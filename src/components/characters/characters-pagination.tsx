@@ -2,28 +2,31 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
+import {
+  type AgeBand,
+  buildCharactersListHref,
+} from "@/lib/characters-catalog-url";
 
 const LIMIT_OPTIONS = [12, 24, 36] as const;
-
-function href(page: number, limit: number) {
-  const q = new URLSearchParams({
-    page: String(page),
-    limit: String(limit),
-  });
-  return `/characters?${q.toString()}`;
-}
 
 export function CharactersPagination({
   page,
   limit,
   resultCount,
+  q,
+  ageBand,
 }: {
   page: number;
   limit: number;
   resultCount: number;
+  q: string;
+  ageBand: AgeBand;
 }) {
   const hasPrev = page > 1;
   const hasNext = resultCount >= limit;
+
+  const href = (p: number, l = limit) =>
+    buildCharactersListHref({ page: p, limit: l, q, ageBand });
 
   return (
     <nav

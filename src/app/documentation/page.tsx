@@ -129,6 +129,14 @@ function EndpointCode({ children }: { children: string }) {
   );
 }
 
+function InlineCode({ children }: { children: string }) {
+  return (
+    <code className="rounded bg-muted px-1 py-0.5 text-[0.6875rem] text-foreground">
+      {children}
+    </code>
+  );
+}
+
 const characterNameExample = `type CharacterNameJson = {
   en: string
   jp: string
@@ -193,27 +201,20 @@ export default function DocumentationPage() {
               <li>
                 <strong className="text-foreground">Pagination:</strong>{" "}
                 <EndpointCode>?page=</EndpointCode> (1-based, default{" "}
-                <code className="rounded bg-muted px-1 py-0.5 text-[0.6875rem]">
-                  1
-                </code>
-                ), <EndpointCode>?limit=</EndpointCode> (default{" "}
-                <code className="rounded bg-muted px-1 py-0.5 text-[0.6875rem]">
-                  20
-                </code>
-                ).
+                <InlineCode>1</InlineCode>), <EndpointCode>?limit=</EndpointCode>{" "}
+                (default <InlineCode>20</InlineCode>).
               </li>
               <li>
                 <strong className="text-foreground">Timestamps:</strong>{" "}
-                <code className="rounded bg-muted px-1 py-0.5 text-[0.6875rem]">
-                  created_at
-                </code>{" "}
-                values are ISO 8601 date-time strings (UTC).
+                <InlineCode>created_at</InlineCode> values are ISO 8601
+                date-time strings (UTC).
               </li>
               <li>
                 <strong className="text-foreground">Errors:</strong> failed
-                requests return JSON{" "}
-                <EndpointCode>{`{ "error": string }`}</EndpointCode> with HTTP
-                500.
+                requests return JSON <InlineCode>{`{ "error": string }`}</InlineCode>.
+                Most server errors return HTTP <InlineCode>500</InlineCode>; some
+                detail routes return <InlineCode>404</InlineCode> when an id is
+                missing.
               </li>
             </ul>
           </CardContent>
@@ -243,6 +244,31 @@ export default function DocumentationPage() {
 
         <Card>
           <CardHeader>
+            <CardTitle>Localized JSON fields</CardTitle>
+            <CardDescription>
+              Some columns are stored as JSON and usually follow a shared shape.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4 text-sm text-muted-foreground">
+            <p>
+              Columns like <InlineCode>characters.name</InlineCode>,{" "}
+              <InlineCode>devil_fruits.name</InlineCode>, and{" "}
+              <InlineCode>devil_fruits.model</InlineCode> may be <InlineCode>null</InlineCode>{" "}
+              or a localized JSON object. When localized, the convention is:
+            </p>
+            <pre className="overflow-x-auto rounded-lg border border-border/80 bg-muted/30 p-4 font-mono text-[0.75rem] leading-relaxed text-foreground">
+              {characterNameExample}
+            </pre>
+            <p>
+              Clients typically pick a primary label in priority order{" "}
+              <InlineCode>en</InlineCode> → <InlineCode>romaji</InlineCode> →{" "}
+              <InlineCode>jp</InlineCode>.
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
             <CardTitle>Characters</CardTitle>
             <CardDescription>
               Paginated characters; each item includes related bounties.
@@ -253,14 +279,33 @@ export default function DocumentationPage() {
               <EndpointCode>GET /api/characters</EndpointCode>
             </p>
             <p>
+              <strong className="text-foreground">Query:</strong>
+            </p>
+            <ul className="list-inside list-disc space-y-1.5">
+              <li>
+                <EndpointCode>?page=</EndpointCode> / <EndpointCode>?limit=</EndpointCode>{" "}
+                pagination.
+              </li>
+              <li>
+                <EndpointCode>?q=</EndpointCode> searches localized name fields{" "}
+                (<InlineCode>en</InlineCode>, <InlineCode>jp</InlineCode>,{" "}
+                <InlineCode>romaji</InlineCode>) case-insensitively.
+              </li>
+              <li>
+                <EndpointCode>?ageBand=</EndpointCode> filters numeric{" "}
+                <InlineCode>age</InlineCode> with one of{" "}
+                <InlineCode>0-12</InlineCode>, <InlineCode>13-17</InlineCode>,{" "}
+                <InlineCode>18-29</InlineCode>, <InlineCode>30-59</InlineCode>,{" "}
+                <InlineCode>60+</InlineCode>. When set, rows with{" "}
+                <InlineCode>age = null</InlineCode> are excluded.
+              </li>
+            </ul>
+            <p>
               <strong className="text-foreground">Response:</strong> a JSON
               array of character objects. Each object includes the fields below,
               plus a{" "}
-              <code className="rounded bg-muted px-1 py-0.5 text-[0.6875rem]">
-                bounties
-              </code>{" "}
-              array of bounty objects (same shape as{" "}
-              <EndpointCode>GET /api/bounties</EndpointCode> items).
+              <InlineCode>bounties</InlineCode> array of bounty objects (same
+              shape as <EndpointCode>GET /api/bounties</EndpointCode> items).
             </p>
             <div>
               <p className="mb-2 font-medium text-foreground">
@@ -276,23 +321,25 @@ export default function DocumentationPage() {
               </p>
               <FieldTable rows={toRows(BOUNTY_ROW_FIELDS)} />
             </div>
-            <div>
-              <p className="mb-2 font-medium text-foreground">
-                <code className="font-mono text-[0.8125rem]">name</code> — JSON
-                object shape
-              </p>
-              <p className="mb-2 text-muted-foreground">
-                This field may be any JSON object; when it represents a
-                character name, it follows the{" "}
-                <code className="rounded bg-muted px-1 py-0.5 text-[0.6875rem]">
-                  CharacterNameJson
-                </code>{" "}
-                convention:
-              </p>
-              <pre className="overflow-x-auto rounded-lg border border-border/80 bg-muted/30 p-4 font-mono text-[0.75rem] leading-relaxed text-foreground">
-                {characterNameExample}
-              </pre>
-            </div>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Character detail</CardTitle>
+            <CardDescription>
+              Fetch a single character by id (includes related bounties).
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4 text-sm text-muted-foreground">
+            <p>
+              <EndpointCode>GET /api/characters/[id]</EndpointCode>
+            </p>
+            <p>
+              <strong className="text-foreground">Response:</strong> a single
+              character object (same fields as list items), or{" "}
+              <InlineCode>404</InlineCode> when not found.
+            </p>
           </CardContent>
         </Card>
 
@@ -311,25 +358,16 @@ export default function DocumentationPage() {
               <strong className="text-foreground">Query:</strong>{" "}
               <EndpointCode>?isActive=true</EndpointCode> or{" "}
               <EndpointCode>?isActive=false</EndpointCode> filters{" "}
-              <code className="rounded bg-muted px-1 py-0.5 text-[0.6875rem]">
-                is_active
-              </code>
-              . If omitted, no filter is applied (returns both active and
-              inactive).
+              <InlineCode>is_active</InlineCode>. If omitted, no filter is
+              applied (returns both active and inactive).
             </p>
             <p>
               <strong className="text-foreground">Sort:</strong>{" "}
               <EndpointCode>?sort=high</EndpointCode> orders by{" "}
-              <code className="rounded bg-muted px-1 py-0.5 text-[0.6875rem]">
-                amount
-              </code>{" "}
-              descending (largest first); <EndpointCode>?sort=low</EndpointCode>{" "}
-              ascending (smallest first). Omit <EndpointCode>sort</EndpointCode>{" "}
-              for newest first by{" "}
-              <code className="rounded bg-muted px-1 py-0.5 text-[0.6875rem]">
-                created_at
-              </code>
-              .
+              <InlineCode>amount</InlineCode> descending (largest first);{" "}
+              <EndpointCode>?sort=low</EndpointCode> ascending (smallest first).
+              Omit <EndpointCode>sort</EndpointCode> for newest first by{" "}
+              <InlineCode>created_at</InlineCode>.
             </p>
             <p>
               <strong className="text-foreground">Response:</strong> a JSON
@@ -349,26 +387,14 @@ export default function DocumentationPage() {
               <EndpointCode>GET /api/devil-fruits</EndpointCode>
             </p>
             <p>
+              <strong className="text-foreground">Query:</strong> pagination via{" "}
+              <EndpointCode>?page=</EndpointCode> / <EndpointCode>?limit=</EndpointCode>.
+            </p>
+            <p>
               <strong className="text-foreground">Response:</strong> a JSON
               array of devil fruit objects (fields below).
             </p>
             <FieldTable rows={toRows(DEVIL_FRUIT_ROW_FIELDS)} />
-            <p>
-              Fields{" "}
-              <code className="rounded bg-muted px-1 py-0.5 text-[0.6875rem]">
-                name
-              </code>{" "}
-              and{" "}
-              <code className="rounded bg-muted px-1 py-0.5 text-[0.6875rem]">
-                model
-              </code>{" "}
-              use the same{" "}
-              <code className="rounded bg-muted px-1 py-0.5 text-[0.6875rem]">
-                CharacterNameJson
-              </code>{" "}
-              convention as character names when the value is a localized
-              object (see the Characters section above).
-            </p>
           </CardContent>
         </Card>
 

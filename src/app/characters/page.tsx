@@ -7,10 +7,17 @@ import {
   type ApiCharacter,
   CharacterCard,
 } from "@/components/characters/character-card";
+import { CharactersCatalogToolbar } from "@/components/characters/characters-catalog-toolbar";
 import { CharactersPagination } from "@/components/characters/characters-pagination";
 import { CatalogNav } from "@/components/layout/catalog-nav";
 import { LogoMark } from "@/components/logo";
 import { Button } from "@/components/ui/button";
+import {
+  type AgeBand,
+  buildCharactersListHref,
+  parseAgeBand,
+  parseNameQuery,
+} from "@/lib/characters-catalog-url";
 import {
   Card,
   CardContent,
@@ -30,11 +37,19 @@ const LIMIT_OPTIONS = new Set([12, 24, 36]);
 async function fetchCharacters(
   page: number,
   limit: number,
+  q: string,
+  ageBand: AgeBand,
 ): Promise<{ ok: true; data: ApiCharacter[] } | { ok: false }> {
   const h = await headers();
   const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
   const proto = h.get("x-forwarded-proto") ?? "http";
-  const url = `${proto}://${host}/api/characters?page=${page}&limit=${limit}`;
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+  });
+  if (q) params.set("q", q);
+  if (ageBand !== "all") params.set("ageBand", ageBand);
+  const url = `${proto}://${host}/api/characters?${params.toString()}`;
 
   const res = await fetch(url, { cache: "no-store" });
   if (!res.ok) return { ok: false };
@@ -46,14 +61,30 @@ async function fetchCharacters(
 export default async function CharactersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; limit?: string }>;
+  searchParams: Promise<{ page?: string; limit?: string; q?: string; ageBand?: string }>;
 }) {
   const sp = await searchParams;
   const page = Math.max(1, Math.floor(Number(sp.page) || 1));
   const rawLimit = Number(sp.limit);
   const limit = LIMIT_OPTIONS.has(rawLimit) ? rawLimit : 12;
+  const q = parseNameQuery(sp.q);
+  const ageBand = parseAgeBand(sp.ageBand);
 
-  const result = await fetchCharacters(page, limit);
+  const result = await fetchCharacters(page, limit, q, ageBand);
+
+  const retryHref = buildCharactersListHref({
+    page: 1,
+    limit,
+    q,
+    ageBand,
+  });
+
+  const firstPageHref = buildCharactersListHref({
+    page: 1,
+    limit: 12,
+    q,
+    ageBand,
+  });
 
   return (
     <div
@@ -122,7 +153,7 @@ export default async function CharactersPage({
       </header>
 
       <main className="relative z-10 mx-auto max-w-6xl px-4 py-10 md:px-8 md:py-14">
-        <div className="mb-10 max-w-2xl space-y-3">
+        <div className="mb-8 max-w-2xl space-y-3 md:mb-10">
           <p className="font-display text-[0.7rem] font-medium tracking-[0.28em] text-primary uppercase">
             Grand Line · Catalog
           </p>
@@ -130,10 +161,12 @@ export default async function CharactersPage({
             Characters
           </h1>
           <p className="text-pretty text-sm/relaxed text-muted-foreground md:text-base/relaxed">
-            Explore the dataset with pagination. Portrait images will appear on
-            each card when available.
+            Filter by age, search localized names, and paginate. URLs keep your
+            filters so you can share a view.
           </p>
         </div>
+
+        <CharactersCatalogToolbar ageBand={ageBand} limit={limit} q={q} />
 
         {!result.ok ? (
           <Card className="border-destructive/30 bg-card/90">
@@ -145,28 +178,34 @@ export default async function CharactersPage({
             </CardHeader>
             <CardContent>
               <Button asChild className="rounded-full" variant="outline">
-                <Link href={`/characters?page=1&limit=${limit}`}>Retry</Link>
+                <Link href={retryHref}>Retry</Link>
               </Button>
             </CardContent>
           </Card>
         ) : result.data.length === 0 ? (
           <Card className="bg-card/90">
             <CardHeader>
-              <CardTitle>No characters here</CardTitle>
+              <CardTitle>No characters match</CardTitle>
               <CardDescription>
-                This page is empty. Go back to the first page or change how many
-                results you show per page.
+                Try another search, age range, or go back to the full list.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
               <Button asChild className="rounded-full">
-                <Link href="/characters?page=1&limit=12">First page</Link>
+                <Link
+                  href={buildCharactersListHref({
+                    page: 1,
+                    limit: 12,
+                    q: "",
+                    ageBand: "all",
+                  })}
+                >
+                  Clear filters
+                </Link>
               </Button>
               {page > 1 ? (
                 <Button asChild className="rounded-full" variant="outline">
-                  <Link href={`/characters?page=${page - 1}&limit=${limit}`}>
-                    Previous page
-                  </Link>
+                  <Link href={firstPageHref}>First page</Link>
                 </Button>
               ) : null}
             </CardContent>
@@ -182,8 +221,10 @@ export default async function CharactersPage({
             </ul>
             <div className="mt-10">
               <CharactersPagination
+                ageBand={ageBand}
                 limit={limit}
                 page={page}
+                q={q}
                 resultCount={result.data.length}
               />
             </div>
