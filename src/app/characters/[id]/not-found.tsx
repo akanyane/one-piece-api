@@ -21,11 +21,14 @@ export default function CharacterNotFound() {
           >
             <LogoMark />
           </Link>
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/characters">
-              <Users data-icon="inline-start" />
-              Characters
-            </Link>
+          <Button
+            variant="ghost"
+            size="sm"
+            nativeButton={false}
+            render={<Link href="/characters" />}
+          >
+            <Users data-icon="inline-start" />
+            Characters
           </Button>
         </div>
       </header>
@@ -40,17 +43,22 @@ export default function CharacterNotFound() {
           This id is not in the database, or the link may be wrong.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-2">
-          <Button asChild className="rounded-full">
-            <Link href="/characters">
-              <Users data-icon="inline-start" />
-              All characters
-            </Link>
+          <Button
+            className="rounded-full"
+            nativeButton={false}
+            render={<Link href="/characters" />}
+          >
+            <Users data-icon="inline-start" />
+            All characters
           </Button>
-          <Button asChild className="rounded-full" variant="outline">
-            <Link href="/">
-              <ArrowLeft data-icon="inline-start" />
-              Home
-            </Link>
+          <Button
+            className="rounded-full"
+            nativeButton={false}
+            render={<Link href="/" />}
+            variant="outline"
+          >
+            <ArrowLeft data-icon="inline-start" />
+            Home
           </Button>
         </div>
       </main>

@@ -1,11 +1,8 @@
-import { Coins, Fingerprint, UserRound } from "lucide-react";
+import { Coins, UserRound } from "lucide-react";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
-import {
-  displayCharacterName,
-  subtitleCharacterName,
-} from "@/lib/character-name";
+import { displayCharacterName } from "@/lib/character-name";
 import { cn } from "@/lib/utils";
 
 export type ApiBountyRow = {
@@ -22,10 +19,6 @@ function formatBerry(n: number | null): string {
   return n.toLocaleString("en-US");
 }
 
-function shortId(id: string): string {
-  return id.length > 8 ? `${id.slice(0, 8)}…` : id;
-}
-
 export function BountyCard({
   bounty,
   className,
@@ -37,10 +30,6 @@ export function BountyCard({
   const characterTitle = bounty.character_id
     ? displayCharacterName(nameJson)
     : null;
-  const characterSubtitle =
-    bounty.character_id && nameJson
-      ? subtitleCharacterName(nameJson, characterTitle ?? "")
-      : undefined;
 
   return (
     <article
@@ -81,12 +70,6 @@ export function BountyCard({
 
       <div className="flex flex-1 flex-col gap-3 p-5">
         <div className="space-y-1.5 text-[0.8125rem] text-muted-foreground">
-          {/* <div className="flex items-center gap-2 font-mono text-[0.6875rem] text-foreground/80">
-            <Fingerprint aria-hidden className="size-3.5 shrink-0 opacity-60" />
-            <span className="truncate" title={bounty.id}>
-              {shortId(bounty.id)}
-            </span>
-          </div> */}
           <div>
             <span className="flex items-center gap-1.5 text-[0.65rem] font-medium tracking-wide uppercase">
               <UserRound aria-hidden className="size-3 opacity-60" />
@@ -97,15 +80,6 @@ export function BountyCard({
                 <p className="font-display text-base font-medium leading-snug text-foreground">
                   {characterTitle}
                 </p>
-                {/* {characterSubtitle ? (
-                  <p className="text-sm text-muted-foreground">
-                    {characterSubtitle}
-                  </p>
-                ) : null}
-                <p className="font-mono text-[0.65rem] text-muted-foreground/90">
-                  <span className="sr-only">Character id: </span>
-                  {shortId(bounty.character_id)}
-                </p> */}
               </div>
             ) : (
               <p className="mt-1 italic text-foreground/80">Not linked</p>
@@ -113,16 +87,6 @@ export function BountyCard({
           </div>
         </div>
         <div className="mt-auto border-t border-border/50 pt-3">
-          {/* <p className="text-[0.65rem] text-muted-foreground">
-            Added{" "}
-            <time dateTime={bounty.created_at}>
-              {new Date(bounty.created_at).toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "short",
-                day: "numeric",
-              })}
-            </time>
-          </p> */}
           <Link
             className="mt-2 inline-flex text-[0.8125rem] font-medium text-primary underline-offset-4 hover:underline"
             href={`/characters/${bounty.character_id}`}

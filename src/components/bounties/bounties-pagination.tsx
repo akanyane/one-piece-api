@@ -54,12 +54,13 @@ export function BountiesPagination({
           {LIMIT_OPTIONS.map((l) => (
             <Button
               key={l}
-              asChild
               className="rounded-full"
+              nativeButton={false}
+              render={<Link href={href(1, l)} />}
               size="sm"
               variant={l === limit ? "default" : "outline"}
             >
-              <Link href={href(1, l)}>{l} per page</Link>
+              {l} per page
             </Button>
           ))}
         </div>
@@ -67,15 +68,14 @@ export function BountiesPagination({
         <div className="flex justify-center gap-2">
           {hasPrev ? (
             <Button
-              asChild
               className="rounded-full"
+              nativeButton={false}
+              render={<Link href={href(page - 1)} />}
               size="sm"
               variant="outline"
             >
-              <Link href={href(page - 1)}>
-                <ChevronLeft data-icon="inline-start" />
-                Previous
-              </Link>
+              <ChevronLeft data-icon="inline-start" />
+              Previous
             </Button>
           ) : (
             <Button
@@ -90,15 +90,14 @@ export function BountiesPagination({
           )}
           {hasNext ? (
             <Button
-              asChild
               className="rounded-full"
+              nativeButton={false}
+              render={<Link href={href(page + 1)} />}
               size="sm"
               variant="outline"
             >
-              <Link href={href(page + 1)}>
-                Next
-                <ChevronRight data-icon="inline-end" />
-              </Link>
+              Next
+              <ChevronRight data-icon="inline-end" />
             </Button>
           ) : (
             <Button
@@ -141,22 +140,23 @@ export function BountyFilterTabs({
       {tabs.map(({ key, label }) => (
         <Button
           key={key}
-          asChild
           className="rounded-full"
+          nativeButton={false}
+          render={
+            <Link
+              href={buildBountiesListHref({
+                page: 1,
+                limit,
+                filter: key,
+                sort,
+              })}
+              role="tab"
+            />
+          }
           size="sm"
           variant={filter === key ? "default" : "ghost"}
         >
-          <Link
-            href={buildBountiesListHref({
-              page: 1,
-              limit,
-              filter: key,
-              sort,
-            })}
-            role="tab"
-          >
-            {label}
-          </Link>
+          {label}
         </Button>
       ))}
     </div>
@@ -187,22 +187,23 @@ export function BountySortTabs({
       {tabs.map(({ key, label }) => (
         <Button
           key={key}
-          asChild
           className="rounded-full"
+          nativeButton={false}
+          render={
+            <Link
+              href={buildBountiesListHref({
+                page: 1,
+                limit,
+                filter,
+                sort: key,
+              })}
+              role="tab"
+            />
+          }
           size="sm"
           variant={sort === key ? "default" : "ghost"}
         >
-          <Link
-            href={buildBountiesListHref({
-              page: 1,
-              limit,
-              filter,
-              sort: key,
-            })}
-            role="tab"
-          >
-            {label}
-          </Link>
+          {label}
         </Button>
       ))}
     </div>

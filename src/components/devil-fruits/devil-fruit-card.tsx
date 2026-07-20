@@ -1,4 +1,5 @@
 import { Cherry } from "lucide-react";
+import Image from "next/image";
 
 import { Badge } from "@/components/ui/badge";
 import {
@@ -46,27 +47,24 @@ export function DevilFruitCard({
         />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,color-mix(in_oklch,var(--color-primary)_25%,transparent),transparent_55%)]" />
         {fruit.image_url ? (
-          <img
+          <Image
             alt=""
-            className="absolute inset-0 size-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
-            decoding="async"
+            className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+            fill
             src={fruit.image_url}
+            unoptimized
           />
         ) : null}
-        <div
-          className={cn(
-            "absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center",
-            // fruit.image_url &&
-            //   "bg-linear-to-t from-background/90 via-background/20 to-transparent",
-          )}
-        >
-          {!fruit.image_url ?<div className="flex size-[4.5rem] items-center justify-center rounded-full border border-primary/25 bg-background/50 shadow-inner backdrop-blur-sm transition-transform duration-300 group-hover:scale-105">
-            <Cherry
-              aria-hidden
-              className="size-9 text-primary/45"
-              strokeWidth={1.35}
-            />
-          </div> : null}
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
+          {!fruit.image_url ? (
+            <div className="flex size-[4.5rem] items-center justify-center rounded-full border border-primary/25 bg-background/50 shadow-inner backdrop-blur-sm transition-transform duration-300 group-hover:scale-105">
+              <Cherry
+                aria-hidden
+                className="size-9 text-primary/45"
+                strokeWidth={1.35}
+              />
+            </div>
+          ) : null}
           {!fruit.image_url ? (
             <p className="max-w-[12rem] text-[0.65rem] font-medium tracking-[0.2em] text-muted-foreground uppercase">
               Art coming soon

@@ -65,7 +65,8 @@ const DEVIL_FRUIT_ROW_FIELDS: {
   {
     key: "name",
     type: "object | null",
-    notes: "Localized fruit name; CharacterNameJson when present (en, jp, romaji)",
+    notes:
+      "Localized fruit name; CharacterNameJson when present (en, jp, romaji)",
   },
   {
     key: "model",
@@ -156,11 +157,14 @@ export default function DocumentationPage() {
       <header className="border-b border-border/60 bg-background/80 backdrop-blur">
         <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-4 md:px-6">
           <Logo />
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/">
-              <ArrowLeft data-icon="inline-start" />
-              Home
-            </Link>
+          <Button
+            variant="ghost"
+            size="sm"
+            nativeButton={false}
+            render={<Link href="/" />}
+          >
+            <ArrowLeft data-icon="inline-start" />
+            Home
           </Button>
         </div>
       </header>
@@ -201,8 +205,9 @@ export default function DocumentationPage() {
               <li>
                 <strong className="text-foreground">Pagination:</strong>{" "}
                 <EndpointCode>?page=</EndpointCode> (1-based, default{" "}
-                <InlineCode>1</InlineCode>), <EndpointCode>?limit=</EndpointCode>{" "}
-                (default <InlineCode>20</InlineCode>).
+                <InlineCode>1</InlineCode>),{" "}
+                <EndpointCode>?limit=</EndpointCode> (default{" "}
+                <InlineCode>20</InlineCode>).
               </li>
               <li>
                 <strong className="text-foreground">Timestamps:</strong>{" "}
@@ -211,9 +216,10 @@ export default function DocumentationPage() {
               </li>
               <li>
                 <strong className="text-foreground">Errors:</strong> failed
-                requests return JSON <InlineCode>{`{ "error": string }`}</InlineCode>.
-                Most server errors return HTTP <InlineCode>500</InlineCode>; some
-                detail routes return <InlineCode>404</InlineCode> when an id is
+                requests return JSON{" "}
+                <InlineCode>{`{ "error": string }`}</InlineCode>. Most server
+                errors return HTTP <InlineCode>500</InlineCode>; some detail
+                routes return <InlineCode>404</InlineCode> when an id is
                 missing.
               </li>
             </ul>
@@ -253,8 +259,9 @@ export default function DocumentationPage() {
             <p>
               Columns like <InlineCode>characters.name</InlineCode>,{" "}
               <InlineCode>devil_fruits.name</InlineCode>, and{" "}
-              <InlineCode>devil_fruits.model</InlineCode> may be <InlineCode>null</InlineCode>{" "}
-              or a localized JSON object. When localized, the convention is:
+              <InlineCode>devil_fruits.model</InlineCode> may be{" "}
+              <InlineCode>null</InlineCode> or a localized JSON object. When
+              localized, the convention is:
             </p>
             <pre className="overflow-x-auto rounded-lg border border-border/80 bg-muted/30 p-4 font-mono text-[0.75rem] leading-relaxed text-foreground">
               {characterNameExample}
@@ -283,8 +290,8 @@ export default function DocumentationPage() {
             </p>
             <ul className="list-inside list-disc space-y-1.5">
               <li>
-                <EndpointCode>?page=</EndpointCode> / <EndpointCode>?limit=</EndpointCode>{" "}
-                pagination.
+                <EndpointCode>?page=</EndpointCode> /{" "}
+                <EndpointCode>?limit=</EndpointCode> pagination.
               </li>
               <li>
                 <EndpointCode>?q=</EndpointCode> searches localized name fields{" "}
@@ -303,9 +310,9 @@ export default function DocumentationPage() {
             <p>
               <strong className="text-foreground">Response:</strong> a JSON
               array of character objects. Each object includes the fields below,
-              plus a{" "}
-              <InlineCode>bounties</InlineCode> array of bounty objects (same
-              shape as <EndpointCode>GET /api/bounties</EndpointCode> items).
+              plus a <InlineCode>bounties</InlineCode> array of bounty objects
+              (same shape as <EndpointCode>GET /api/bounties</EndpointCode>{" "}
+              items).
             </p>
             <div>
               <p className="mb-2 font-medium text-foreground">
@@ -388,7 +395,8 @@ export default function DocumentationPage() {
             </p>
             <p>
               <strong className="text-foreground">Query:</strong> pagination via{" "}
-              <EndpointCode>?page=</EndpointCode> / <EndpointCode>?limit=</EndpointCode>.
+              <EndpointCode>?page=</EndpointCode> /{" "}
+              <EndpointCode>?limit=</EndpointCode>.
             </p>
             <p>
               <strong className="text-foreground">Response:</strong> a JSON

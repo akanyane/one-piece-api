@@ -8,11 +8,11 @@ import {
   BountyFilterTabs,
   BountySortTabs,
 } from "@/components/bounties/bounties-pagination";
-import { CatalogNav } from "@/components/layout/catalog-nav";
 import {
   type ApiBountyRow,
   BountyCard,
 } from "@/components/bounties/bounty-card";
+import { CatalogNav } from "@/components/layout/catalog-nav";
 import { LogoMark } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import {
@@ -122,35 +122,50 @@ export default async function BountiesPage({
             </span>
           </Link>
           <CatalogNav>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/">
-                <ArrowLeft data-icon="inline-start" />
-                Home
-              </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/" />}
+            >
+              <ArrowLeft data-icon="inline-start" />
+              Home
             </Button>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/characters">
-                <Users data-icon="inline-start" />
-                Characters
-              </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/characters" />}
+            >
+              <Users data-icon="inline-start" />
+              Characters
             </Button>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/devil-fruits">
-                <Cherry data-icon="inline-start" />
-                Devil fruits
-              </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/devil-fruits" />}
+            >
+              <Cherry data-icon="inline-start" />
+              Devil fruits
             </Button>
-            <Button variant="default" size="sm" asChild>
-              <Link href="/bounties">
-                <Coins data-icon="inline-start" />
-                Bounties
-              </Link>
+            <Button
+              variant="default"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/bounties" />}
+            >
+              <Coins data-icon="inline-start" />
+              Bounties
             </Button>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/documentation">
-                <BookOpen data-icon="inline-start" />
-                Docs
-              </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/documentation" />}
+            >
+              <BookOpen data-icon="inline-start" />
+              Docs
             </Button>
           </CatalogNav>
         </div>
@@ -185,8 +200,13 @@ export default async function BountiesPage({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button asChild className="rounded-full" variant="outline">
-                <Link href={retryHref}>Retry</Link>
+              <Button
+                className="rounded-full"
+                variant="outline"
+                nativeButton={false}
+                render={<Link href={retryHref} />}
+              >
+                Retry
               </Button>
             </CardContent>
           </Card>
@@ -199,30 +219,39 @@ export default async function BountiesPage({
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
-              <Button asChild className="rounded-full">
-                <Link
-                  href={buildBountiesListHref({
-                    page: 1,
-                    limit: 12,
-                    filter: "all",
-                    sort: "newest",
-                  })}
-                >
-                  First page
-                </Link>
-              </Button>
-              {page > 1 ? (
-                <Button asChild className="rounded-full" variant="outline">
+              <Button
+                className="rounded-full"
+                nativeButton={false}
+                render={
                   <Link
                     href={buildBountiesListHref({
-                      page: page - 1,
-                      limit,
-                      filter,
-                      sort,
+                      page: 1,
+                      limit: 12,
+                      filter: "all",
+                      sort: "newest",
                     })}
-                  >
-                    Previous page
-                  </Link>
+                  />
+                }
+              >
+                First page
+              </Button>
+              {page > 1 ? (
+                <Button
+                  className="rounded-full"
+                  variant="outline"
+                  nativeButton={false}
+                  render={
+                    <Link
+                      href={buildBountiesListHref({
+                        page: page - 1,
+                        limit,
+                        filter,
+                        sort,
+                      })}
+                    />
+                  }
+                >
+                  Previous page
                 </Button>
               ) : null}
             </CardContent>

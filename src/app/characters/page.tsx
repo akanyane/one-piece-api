@@ -13,18 +13,18 @@ import { CatalogNav } from "@/components/layout/catalog-nav";
 import { LogoMark } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import {
-  type AgeBand,
-  buildCharactersListHref,
-  parseAgeBand,
-  parseNameQuery,
-} from "@/lib/characters-catalog-url";
-import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import {
+  type AgeBand,
+  buildCharactersListHref,
+  parseAgeBand,
+  parseNameQuery,
+} from "@/lib/characters-catalog-url";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -61,7 +61,12 @@ async function fetchCharacters(
 export default async function CharactersPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; limit?: string; q?: string; ageBand?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    limit?: string;
+    q?: string;
+    ageBand?: string;
+  }>;
 }) {
   const sp = await searchParams;
   const page = Math.max(1, Math.floor(Number(sp.page) || 1));
@@ -118,35 +123,50 @@ export default async function CharactersPage({
             </span>
           </Link>
           <CatalogNav>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/">
-                <ArrowLeft data-icon="inline-start" />
-                Home
-              </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/" />}
+            >
+              <ArrowLeft data-icon="inline-start" />
+              Home
             </Button>
-            <Button variant="default" size="sm" asChild>
-              <Link href="/characters">
-                <Users data-icon="inline-start" />
-                Characters
-              </Link>
+            <Button
+              variant="default"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/characters" />}
+            >
+              <Users data-icon="inline-start" />
+              Characters
             </Button>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/devil-fruits">
-                <Cherry data-icon="inline-start" />
-                Devil fruits
-              </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/devil-fruits" />}
+            >
+              <Cherry data-icon="inline-start" />
+              Devil fruits
             </Button>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/bounties">
-                <Coins data-icon="inline-start" />
-                Bounties
-              </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/bounties" />}
+            >
+              <Coins data-icon="inline-start" />
+              Bounties
             </Button>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/documentation">
-                <BookOpen data-icon="inline-start" />
-                Docs
-              </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/documentation" />}
+            >
+              <BookOpen data-icon="inline-start" />
+              Docs
             </Button>
           </CatalogNav>
         </div>
@@ -177,8 +197,13 @@ export default async function CharactersPage({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button asChild className="rounded-full" variant="outline">
-                <Link href={retryHref}>Retry</Link>
+              <Button
+                className="rounded-full"
+                variant="outline"
+                nativeButton={false}
+                render={<Link href={retryHref} />}
+              >
+                Retry
               </Button>
             </CardContent>
           </Card>
@@ -191,21 +216,30 @@ export default async function CharactersPage({
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
-              <Button asChild className="rounded-full">
-                <Link
-                  href={buildCharactersListHref({
-                    page: 1,
-                    limit: 12,
-                    q: "",
-                    ageBand: "all",
-                  })}
-                >
-                  Clear filters
-                </Link>
+              <Button
+                className="rounded-full"
+                nativeButton={false}
+                render={
+                  <Link
+                    href={buildCharactersListHref({
+                      page: 1,
+                      limit: 12,
+                      q: "",
+                      ageBand: "all",
+                    })}
+                  />
+                }
+              >
+                Clear filters
               </Button>
               {page > 1 ? (
-                <Button asChild className="rounded-full" variant="outline">
-                  <Link href={firstPageHref}>First page</Link>
+                <Button
+                  className="rounded-full"
+                  variant="outline"
+                  nativeButton={false}
+                  render={<Link href={firstPageHref} />}
+                >
+                  First page
                 </Button>
               ) : null}
             </CardContent>

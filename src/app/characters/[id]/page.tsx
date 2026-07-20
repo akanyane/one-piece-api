@@ -41,7 +41,8 @@ function nameParts(name: unknown): { key: string; value: string }[] {
   const out: { key: string; value: string }[] = [];
   for (const k of keys) {
     const v = o[k];
-    if (typeof v === "string" && v.trim()) out.push({ key: k, value: v.trim() });
+    if (typeof v === "string" && v.trim())
+      out.push({ key: k, value: v.trim() });
   }
   return out;
 }
@@ -103,11 +104,14 @@ export default async function CharacterDetailPage({
               <LogoMark />
             </Link>
             <CatalogNav>
-              <Button variant="ghost" size="sm" asChild>
-                <Link href="/characters">
-                  <Users data-icon="inline-start" />
-                  Characters
-                </Link>
+              <Button
+                variant="ghost"
+                size="sm"
+                nativeButton={false}
+                render={<Link href="/characters" />}
+              >
+                <Users data-icon="inline-start" />
+                Characters
               </Button>
             </CatalogNav>
           </div>
@@ -121,11 +125,20 @@ export default async function CharacterDetailPage({
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
-              <Button asChild className="rounded-full">
-                <Link href={`/characters/${id}`}>Retry</Link>
+              <Button
+                className="rounded-full"
+                nativeButton={false}
+                render={<Link href={`/characters/${id}`} />}
+              >
+                Retry
               </Button>
-              <Button asChild className="rounded-full" variant="outline">
-                <Link href="/characters">All characters</Link>
+              <Button
+                className="rounded-full"
+                variant="outline"
+                nativeButton={false}
+                render={<Link href="/characters" />}
+              >
+                All characters
               </Button>
             </CardContent>
           </Card>
@@ -177,35 +190,50 @@ export default async function CharacterDetailPage({
             </span>
           </Link>
           <CatalogNav>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/">
-                <ArrowLeft data-icon="inline-start" />
-                Home
-              </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/" />}
+            >
+              <ArrowLeft data-icon="inline-start" />
+              Home
             </Button>
-            <Button variant="default" size="sm" asChild>
-              <Link href="/characters">
-                <Users data-icon="inline-start" />
-                Characters
-              </Link>
+            <Button
+              variant="default"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/characters" />}
+            >
+              <Users data-icon="inline-start" />
+              Characters
             </Button>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/devil-fruits">
-                <Cherry data-icon="inline-start" />
-                Devil fruits
-              </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/devil-fruits" />}
+            >
+              <Cherry data-icon="inline-start" />
+              Devil fruits
             </Button>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/bounties">
-                <Coins data-icon="inline-start" />
-                Bounties
-              </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/bounties" />}
+            >
+              <Coins data-icon="inline-start" />
+              Bounties
             </Button>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/documentation">
-                <BookOpen data-icon="inline-start" />
-                Docs
-              </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/documentation" />}
+            >
+              <BookOpen data-icon="inline-start" />
+              Docs
             </Button>
           </CatalogNav>
         </div>
@@ -217,12 +245,11 @@ export default async function CharacterDetailPage({
             variant="ghost"
             size="sm"
             className="-ml-2 mb-4 rounded-full text-muted-foreground hover:text-foreground"
-            asChild
+            nativeButton={false}
+            render={<Link href="/characters" />}
           >
-            <Link href="/characters">
-              <ArrowLeft data-icon="inline-start" />
-              Back to characters
-            </Link>
+            <ArrowLeft data-icon="inline-start" />
+            Back to characters
           </Button>
         </div>
 
@@ -361,7 +388,9 @@ export default async function CharacterDetailPage({
                   <dt className="text-[0.65rem] font-medium tracking-wide text-muted-foreground uppercase">
                     Record added
                   </dt>
-                  <dd className="text-base text-foreground/90">{createdLabel}</dd>
+                  <dd className="text-base text-foreground/90">
+                    {createdLabel}
+                  </dd>
                 </div>
                 <div className="space-y-1 sm:col-span-2">
                   <dt className="flex items-center gap-2 text-[0.65rem] font-medium tracking-wide text-muted-foreground uppercase">
@@ -412,7 +441,10 @@ export default async function CharacterDetailPage({
                             </Badge>
                           </div>
                           <div className="flex items-center gap-2 text-[0.8125rem] text-muted-foreground">
-                            <Coins aria-hidden className="size-3.5 opacity-60" />
+                            <Coins
+                              aria-hidden
+                              className="size-3.5 opacity-60"
+                            />
                             <span>Posted {posted}</span>
                           </div>
                         </div>

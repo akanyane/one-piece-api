@@ -1,5 +1,5 @@
-import { cache } from "react";
 import { headers } from "next/headers";
+import { cache } from "react";
 
 import type { ApiCharacter } from "@/components/characters/character-card";
 

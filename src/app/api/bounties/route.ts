@@ -1,10 +1,17 @@
 import { NextResponse } from "next/server";
+import { errorResponse } from "@/lib/api-error";
 import { supabase } from "@/supabase/client";
+
+const MAX_LIMIT = 100;
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const page = Number(url.searchParams.get("page")) || 1;
-  const limit = Number(url.searchParams.get("limit")) || 20;
+  const page = Math.max(
+    1,
+    Math.floor(Number(url.searchParams.get("page")) || 1),
+  );
+  const rawLimit = Number(url.searchParams.get("limit")) || 20;
+  const limit = Math.min(Math.max(1, Math.floor(rawLimit)), MAX_LIMIT);
 
   const isActiveParam = url.searchParams.get("isActive");
   const isActive =
@@ -36,7 +43,7 @@ export async function GET(request: Request) {
   );
 
   if (error) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+    return errorResponse(error);
   }
 
   return NextResponse.json(data);

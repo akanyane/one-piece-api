@@ -50,12 +50,13 @@ export function DevilFruitsPagination({
           {LIMIT_OPTIONS.map((l) => (
             <Button
               key={l}
-              asChild
               className="rounded-full"
+              nativeButton={false}
+              render={<Link href={href(1, l)} />}
               size="sm"
               variant={l === limit ? "default" : "outline"}
             >
-              <Link href={href(1, l)}>{l} per page</Link>
+              {l} per page
             </Button>
           ))}
         </div>
@@ -63,15 +64,14 @@ export function DevilFruitsPagination({
         <div className="flex justify-center gap-2">
           {hasPrev ? (
             <Button
-              asChild
               className="rounded-full"
+              nativeButton={false}
+              render={<Link href={href(page - 1, limit)} />}
               size="sm"
               variant="outline"
             >
-              <Link href={href(page - 1, limit)}>
-                <ChevronLeft data-icon="inline-start" />
-                Previous
-              </Link>
+              <ChevronLeft data-icon="inline-start" />
+              Previous
             </Button>
           ) : (
             <Button
@@ -86,15 +86,14 @@ export function DevilFruitsPagination({
           )}
           {hasNext ? (
             <Button
-              asChild
               className="rounded-full"
+              nativeButton={false}
+              render={<Link href={href(page + 1, limit)} />}
               size="sm"
               variant="outline"
             >
-              <Link href={href(page + 1, limit)}>
-                Next
-                <ChevronRight data-icon="inline-end" />
-              </Link>
+              Next
+              <ChevronRight data-icon="inline-end" />
             </Button>
           ) : (
             <Button

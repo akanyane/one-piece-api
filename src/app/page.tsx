@@ -84,35 +84,51 @@ export default function Home() {
             </span>
           </div>
           <CatalogNav className="home-animate-fade home-delay-1">
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/characters">
-                <Users data-icon="inline-start" />
-                Characters
-              </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/characters" />}
+            >
+              <Users data-icon="inline-start" />
+              Characters
             </Button>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/devil-fruits">
-                <Cherry data-icon="inline-start" />
-                Devil fruits
-              </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/devil-fruits" />}
+            >
+              <Cherry data-icon="inline-start" />
+              Devil fruits
             </Button>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/bounties">
-                <Coins data-icon="inline-start" />
-                Bounties
-              </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/bounties" />}
+            >
+              <Coins data-icon="inline-start" />
+              Bounties
             </Button>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/documentation">
-                <BookOpen data-icon="inline-start" />
-                Docs
-              </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/documentation" />}
+            >
+              <BookOpen data-icon="inline-start" />
+              Docs
             </Button>
-            <Button variant="outline" size="sm" asChild>
-              <a href={REPO} rel="noreferrer" target="_blank">
-                <ExternalLink data-icon="inline-start" />
-                GitHub
-              </a>
+            <Button
+              variant="outline"
+              size="sm"
+              nativeButton={false}
+              // biome-ignore lint/a11y/useAnchorContent: label is passed as Button's children and merged in by the render prop
+              render={<a href={REPO} rel="noreferrer" target="_blank" />}
+            >
+              <ExternalLink data-icon="inline-start" />
+              GitHub
             </Button>
           </CatalogNav>
         </div>
@@ -151,13 +167,12 @@ export default function Home() {
           </div>
           <div className="home-animate-rise home-delay-4 mt-10 flex flex-wrap gap-3">
             <Button
-              asChild
               className="rounded-full px-5 shadow-md shadow-primary/15"
+              nativeButton={false}
+              render={<Link href="/documentation" />}
             >
-              <Link href="/documentation">
-                <BookOpen data-icon="inline-start" />
-                Documentation
-              </Link>
+              <BookOpen data-icon="inline-start" />
+              Documentation
             </Button>
           </div>
         </section>
@@ -206,12 +221,11 @@ export default function Home() {
                       className="rounded-full"
                       size="sm"
                       variant="secondary"
-                      asChild
+                      nativeButton={false}
+                      render={<Link href="/documentation" />}
                     >
-                      <Link href="/documentation">
-                        <BookOpen data-icon="inline-start" />
-                        Open documentation
-                      </Link>
+                      <BookOpen data-icon="inline-start" />
+                      Open documentation
                     </Button>
                   </CardFooter>
                 </div>
@@ -271,12 +285,12 @@ export default function Home() {
                     className="rounded-full"
                     size="sm"
                     variant="outline"
-                    asChild
+                    nativeButton={false}
+                    // biome-ignore lint/a11y/useAnchorContent: label is passed as Button's children and merged in by the render prop
+                    render={<a href={REPO} rel="noreferrer" target="_blank" />}
                   >
-                    <a href={REPO} rel="noreferrer" target="_blank">
-                      <ExternalLink data-icon="inline-start" />
-                      Repository on GitHub
-                    </a>
+                    <ExternalLink data-icon="inline-start" />
+                    Repository on GitHub
                   </Button>
                 </CardFooter>
               </Card>

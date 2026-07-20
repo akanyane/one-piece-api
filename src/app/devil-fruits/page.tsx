@@ -87,35 +87,50 @@ export default async function DevilFruitsPage({
             </span>
           </Link>
           <CatalogNav>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/">
-                <ArrowLeft data-icon="inline-start" />
-                Home
-              </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/" />}
+            >
+              <ArrowLeft data-icon="inline-start" />
+              Home
             </Button>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/characters">
-                <Users data-icon="inline-start" />
-                Characters
-              </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/characters" />}
+            >
+              <Users data-icon="inline-start" />
+              Characters
             </Button>
-            <Button variant="default" size="sm" asChild>
-              <Link href="/devil-fruits">
-                <Cherry data-icon="inline-start" />
-                Devil fruits
-              </Link>
+            <Button
+              variant="default"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/devil-fruits" />}
+            >
+              <Cherry data-icon="inline-start" />
+              Devil fruits
             </Button>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/bounties">
-                <Coins data-icon="inline-start" />
-                Bounties
-              </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/bounties" />}
+            >
+              <Coins data-icon="inline-start" />
+              Bounties
             </Button>
-            <Button variant="ghost" size="sm" asChild>
-              <Link href="/documentation">
-                <BookOpen data-icon="inline-start" />
-                Docs
-              </Link>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/documentation" />}
+            >
+              <BookOpen data-icon="inline-start" />
+              Docs
             </Button>
           </CatalogNav>
         </div>
@@ -155,8 +170,13 @@ export default async function DevilFruitsPage({
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <Button asChild className="rounded-full" variant="outline">
-                <Link href={`/devil-fruits?page=1&limit=${limit}`}>Retry</Link>
+              <Button
+                className="rounded-full"
+                variant="outline"
+                nativeButton={false}
+                render={<Link href={`/devil-fruits?page=1&limit=${limit}`} />}
+              >
+                Retry
               </Button>
             </CardContent>
           </Card>
@@ -170,14 +190,25 @@ export default async function DevilFruitsPage({
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
-              <Button asChild className="rounded-full">
-                <Link href="/devil-fruits?page=1&limit=12">First page</Link>
+              <Button
+                className="rounded-full"
+                nativeButton={false}
+                render={<Link href="/devil-fruits?page=1&limit=12" />}
+              >
+                First page
               </Button>
               {page > 1 ? (
-                <Button asChild className="rounded-full" variant="outline">
-                  <Link href={`/devil-fruits?page=${page - 1}&limit=${limit}`}>
-                    Previous page
-                  </Link>
+                <Button
+                  className="rounded-full"
+                  variant="outline"
+                  nativeButton={false}
+                  render={
+                    <Link
+                      href={`/devil-fruits?page=${page - 1}&limit=${limit}`}
+                    />
+                  }
+                >
+                  Previous page
                 </Button>
               ) : null}
             </CardContent>

@@ -23,11 +23,14 @@ export default function Page() {
       <header className="border-b border-border/60 bg-background/80 backdrop-blur">
         <div className="mx-auto flex max-w-3xl items-center justify-between gap-4 px-4 py-4 md:px-6">
           <Logo />
-          <Button variant="ghost" size="sm" asChild>
-            <Link href="/">
-              <ArrowLeft data-icon="inline-start" />
-              Home
-            </Link>
+          <Button
+            variant="ghost"
+            size="sm"
+            nativeButton={false}
+            render={<Link href="/" />}
+          >
+            <ArrowLeft data-icon="inline-start" />
+            Home
           </Button>
         </div>
       </header>
