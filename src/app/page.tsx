@@ -11,6 +11,7 @@ import {
 import Link from "next/link";
 
 import { CatalogNav } from "@/components/layout/catalog-nav";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import Logo from "@/components/logo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -130,6 +131,7 @@ export default function Home() {
               GitHub
             </Button>
           </CatalogNav>
+          <ThemeToggle />
         </div>
       </header>
 

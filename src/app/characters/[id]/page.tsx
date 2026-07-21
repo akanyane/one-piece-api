@@ -17,6 +17,7 @@ import { notFound } from "next/navigation";
 
 import type { ApiBounty } from "@/components/characters/character-card";
 import { CatalogNav } from "@/components/layout/catalog-nav";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { LogoMark } from "@/components/logo";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -115,6 +116,7 @@ export default async function CharacterDetailPage({
                 Characters
               </Button>
             </CatalogNav>
+            <ThemeToggle />
           </div>
         </header>
         <main className="relative z-10 mx-auto max-w-2xl px-4 py-12 md:px-8">
@@ -237,6 +239,7 @@ export default async function CharacterDetailPage({
               Docs
             </Button>
           </CatalogNav>
+          <ThemeToggle />
         </div>
       </header>
 

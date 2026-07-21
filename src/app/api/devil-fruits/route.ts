@@ -1,7 +1,8 @@
+import type { PostgrestError } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
 import { errorResponse } from "@/lib/api-error";
-import { supabase } from "@/supabase/client";
+import { getDevilFruits } from "@/lib/data";
 
 const MAX_LIMIT = 100;
 
@@ -14,15 +15,10 @@ export async function GET(request: Request) {
   const rawLimit = Number(url.searchParams.get("limit")) || 20;
   const limit = Math.min(Math.max(1, Math.floor(rawLimit)), MAX_LIMIT);
 
-  const { data, error } = await supabase
-    .from("devil_fruits")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .range((page - 1) * limit, page * limit - 1);
-
-  if (error) {
-    return errorResponse(error);
+  try {
+    const data = await getDevilFruits({ page, limit });
+    return NextResponse.json(data);
+  } catch (error) {
+    return errorResponse(error as PostgrestError);
   }
-
-  return NextResponse.json(data);
 }

@@ -1,6 +1,8 @@
+import type { PostgrestError } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+
 import { errorResponse } from "@/lib/api-error";
-import { supabase } from "@/supabase/client";
+import { getBounties } from "@/lib/data";
 
 const MAX_LIMIT = 100;
 
@@ -18,33 +20,13 @@ export async function GET(request: Request) {
     isActiveParam === null ? undefined : isActiveParam.toLowerCase() === "true";
 
   const sortParam = url.searchParams.get("sort");
+  const sort =
+    sortParam === "high" || sortParam === "low" ? sortParam : "newest";
 
-  let query = supabase.from("bounties").select("*, characters(name)");
-
-  if (isActive !== undefined) {
-    query = query.eq("is_active", isActive);
+  try {
+    const data = await getBounties({ page, limit, isActive, sort });
+    return NextResponse.json(data);
+  } catch (error) {
+    return errorResponse(error as PostgrestError);
   }
-
-  if (sortParam === "high") {
-    query = query
-      .order("amount", { ascending: false })
-      .order("created_at", { ascending: false });
-  } else if (sortParam === "low") {
-    query = query
-      .order("amount", { ascending: true })
-      .order("created_at", { ascending: false });
-  } else {
-    query = query.order("created_at", { ascending: false });
-  }
-
-  const { data, error } = await query.range(
-    (page - 1) * limit,
-    page * limit - 1,
-  );
-
-  if (error) {
-    return errorResponse(error);
-  }
-
-  return NextResponse.json(data);
 }

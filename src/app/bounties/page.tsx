@@ -1,6 +1,5 @@
 import { ArrowLeft, BookOpen, Cherry, Coins, Users } from "lucide-react";
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import Link from "next/link";
 
 import {
@@ -13,6 +12,7 @@ import {
   BountyCard,
 } from "@/components/bounties/bounty-card";
 import { CatalogNav } from "@/components/layout/catalog-nav";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { LogoMark } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import {
@@ -29,6 +29,7 @@ import {
   parseBountyFilter,
   parseBountySort,
 } from "@/lib/bounties-catalog-url";
+import { getBounties } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
@@ -44,24 +45,14 @@ async function fetchBounties(
   filter: BountyFilter,
   sort: BountySort,
 ): Promise<{ ok: true; data: ApiBountyRow[] } | { ok: false }> {
-  const h = await headers();
-  const host = h.get("x-forwarded-host") ?? h.get("host") ?? "localhost:3000";
-  const proto = h.get("x-forwarded-proto") ?? "http";
-  const q = new URLSearchParams({
-    page: String(page),
-    limit: String(limit),
-  });
-  if (filter === "active") q.set("isActive", "true");
-  if (filter === "inactive") q.set("isActive", "false");
-  if (sort === "high") q.set("sort", "high");
-  if (sort === "low") q.set("sort", "low");
-  const url = `${proto}://${host}/api/bounties?${q.toString()}`;
-
-  const res = await fetch(url, { cache: "no-store" });
-  if (!res.ok) return { ok: false };
-  const data = (await res.json()) as unknown;
-  if (!Array.isArray(data)) return { ok: false };
-  return { ok: true, data: data as ApiBountyRow[] };
+  const isActive =
+    filter === "active" ? true : filter === "inactive" ? false : undefined;
+  try {
+    const data = await getBounties({ page, limit, isActive, sort });
+    return { ok: true, data: data as ApiBountyRow[] };
+  } catch {
+    return { ok: false };
+  }
 }
 
 export default async function BountiesPage({
@@ -168,6 +159,7 @@ export default async function BountiesPage({
               Docs
             </Button>
           </CatalogNav>
+          <ThemeToggle />
         </div>
       </header>
 

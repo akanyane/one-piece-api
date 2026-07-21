@@ -1,7 +1,8 @@
+import type { PostgrestError } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
 import { errorResponse } from "@/lib/api-error";
-import { supabase } from "@/supabase/client";
+import { getCharacterById } from "@/lib/data";
 
 export async function GET(
   _request: Request,
@@ -9,18 +10,13 @@ export async function GET(
 ) {
   const { id } = await context.params;
 
-  const { data, error } = await supabase
-    .from("characters")
-    .select("*, bounties(*)")
-    .eq("id", id)
-    .maybeSingle();
-
-  if (error) {
-    return errorResponse(error);
+  try {
+    const data = await getCharacterById(id);
+    if (!data) {
+      return NextResponse.json({ error: "Not found" }, { status: 404 });
+    }
+    return NextResponse.json(data);
+  } catch (error) {
+    return errorResponse(error as PostgrestError);
   }
-  if (!data) {
-    return NextResponse.json({ error: "Not found" }, { status: 404 });
-  }
-
-  return NextResponse.json(data);
 }
