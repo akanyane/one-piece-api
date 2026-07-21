@@ -35,6 +35,7 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "Bounties",
   description: "Browse bounties from the One Piece API.",
+  alternates: { canonical: "/bounties" },
 };
 
 const LIMIT_OPTIONS = new Set([12, 24, 36]);

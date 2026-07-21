@@ -24,6 +24,7 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "Devil fruits",
   description: "Browse devil fruits from the One Piece API.",
+  alternates: { canonical: "/devil-fruits" },
 };
 
 const LIMIT_OPTIONS = new Set([12, 24, 36]);

@@ -31,6 +31,7 @@ import { cn } from "@/lib/utils";
 export const metadata: Metadata = {
   title: "Characters",
   description: "Browse characters from the One Piece API.",
+  alternates: { canonical: "/characters" },
 };
 
 const LIMIT_OPTIONS = new Set([12, 24, 36]);

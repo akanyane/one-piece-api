@@ -79,6 +79,7 @@ export async function generateMetadata({
   return {
     title,
     description,
+    alternates: { canonical: `/characters/${id}` },
     openGraph: {
       type: "profile",
       siteName: "One Piece API",

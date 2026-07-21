@@ -15,6 +15,7 @@ import {
 export const metadata: Metadata = {
   title: "About",
   description: "About the One Piece API project and licensing.",
+  alternates: { canonical: "/about" },
 };
 
 export default function Page() {

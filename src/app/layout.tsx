@@ -22,6 +22,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: { default: "One Piece API", template: "%s · One Piece API" },
   description: DESCRIPTION,
+  alternates: { canonical: "/" },
   openGraph: {
     type: "website",
     siteName: "One Piece API",

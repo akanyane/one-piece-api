@@ -16,6 +16,7 @@ import type { Tables } from "@/supabase/database.types";
 export const metadata: Metadata = {
   title: "Documentation",
   description: "How to use the One Piece API: REST basics and examples.",
+  alternates: { canonical: "/documentation" },
 };
 
 type ColumnRow = { field: string; type: string; notes?: string };
