@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.2.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.1.0...one-piece-api-v0.2.0) (2026-07-21)
+
+
+### Features
+
+* add canonical URLs to every page ([904ca7f](https://github.com/akanyane/one-piece-api/commit/904ca7f066a1eca300d38af99bfeba84c03fe177))
+* add Open Graph/Twitter metadata, image alt text, and API cache headers ([c22efce](https://github.com/akanyane/one-piece-api/commit/c22efcef5c5e2a7b69365a6873a490f4d6984cec))
+* cache Supabase reads, wire up dark mode, add missing loading/error states ([2ce7efc](https://github.com/akanyane/one-piece-api/commit/2ce7efc8d6f3757214bcceeb2306c4bd4a784731))
+* image optimization, sitemap/robots, fix broken GitHub links, style 404 ([c26a51d](https://github.com/akanyane/one-piece-api/commit/c26a51d969579687b7e2a80a28336764181b8340))
+
+
+### Bug Fixes
+
+* balance pill button padding and add total-page context to pagination ([f1d899d](https://github.com/akanyane/one-piece-api/commit/f1d899d0c4c11e362fd51cb152eda95232bf85d2))
+* give .surface-story a dark-mode counterpart ([309c3f5](https://github.com/akanyane/one-piece-api/commit/309c3f540ac40849e33fcfaffc337303d7292063))
+* stop bottom-right ambient blob from adding empty scroll space ([a5f9e84](https://github.com/akanyane/one-piece-api/commit/a5f9e8458582d844b82714c46fe6fcbc023e85a3))
+
 ## [0.1.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.0.1...one-piece-api-v0.1.0) (2026-07-21)
 
 
