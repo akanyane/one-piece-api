@@ -1,7 +1,7 @@
 import type { PostgrestError } from "@supabase/supabase-js";
-import { NextResponse } from "next/server";
 
 import { errorResponse } from "@/lib/api-error";
+import { apiJson } from "@/lib/api-response";
 import { getBounties } from "@/lib/data";
 
 const MAX_LIMIT = 100;
@@ -25,7 +25,7 @@ export async function GET(request: Request) {
 
   try {
     const data = await getBounties({ page, limit, isActive, sort });
-    return NextResponse.json(data);
+    return apiJson(data);
   } catch (error) {
     return errorResponse(error as PostgrestError);
   }

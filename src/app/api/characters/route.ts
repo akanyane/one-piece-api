@@ -1,7 +1,7 @@
 import type { PostgrestError } from "@supabase/supabase-js";
-import { NextResponse } from "next/server";
 
 import { errorResponse } from "@/lib/api-error";
+import { apiJson } from "@/lib/api-response";
 import { parseAgeBand, parseNameQuery } from "@/lib/characters-catalog-url";
 import { getCharacters } from "@/lib/data";
 
@@ -21,7 +21,7 @@ export async function GET(request: Request) {
 
   try {
     const data = await getCharacters({ page, limit, q, ageBand });
-    return NextResponse.json(data);
+    return apiJson(data);
   } catch (error) {
     return errorResponse(error as PostgrestError);
   }

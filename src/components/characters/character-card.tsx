@@ -65,7 +65,7 @@ export function CharacterCard({
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,color-mix(in_oklch,var(--color-primary)_25%,transparent),transparent_55%)]" />
         {character.image_url ? (
           <Image
-            alt=""
+            alt={displayCharacterName(character.name)}
             className="object-cover object-top transition-transform duration-300 group-hover:scale-[1.03]"
             fill
             sizes="(min-width: 1280px) 360px, (min-width: 640px) 50vw, 100vw"

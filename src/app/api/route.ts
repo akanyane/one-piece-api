@@ -1,7 +1,7 @@
-import { NextResponse } from "next/server";
+import { apiJson } from "@/lib/api-response";
 
 export async function GET() {
-  return NextResponse.json({
+  return apiJson({
     characters: "https://onepieceapi.com/api/characters",
     devilFruits: "https://onepieceapi.com/api/devil-fruits",
     bounties: "https://onepieceapi.com/api/bounties",

@@ -74,9 +74,24 @@ export async function generateMetadata({
       : { title: "Character" };
   }
   const title = displayCharacterName(result.data.name);
+  const description = `Stats, profile, and bounties for ${title}.`;
+  const images = result.data.image_url ? [result.data.image_url] : undefined;
   return {
     title,
-    description: `Stats, profile, and bounties for ${title}.`,
+    description,
+    openGraph: {
+      type: "profile",
+      siteName: "One Piece API",
+      title,
+      description,
+      images,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images,
+    },
   };
 }
 
@@ -276,7 +291,7 @@ export default async function CharacterDetailPage({
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_35%_25%,color-mix(in_oklch,var(--color-primary)_28%,transparent),transparent_58%)]" />
               {character.image_url ? (
                 <Image
-                  alt=""
+                  alt={title}
                   className="object-cover object-top"
                   fill
                   sizes="(min-width: 1024px) 320px, (min-width: 448px) 448px, 100vw"

@@ -15,11 +15,24 @@ const fraunces = Fraunces({
   axes: ["SOFT", "WONK", "opsz"],
 });
 
+const DESCRIPTION =
+  "REST API for One Piece characters, images, and canonical series data.";
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: "One Piece API",
-  description:
-    "REST API for One Piece characters, images, and canonical series data.",
+  title: { default: "One Piece API", template: "%s · One Piece API" },
+  description: DESCRIPTION,
+  openGraph: {
+    type: "website",
+    siteName: "One Piece API",
+    title: "One Piece API",
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "One Piece API",
+    description: DESCRIPTION,
+  },
 };
 
 export default function RootLayout({

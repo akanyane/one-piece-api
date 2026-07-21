@@ -2,6 +2,7 @@ import type { PostgrestError } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
 import { errorResponse } from "@/lib/api-error";
+import { apiJson } from "@/lib/api-response";
 import { getCharacterById } from "@/lib/data";
 
 export async function GET(
@@ -15,7 +16,7 @@ export async function GET(
     if (!data) {
       return NextResponse.json({ error: "Not found" }, { status: 404 });
     }
-    return NextResponse.json(data);
+    return apiJson(data);
   } catch (error) {
     return errorResponse(error as PostgrestError);
   }
