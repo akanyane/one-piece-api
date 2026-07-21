@@ -69,7 +69,7 @@ export default async function DevilFruitsPage({
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute right-0 bottom-0 size-[min(80vw,420px)] translate-x-1/4 translate-y-1/4 rounded-full bg-[radial-gradient(circle,color-mix(in_oklch,oklch(0.62_0.14_145)_22%,transparent),transparent_70%)] blur-3xl"
+        className="pointer-events-none absolute right-0 bottom-0 size-[min(80vw,420px)] translate-x-1/4 rounded-full bg-[radial-gradient(circle,color-mix(in_oklch,oklch(0.62_0.14_145)_22%,transparent),transparent_70%)] blur-3xl"
       />
 
       <header className="relative z-10 border-b border-border/50 bg-card/40 backdrop-blur-md">
