@@ -124,7 +124,6 @@ export default function Home() {
               variant="outline"
               size="sm"
               nativeButton={false}
-              // biome-ignore lint/a11y/useAnchorContent: label is passed as Button's children and merged in by the render prop
               render={<a href={REPO} rel="noreferrer" target="_blank" />}
             >
               <ExternalLink data-icon="inline-start" />
@@ -286,7 +285,6 @@ export default function Home() {
                     size="sm"
                     variant="outline"
                     nativeButton={false}
-                    // biome-ignore lint/a11y/useAnchorContent: label is passed as Button's children and merged in by the render prop
                     render={<a href={REPO} rel="noreferrer" target="_blank" />}
                   >
                     <ExternalLink data-icon="inline-start" />
