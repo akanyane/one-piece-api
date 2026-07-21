@@ -34,7 +34,7 @@ async function fetchCharacters(params: GetCharactersParams) {
 
   let query = supabase
     .from("characters")
-    .select("*, bounties(*)")
+    .select("*, bounties(*)", { count: "exact" })
     .order("created_at", { ascending: false });
 
   if (params.q) {
@@ -48,12 +48,12 @@ async function fetchCharacters(params: GetCharactersParams) {
   if (min !== null) query = query.gte("age", min);
   if (max !== null) query = query.lte("age", max);
 
-  const { data, error } = await query.range(
+  const { data, error, count } = await query.range(
     (page - 1) * limit,
     page * limit - 1,
   );
   if (error) throw error;
-  return data;
+  return { data, count: count ?? null };
 }
 
 /** Cached character list. Revalidates every {@link REVALIDATE_SECONDS}s or on-demand via `revalidateTag("characters")`. */
@@ -86,13 +86,13 @@ async function fetchDevilFruits(params: GetDevilFruitsParams) {
   const page = clampPage(params.page);
   const limit = clampLimit(params.limit);
 
-  const { data, error } = await supabase
+  const { data, error, count } = await supabase
     .from("devil_fruits")
-    .select("*")
+    .select("*", { count: "exact" })
     .order("created_at", { ascending: false })
     .range((page - 1) * limit, page * limit - 1);
   if (error) throw error;
-  return data;
+  return { data, count: count ?? null };
 }
 
 /** Cached devil fruit list. */
@@ -113,7 +113,9 @@ async function fetchBounties(params: GetBountiesParams) {
   const page = clampPage(params.page);
   const limit = clampLimit(params.limit);
 
-  let query = supabase.from("bounties").select("*, characters(name)");
+  let query = supabase
+    .from("bounties")
+    .select("*, characters(name)", { count: "exact" });
 
   if (params.isActive !== undefined) {
     query = query.eq("is_active", params.isActive);
@@ -131,12 +133,12 @@ async function fetchBounties(params: GetBountiesParams) {
     query = query.order("created_at", { ascending: false });
   }
 
-  const { data, error } = await query.range(
+  const { data, error, count } = await query.range(
     (page - 1) * limit,
     page * limit - 1,
   );
   if (error) throw error;
-  return data;
+  return { data, count: count ?? null };
 }
 
 /** Cached bounty list. */

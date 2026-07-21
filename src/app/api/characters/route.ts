@@ -20,7 +20,7 @@ export async function GET(request: Request) {
   const ageBand = parseAgeBand(url.searchParams.get("ageBand") ?? undefined);
 
   try {
-    const data = await getCharacters({ page, limit, q, ageBand });
+    const { data } = await getCharacters({ page, limit, q, ageBand });
     return apiJson(data);
   } catch (error) {
     return errorResponse(error as PostgrestError);

@@ -45,12 +45,14 @@ async function fetchBounties(
   limit: number,
   filter: BountyFilter,
   sort: BountySort,
-): Promise<{ ok: true; data: ApiBountyRow[] } | { ok: false }> {
+): Promise<
+  { ok: true; data: ApiBountyRow[]; count: number | null } | { ok: false }
+> {
   const isActive =
     filter === "active" ? true : filter === "inactive" ? false : undefined;
   try {
-    const data = await getBounties({ page, limit, isActive, sort });
-    return { ok: true, data: data as ApiBountyRow[] };
+    const { data, count } = await getBounties({ page, limit, isActive, sort });
+    return { ok: true, data: data as ApiBountyRow[], count };
   } catch {
     return { ok: false };
   }
@@ -194,7 +196,7 @@ export default async function BountiesPage({
             </CardHeader>
             <CardContent>
               <Button
-                className="rounded-full"
+                className="rounded-full px-3.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"
                 variant="outline"
                 nativeButton={false}
                 render={<Link href={retryHref} />}
@@ -213,7 +215,7 @@ export default async function BountiesPage({
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
               <Button
-                className="rounded-full"
+                className="rounded-full px-3.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"
                 nativeButton={false}
                 render={
                   <Link
@@ -230,7 +232,7 @@ export default async function BountiesPage({
               </Button>
               {page > 1 ? (
                 <Button
-                  className="rounded-full"
+                  className="rounded-full px-3.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"
                   variant="outline"
                   nativeButton={false}
                   render={
@@ -260,6 +262,7 @@ export default async function BountiesPage({
             </ul>
             <div className="mt-10">
               <BountiesPagination
+                count={result.count}
                 filter={filter}
                 limit={limit}
                 page={page}

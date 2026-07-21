@@ -16,7 +16,7 @@ export async function GET(request: Request) {
   const limit = Math.min(Math.max(1, Math.floor(rawLimit)), MAX_LIMIT);
 
   try {
-    const data = await getDevilFruits({ page, limit });
+    const { data } = await getDevilFruits({ page, limit });
     return apiJson(data);
   } catch (error) {
     return errorResponse(error as PostgrestError);

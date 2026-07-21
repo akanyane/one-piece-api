@@ -53,12 +53,15 @@ export default function GlobalError({
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
-            <Button className="rounded-full" onClick={reset}>
+            <Button
+              className="rounded-full px-3.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"
+              onClick={reset}
+            >
               <RotateCcw data-icon="inline-start" />
               Try again
             </Button>
             <Button
-              className="rounded-full"
+              className="rounded-full px-3.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"
               variant="outline"
               nativeButton={false}
               render={<Link href="/" />}

@@ -219,7 +219,7 @@ export default function Home() {
                   </CardContent>
                   <CardFooter className="border-t border-border/60 pt-4">
                     <Button
-                      className="rounded-full"
+                      className="rounded-full px-3 has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5"
                       size="sm"
                       variant="secondary"
                       nativeButton={false}
@@ -283,7 +283,7 @@ export default function Home() {
                 </CardContent>
                 <CardFooter className="border-t border-border/60">
                   <Button
-                    className="rounded-full"
+                    className="rounded-full px-3 has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5"
                     size="sm"
                     variant="outline"
                     nativeButton={false}

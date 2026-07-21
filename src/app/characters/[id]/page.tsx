@@ -145,14 +145,14 @@ export default async function CharacterDetailPage({
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
               <Button
-                className="rounded-full"
+                className="rounded-full px-3.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"
                 nativeButton={false}
                 render={<Link href={`/characters/${id}`} />}
               >
                 Retry
               </Button>
               <Button
-                className="rounded-full"
+                className="rounded-full px-3.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"
                 variant="outline"
                 nativeButton={false}
                 render={<Link href="/characters" />}

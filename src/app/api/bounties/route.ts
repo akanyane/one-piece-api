@@ -24,7 +24,7 @@ export async function GET(request: Request) {
     sortParam === "high" || sortParam === "low" ? sortParam : "newest";
 
   try {
-    const data = await getBounties({ page, limit, isActive, sort });
+    const { data } = await getBounties({ page, limit, isActive, sort });
     return apiJson(data);
   } catch (error) {
     return errorResponse(error as PostgrestError);

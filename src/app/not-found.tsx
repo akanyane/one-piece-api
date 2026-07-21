@@ -92,7 +92,7 @@ export default function NotFound() {
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-2">
           <Button
-            className="rounded-full"
+            className="rounded-full px-3.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"
             nativeButton={false}
             render={<Link href="/" />}
           >
@@ -100,7 +100,7 @@ export default function NotFound() {
             Home
           </Button>
           <Button
-            className="rounded-full"
+            className="rounded-full px-3.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"
             nativeButton={false}
             render={<Link href="/characters" />}
             variant="outline"

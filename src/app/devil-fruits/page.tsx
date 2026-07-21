@@ -32,10 +32,12 @@ const LIMIT_OPTIONS = new Set([12, 24, 36]);
 async function fetchDevilFruits(
   page: number,
   limit: number,
-): Promise<{ ok: true; data: ApiDevilFruitRow[] } | { ok: false }> {
+): Promise<
+  { ok: true; data: ApiDevilFruitRow[]; count: number | null } | { ok: false }
+> {
   try {
-    const data = await getDevilFruits({ page, limit });
-    return { ok: true, data: data as ApiDevilFruitRow[] };
+    const { data, count } = await getDevilFruits({ page, limit });
+    return { ok: true, data: data as ApiDevilFruitRow[], count };
   } catch {
     return { ok: false };
   }
@@ -170,7 +172,7 @@ export default async function DevilFruitsPage({
             </CardHeader>
             <CardContent>
               <Button
-                className="rounded-full"
+                className="rounded-full px-3.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"
                 variant="outline"
                 nativeButton={false}
                 render={<Link href={`/devil-fruits?page=1&limit=${limit}`} />}
@@ -190,7 +192,7 @@ export default async function DevilFruitsPage({
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
               <Button
-                className="rounded-full"
+                className="rounded-full px-3.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"
                 nativeButton={false}
                 render={<Link href="/devil-fruits?page=1&limit=12" />}
               >
@@ -198,7 +200,7 @@ export default async function DevilFruitsPage({
               </Button>
               {page > 1 ? (
                 <Button
-                  className="rounded-full"
+                  className="rounded-full px-3.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"
                   variant="outline"
                   nativeButton={false}
                   render={
@@ -223,6 +225,7 @@ export default async function DevilFruitsPage({
             </ul>
             <div className="mt-10">
               <DevilFruitsPagination
+                count={result.count}
                 limit={limit}
                 page={page}
                 resultCount={result.data.length}

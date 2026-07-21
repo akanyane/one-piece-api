@@ -41,10 +41,12 @@ async function fetchCharacters(
   limit: number,
   q: string,
   ageBand: AgeBand,
-): Promise<{ ok: true; data: ApiCharacter[] } | { ok: false }> {
+): Promise<
+  { ok: true; data: ApiCharacter[]; count: number | null } | { ok: false }
+> {
   try {
-    const data = await getCharacters({ page, limit, q, ageBand });
-    return { ok: true, data: data as ApiCharacter[] };
+    const { data, count } = await getCharacters({ page, limit, q, ageBand });
+    return { ok: true, data: data as ApiCharacter[], count };
   } catch {
     return { ok: false };
   }
@@ -191,7 +193,7 @@ export default async function CharactersPage({
             </CardHeader>
             <CardContent>
               <Button
-                className="rounded-full"
+                className="rounded-full px-3.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"
                 variant="outline"
                 nativeButton={false}
                 render={<Link href={retryHref} />}
@@ -210,7 +212,7 @@ export default async function CharactersPage({
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
               <Button
-                className="rounded-full"
+                className="rounded-full px-3.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"
                 nativeButton={false}
                 render={
                   <Link
@@ -227,7 +229,7 @@ export default async function CharactersPage({
               </Button>
               {page > 1 ? (
                 <Button
-                  className="rounded-full"
+                  className="rounded-full px-3.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"
                   variant="outline"
                   nativeButton={false}
                   render={<Link href={firstPageHref} />}
@@ -249,6 +251,7 @@ export default async function CharactersPage({
             <div className="mt-10">
               <CharactersPagination
                 ageBand={ageBand}
+                count={result.count}
                 limit={limit}
                 page={page}
                 q={q}
