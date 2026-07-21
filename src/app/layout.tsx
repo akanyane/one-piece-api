@@ -5,6 +5,7 @@ import "./globals.css";
 
 import { Fraunces, Outfit } from "next/font/google";
 import { ThemeProvider } from "@/components/layout/theme-provider";
+import { SITE_URL } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-sans" });
@@ -15,6 +16,7 @@ const fraunces = Fraunces({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: "One Piece API",
   description:
     "REST API for One Piece characters, images, and canonical series data.",

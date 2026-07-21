@@ -144,3 +144,20 @@ export const getBounties = unstable_cache(fetchBounties, ["bounties-list"], {
   revalidate: REVALIDATE_SECONDS,
   tags: ["bounties"],
 });
+
+async function fetchAllCharacterIds() {
+  const { data, error } = await supabase
+    .from("characters")
+    .select("id, created_at")
+    .order("created_at", { ascending: false })
+    .limit(10000);
+  if (error) throw error;
+  return data;
+}
+
+/** Every character id + created_at, for the sitemap. Not paginated -- this is the full set. */
+export const getAllCharacterIds = unstable_cache(
+  fetchAllCharacterIds,
+  ["characters-all-ids"],
+  { revalidate: REVALIDATE_SECONDS, tags: ["characters"] },
+);

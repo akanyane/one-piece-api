@@ -26,7 +26,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 
-const REPO = "https://github.com/demosalexas/one-piece-api";
+const REPO = "https://github.com/akanyane/one-piece-api";
 
 function WaveDivider({ className }: { className?: string }) {
   return (

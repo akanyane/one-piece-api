@@ -51,8 +51,8 @@ export function DevilFruitCard({
             alt=""
             className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
             fill
+            sizes="(min-width: 1280px) 360px, (min-width: 640px) 50vw, 100vw"
             src={fruit.image_url}
-            unoptimized
           />
         ) : null}
         <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">

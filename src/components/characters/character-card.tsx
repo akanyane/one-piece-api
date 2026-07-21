@@ -68,8 +68,8 @@ export function CharacterCard({
             alt=""
             className="object-cover object-top transition-transform duration-300 group-hover:scale-[1.03]"
             fill
+            sizes="(min-width: 1280px) 360px, (min-width: 640px) 50vw, 100vw"
             src={character.image_url}
-            unoptimized
           />
         ) : null}
         {!character.image_url ? (

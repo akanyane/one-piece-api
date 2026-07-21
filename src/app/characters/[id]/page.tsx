@@ -279,8 +279,8 @@ export default async function CharacterDetailPage({
                   alt=""
                   className="object-cover object-top"
                   fill
+                  sizes="(min-width: 1024px) 320px, (min-width: 448px) 448px, 100vw"
                   src={character.image_url}
-                  unoptimized
                 />
               ) : null}
               {!character.image_url ? (

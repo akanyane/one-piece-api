@@ -92,7 +92,7 @@ export default function Page() {
               You can contribute or report issues on{" "}
               <a
                 className="font-medium text-primary underline-offset-4 hover:underline"
-                href="https://github.com/demosalexas/one-piece-api"
+                href="https://github.com/akanyane/one-piece-api"
                 rel="noreferrer"
                 target="_blank"
               >
