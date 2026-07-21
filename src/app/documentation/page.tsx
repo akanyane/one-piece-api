@@ -42,6 +42,7 @@ const CHARACTER_ROW_FIELDS: {
   { key: "blood_type", type: "string" },
   { key: "height", type: "number | null" },
   { key: "status", type: "string" },
+  { key: "image_url", type: "string | null" },
 ];
 
 const BOUNTY_ROW_FIELDS: {
