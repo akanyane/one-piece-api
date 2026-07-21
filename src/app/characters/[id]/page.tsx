@@ -11,6 +11,7 @@ import {
   Users,
 } from "lucide-react";
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -270,18 +271,29 @@ export default async function CharacterDetailPage({
                 className="pointer-events-none absolute inset-0 grain-overlay opacity-45 mix-blend-multiply"
               />
               <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_35%_25%,color-mix(in_oklch,var(--color-primary)_28%,transparent),transparent_58%)]" />
-              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-8 text-center">
-                <div className="flex size-24 items-center justify-center rounded-full border border-primary/30 bg-background/55 shadow-inner backdrop-blur-sm">
-                  <UserRound
-                    aria-hidden
-                    className="size-14 text-primary/40"
-                    strokeWidth={1.2}
-                  />
+              {character.image_url ? (
+                <Image
+                  alt=""
+                  className="object-cover"
+                  fill
+                  src={character.image_url}
+                  unoptimized
+                />
+              ) : null}
+              {!character.image_url ? (
+                <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-8 text-center">
+                  <div className="flex size-24 items-center justify-center rounded-full border border-primary/30 bg-background/55 shadow-inner backdrop-blur-sm">
+                    <UserRound
+                      aria-hidden
+                      className="size-14 text-primary/40"
+                      strokeWidth={1.2}
+                    />
+                  </div>
+                  <p className="max-w-[14rem] text-[0.65rem] font-medium tracking-[0.22em] text-muted-foreground uppercase">
+                    Portrait coming soon
+                  </p>
                 </div>
-                <p className="max-w-[14rem] text-[0.65rem] font-medium tracking-[0.22em] text-muted-foreground uppercase">
-                  Portrait coming soon
-                </p>
-              </div>
+              ) : null}
             </div>
           </aside>
 

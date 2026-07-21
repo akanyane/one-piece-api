@@ -1,4 +1,5 @@
 import { Coins, Droplets, Ruler, UserRound } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 
 import { Badge } from "@/components/ui/badge";
@@ -25,6 +26,7 @@ export type ApiCharacter = {
   height: number | null;
   birthday: unknown;
   created_at: string;
+  image_url: string | null;
   bounties?: ApiBounty[] | null;
 };
 
@@ -55,25 +57,35 @@ export function CharacterCard({
         className,
       )}
     >
-      {/* When the API exposes an image URL, swap this block for next/image here. */}
       <div className="relative aspect-[4/5] overflow-hidden bg-gradient-to-br from-primary/15 via-card to-accent/25">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 grain-overlay opacity-50 mix-blend-multiply"
         />
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,color-mix(in_oklch,var(--color-primary)_25%,transparent),transparent_55%)]" />
-        <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
-          <div className="flex size-[4.5rem] items-center justify-center rounded-full border border-primary/25 bg-background/50 shadow-inner backdrop-blur-sm transition-transform duration-300 group-hover:scale-105">
-            <UserRound
-              aria-hidden
-              className="size-9 text-primary/45"
-              strokeWidth={1.35}
-            />
+        {character.image_url ? (
+          <Image
+            alt=""
+            className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+            fill
+            src={character.image_url}
+            unoptimized
+          />
+        ) : null}
+        {!character.image_url ? (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
+            <div className="flex size-[4.5rem] items-center justify-center rounded-full border border-primary/25 bg-background/50 shadow-inner backdrop-blur-sm transition-transform duration-300 group-hover:scale-105">
+              <UserRound
+                aria-hidden
+                className="size-9 text-primary/45"
+                strokeWidth={1.35}
+              />
+            </div>
+            <p className="max-w-[12rem] text-[0.65rem] font-medium tracking-[0.2em] text-muted-foreground uppercase">
+              Portrait coming soon
+            </p>
           </div>
-          <p className="max-w-[12rem] text-[0.65rem] font-medium tracking-[0.2em] text-muted-foreground uppercase">
-            Portrait coming soon
-          </p>
-        </div>
+        ) : null}
       </div>
 
       <div className="flex flex-1 flex-col gap-3 border-t border-border/60 p-4 md:p-5">
