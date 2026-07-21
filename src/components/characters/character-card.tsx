@@ -66,7 +66,7 @@ export function CharacterCard({
         {character.image_url ? (
           <Image
             alt=""
-            className="object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+            className="object-cover object-top transition-transform duration-300 group-hover:scale-[1.03]"
             fill
             src={character.image_url}
             unoptimized

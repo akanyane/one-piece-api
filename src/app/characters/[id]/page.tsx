@@ -274,7 +274,7 @@ export default async function CharacterDetailPage({
               {character.image_url ? (
                 <Image
                   alt=""
-                  className="object-cover"
+                  className="object-cover object-top"
                   fill
                   src={character.image_url}
                   unoptimized
