@@ -130,7 +130,7 @@
   }
 }
 
-/* Home: warm paper + sea tones, scoped so other routes keep default tokens */
+/* Warm paper + sea tones, used as the wrapper on every page. */
 @layer components {
   .surface-story {
     --background: oklch(0.965 0.022 88);
@@ -151,6 +151,30 @@
     --destructive: oklch(0.55 0.2 25);
     --popover: oklch(0.993 0.012 92);
     --popover-foreground: oklch(0.26 0.035 55);
+  }
+
+  /* Dark counterpart. Without this, .surface-story's light-only tokens silently
+     override the .dark theme on every page (since the wrapper div is present
+     everywhere), so the toggle looked like it did nothing. */
+  .dark .surface-story {
+    --background: oklch(0.19 0.02 50);
+    --foreground: oklch(0.94 0.02 85);
+    --card: oklch(0.24 0.025 50);
+    --card-foreground: oklch(0.94 0.02 85);
+    --primary: oklch(0.62 0.11 205);
+    --primary-foreground: oklch(0.15 0.03 205);
+    --secondary: oklch(0.28 0.02 55);
+    --secondary-foreground: oklch(0.92 0.02 85);
+    --muted: oklch(0.26 0.02 55);
+    --muted-foreground: oklch(0.68 0.025 70);
+    --accent: oklch(0.3 0.035 60);
+    --accent-foreground: oklch(0.94 0.02 85);
+    --border: oklch(1 0 0 / 10%);
+    --input: oklch(1 0 0 / 15%);
+    --ring: oklch(0.6 0.09 205);
+    --destructive: oklch(0.65 0.19 25);
+    --popover: oklch(0.24 0.025 50);
+    --popover-foreground: oklch(0.94 0.02 85);
   }
 
   .surface-story [data-slot="card"] {
