@@ -20,8 +20,6 @@
     "build": "next build",
     "start": "next start",
     "lint": "biome check .",
-    "test": "jest",
-    "test:watch": "jest --watch",
     "prepare": "husky"
   },
   "dependencies": {
