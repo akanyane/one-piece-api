@@ -6,7 +6,9 @@ import {
   Coins,
   Droplets,
   Fingerprint,
+  MapPin,
   Ruler,
+  Sailboat,
   UserRound,
   Users,
 } from "lucide-react";
@@ -244,6 +246,24 @@ export default async function CharacterDetailPage({
             >
               <Coins data-icon="inline-start" />
               Bounties
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/ships" />}
+            >
+              <Sailboat data-icon="inline-start" />
+              Ships
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/islands" />}
+            >
+              <MapPin data-icon="inline-start" />
+              Islands
             </Button>
             <Button
               variant="ghost"

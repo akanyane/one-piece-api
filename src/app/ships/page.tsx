@@ -10,15 +10,11 @@ import {
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import {
-  type ApiCharacter,
-  CharacterCard,
-} from "@/components/characters/character-card";
-import { CharactersCatalogToolbar } from "@/components/characters/characters-catalog-toolbar";
-import { CharactersPagination } from "@/components/characters/characters-pagination";
 import { CatalogNav } from "@/components/layout/catalog-nav";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { LogoMark } from "@/components/logo";
+import { type ApiShipRow, ShipCard } from "@/components/ships/ship-card";
+import { ShipsPagination } from "@/components/ships/ships-pagination";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -27,71 +23,42 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  type AgeBand,
-  buildCharactersListHref,
-  parseAgeBand,
-  parseNameQuery,
-} from "@/lib/characters-catalog-url";
-import { getCharacters } from "@/lib/data";
+import { getShips } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
 export const metadata: Metadata = {
-  title: "Characters",
-  description: "Browse characters from the One Piece API.",
-  alternates: { canonical: "/characters" },
+  title: "Ships",
+  description: "Browse pirate and marine ships from the One Piece API.",
+  alternates: { canonical: "/ships" },
 };
 
 const LIMIT_OPTIONS = new Set([12, 24, 36]);
 
-async function fetchCharacters(
+async function fetchShips(
   page: number,
   limit: number,
-  q: string,
-  ageBand: AgeBand,
 ): Promise<
-  { ok: true; data: ApiCharacter[]; count: number | null } | { ok: false }
+  { ok: true; data: ApiShipRow[]; count: number | null } | { ok: false }
 > {
   try {
-    const { data, count } = await getCharacters({ page, limit, q, ageBand });
-    return { ok: true, data: data as ApiCharacter[], count };
+    const { data, count } = await getShips({ page, limit });
+    return { ok: true, data: data as ApiShipRow[], count };
   } catch {
     return { ok: false };
   }
 }
 
-export default async function CharactersPage({
+export default async function ShipsPage({
   searchParams,
 }: {
-  searchParams: Promise<{
-    page?: string;
-    limit?: string;
-    q?: string;
-    ageBand?: string;
-  }>;
+  searchParams: Promise<{ page?: string; limit?: string }>;
 }) {
   const sp = await searchParams;
   const page = Math.max(1, Math.floor(Number(sp.page) || 1));
   const rawLimit = Number(sp.limit);
   const limit = LIMIT_OPTIONS.has(rawLimit) ? rawLimit : 12;
-  const q = parseNameQuery(sp.q);
-  const ageBand = parseAgeBand(sp.ageBand);
 
-  const result = await fetchCharacters(page, limit, q, ageBand);
-
-  const retryHref = buildCharactersListHref({
-    page: 1,
-    limit,
-    q,
-    ageBand,
-  });
-
-  const firstPageHref = buildCharactersListHref({
-    page: 1,
-    limit: 12,
-    q,
-    ageBand,
-  });
+  const result = await fetchShips(page, limit);
 
   return (
     <div
@@ -110,7 +77,7 @@ export default async function CharactersPage({
       />
       <div
         aria-hidden
-        className="pointer-events-none absolute right-0 bottom-0 size-[min(80vw,420px)] translate-x-1/4 rounded-full bg-[radial-gradient(circle,color-mix(in_oklch,oklch(0.55_0.12_220)_22%,transparent),transparent_70%)] blur-3xl"
+        className="pointer-events-none absolute right-0 bottom-0 size-[min(80vw,420px)] translate-x-1/4 rounded-full bg-[radial-gradient(circle,color-mix(in_oklch,oklch(0.62_0.14_145)_22%,transparent),transparent_70%)] blur-3xl"
       />
 
       <header className="relative z-10 border-b border-border/50 bg-card/40 backdrop-blur-md">
@@ -135,7 +102,7 @@ export default async function CharactersPage({
               Home
             </Button>
             <Button
-              variant="default"
+              variant="ghost"
               size="sm"
               nativeButton={false}
               render={<Link href="/characters" />}
@@ -162,7 +129,7 @@ export default async function CharactersPage({
               Bounties
             </Button>
             <Button
-              variant="ghost"
+              variant="default"
               size="sm"
               nativeButton={false}
               render={<Link href="/ships" />}
@@ -194,25 +161,35 @@ export default async function CharactersPage({
       </header>
 
       <main className="relative z-10 mx-auto max-w-6xl px-4 py-10 md:px-8 md:py-14">
-        <div className="mb-8 max-w-2xl space-y-3 md:mb-10">
+        <div className="mb-10 max-w-2xl space-y-3">
           <p className="font-display text-[0.7rem] font-medium tracking-[0.28em] text-primary uppercase">
-            Grand Line · Catalog
+            Grand Line · Vessels
           </p>
           <h1 className="font-display text-3xl font-medium tracking-tight text-balance text-foreground md:text-4xl">
-            Characters
+            Ships
           </h1>
           <p className="text-pretty text-sm/relaxed text-muted-foreground md:text-base/relaxed">
-            Filter by age, search localized names, and paginate. URLs keep your
-            filters so you can share a view.
+            Notable pirate, marine, and government ships. Names use the same
+            localized JSON shape everywhere:{" "}
+            <span className="font-mono text-[0.8125rem] text-foreground/90">
+              en
+            </span>
+            ,{" "}
+            <span className="font-mono text-[0.8125rem] text-foreground/90">
+              jp
+            </span>
+            ,{" "}
+            <span className="font-mono text-[0.8125rem] text-foreground/90">
+              romaji
+            </span>
+            .
           </p>
         </div>
-
-        <CharactersCatalogToolbar ageBand={ageBand} limit={limit} q={q} />
 
         {!result.ok ? (
           <Card className="border-destructive/30 bg-card/90">
             <CardHeader>
-              <CardTitle>Could not load characters</CardTitle>
+              <CardTitle>Could not load ships</CardTitle>
               <CardDescription>
                 The API did not return data. Try again in a moment.
               </CardDescription>
@@ -222,7 +199,7 @@ export default async function CharactersPage({
                 className="rounded-full px-3.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"
                 variant="outline"
                 nativeButton={false}
-                render={<Link href={retryHref} />}
+                render={<Link href={`/ships?page=1&limit=${limit}`} />}
               >
                 Retry
               </Button>
@@ -231,36 +208,30 @@ export default async function CharactersPage({
         ) : result.data.length === 0 ? (
           <Card className="bg-card/90">
             <CardHeader>
-              <CardTitle>No characters match</CardTitle>
+              <CardTitle>No ships here</CardTitle>
               <CardDescription>
-                Try another search, age range, or go back to the full list.
+                This page is empty. Go back to the first page or change how many
+                results you show per page.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-wrap gap-2">
               <Button
                 className="rounded-full px-3.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"
                 nativeButton={false}
-                render={
-                  <Link
-                    href={buildCharactersListHref({
-                      page: 1,
-                      limit: 12,
-                      q: "",
-                      ageBand: "all",
-                    })}
-                  />
-                }
+                render={<Link href="/ships?page=1&limit=12" />}
               >
-                Clear filters
+                First page
               </Button>
               {page > 1 ? (
                 <Button
                   className="rounded-full px-3.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"
                   variant="outline"
                   nativeButton={false}
-                  render={<Link href={firstPageHref} />}
+                  render={
+                    <Link href={`/ships?page=${page - 1}&limit=${limit}`} />
+                  }
                 >
-                  First page
+                  Previous page
                 </Button>
               ) : null}
             </CardContent>
@@ -268,19 +239,17 @@ export default async function CharactersPage({
         ) : (
           <>
             <ul className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-              {result.data.map((character) => (
-                <li key={character.id}>
-                  <CharacterCard character={character} className="h-full" />
+              {result.data.map((ship) => (
+                <li key={ship.id}>
+                  <ShipCard ship={ship} />
                 </li>
               ))}
             </ul>
             <div className="mt-10">
-              <CharactersPagination
-                ageBand={ageBand}
+              <ShipsPagination
                 count={result.count}
                 limit={limit}
                 page={page}
-                q={q}
                 resultCount={result.data.length}
               />
             </div>

@@ -43,6 +43,12 @@ const CHARACTER_ROW_FIELDS: {
   { key: "height", type: "number | null" },
   { key: "status", type: "string" },
   { key: "image_url", type: "string | null" },
+  {
+    key: "extra_data",
+    type: "object | null",
+    notes:
+      "Free-form extra fields, e.g. origin, epithet, occupation, affiliation, first_appearance",
+  },
 ];
 
 const BOUNTY_ROW_FIELDS: {
@@ -78,6 +84,55 @@ const DEVIL_FRUIT_ROW_FIELDS: {
   { key: "type", type: "string | null", notes: "e.g. Paramecia, Zoan, Logia" },
   { key: "sub_type", type: "string | null" },
   { key: "image_url", type: "string | null" },
+];
+
+const SHIP_ROW_FIELDS: {
+  key: keyof Tables<"ships">;
+  type: string;
+  notes?: string;
+}[] = [
+  { key: "id", type: "string", notes: "UUID primary key" },
+  { key: "created_at", type: "string", notes: "ISO 8601 timestamp" },
+  {
+    key: "name",
+    type: "object | null",
+    notes: "Localized name; CharacterNameJson shape when present",
+  },
+  { key: "status", type: "string", notes: "e.g. Active, Destroyed, Unknown" },
+  { key: "type", type: "string | null", notes: "Ship class, when known" },
+  { key: "image_url", type: "string | null" },
+  {
+    key: "extra_data",
+    type: "object | null",
+    notes:
+      "Free-form extra fields, e.g. affiliation, first_appearance, length, height",
+  },
+];
+
+const ISLAND_ROW_FIELDS: {
+  key: keyof Tables<"islands">;
+  type: string;
+  notes?: string;
+}[] = [
+  { key: "id", type: "string", notes: "UUID primary key" },
+  { key: "created_at", type: "string", notes: "ISO 8601 timestamp" },
+  {
+    key: "name",
+    type: "object | null",
+    notes: "Localized name; CharacterNameJson shape when present",
+  },
+  {
+    key: "sea",
+    type: "string | null",
+    notes: "e.g. East Blue, Paradise, New World, Sky",
+  },
+  { key: "image_url", type: "string | null" },
+  {
+    key: "extra_data",
+    type: "object | null",
+    notes:
+      "Free-form extra fields, e.g. affiliation, type, population, first_appearance",
+  },
 ];
 
 function toRows(
@@ -244,7 +299,9 @@ export default function DocumentationPage() {
               {`{
   "characters": "https://onepieceapi.com/api/characters",
   "devilFruits": "https://onepieceapi.com/api/devil-fruits",
-  "bounties": "https://onepieceapi.com/api/bounties"
+  "bounties": "https://onepieceapi.com/api/bounties",
+  "ships": "https://onepieceapi.com/api/ships",
+  "islands": "https://onepieceapi.com/api/islands"
 }`}
             </pre>
           </CardContent>
@@ -410,6 +467,50 @@ export default function DocumentationPage() {
 
         <Card>
           <CardHeader>
+            <CardTitle>Ships</CardTitle>
+            <CardDescription>Paginated ship resources.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4 text-sm text-muted-foreground">
+            <p>
+              <EndpointCode>GET /api/ships</EndpointCode>
+            </p>
+            <p>
+              <strong className="text-foreground">Query:</strong> pagination via{" "}
+              <EndpointCode>?page=</EndpointCode> /{" "}
+              <EndpointCode>?limit=</EndpointCode>.
+            </p>
+            <p>
+              <strong className="text-foreground">Response:</strong> a JSON
+              array of ship objects (fields below).
+            </p>
+            <FieldTable rows={toRows(SHIP_ROW_FIELDS)} />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Islands</CardTitle>
+            <CardDescription>Paginated island resources.</CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-4 text-sm text-muted-foreground">
+            <p>
+              <EndpointCode>GET /api/islands</EndpointCode>
+            </p>
+            <p>
+              <strong className="text-foreground">Query:</strong> pagination via{" "}
+              <EndpointCode>?page=</EndpointCode> /{" "}
+              <EndpointCode>?limit=</EndpointCode>.
+            </p>
+            <p>
+              <strong className="text-foreground">Response:</strong> a JSON
+              array of island objects (fields below).
+            </p>
+            <FieldTable rows={toRows(ISLAND_ROW_FIELDS)} />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
             <CardTitle>Resources not exposed yet</CardTitle>
             <CardDescription>
               Planned or internal data not available as HTTP endpoints today.
@@ -417,9 +518,9 @@ export default function DocumentationPage() {
           </CardHeader>
           <CardContent className="text-sm text-muted-foreground">
             <p>
-              Affiliations, islands, and ships are part of the broader dataset
-              but do not have public routes in this API yet. When they ship,
-              they will be documented here with the same field-table style.
+              Affiliations are part of the broader dataset but do not have a
+              public route in this API yet. When it ships, it will be documented
+              here with the same field-table style.
             </p>
           </CardContent>
         </Card>

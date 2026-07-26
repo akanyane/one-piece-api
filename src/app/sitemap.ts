@@ -8,6 +8,8 @@ const STATIC_ROUTES: MetadataRoute.Sitemap = [
   { url: `${SITE_URL}/characters`, changeFrequency: "daily", priority: 0.9 },
   { url: `${SITE_URL}/devil-fruits`, changeFrequency: "daily", priority: 0.8 },
   { url: `${SITE_URL}/bounties`, changeFrequency: "daily", priority: 0.8 },
+  { url: `${SITE_URL}/ships`, changeFrequency: "daily", priority: 0.7 },
+  { url: `${SITE_URL}/islands`, changeFrequency: "daily", priority: 0.7 },
   {
     url: `${SITE_URL}/documentation`,
     changeFrequency: "monthly",

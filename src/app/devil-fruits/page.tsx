@@ -1,4 +1,12 @@
-import { ArrowLeft, BookOpen, Cherry, Coins, Users } from "lucide-react";
+import {
+  ArrowLeft,
+  BookOpen,
+  Cherry,
+  Coins,
+  MapPin,
+  Sailboat,
+  Users,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -122,6 +130,24 @@ export default async function DevilFruitsPage({
             >
               <Coins data-icon="inline-start" />
               Bounties
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/ships" />}
+            >
+              <Sailboat data-icon="inline-start" />
+              Ships
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/islands" />}
+            >
+              <MapPin data-icon="inline-start" />
+              Islands
             </Button>
             <Button
               variant="ghost"

@@ -147,6 +147,48 @@ export const getBounties = unstable_cache(fetchBounties, ["bounties-list"], {
   tags: ["bounties"],
 });
 
+export type GetShipsParams = { page: number; limit: number };
+
+async function fetchShips(params: GetShipsParams) {
+  const page = clampPage(params.page);
+  const limit = clampLimit(params.limit);
+
+  const { data, error, count } = await supabase
+    .from("ships")
+    .select("*", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range((page - 1) * limit, page * limit - 1);
+  if (error) throw error;
+  return { data, count: count ?? null };
+}
+
+/** Cached ship list. */
+export const getShips = unstable_cache(fetchShips, ["ships-list"], {
+  revalidate: REVALIDATE_SECONDS,
+  tags: ["ships"],
+});
+
+export type GetIslandsParams = { page: number; limit: number };
+
+async function fetchIslands(params: GetIslandsParams) {
+  const page = clampPage(params.page);
+  const limit = clampLimit(params.limit);
+
+  const { data, error, count } = await supabase
+    .from("islands")
+    .select("*", { count: "exact" })
+    .order("created_at", { ascending: false })
+    .range((page - 1) * limit, page * limit - 1);
+  if (error) throw error;
+  return { data, count: count ?? null };
+}
+
+/** Cached island list. */
+export const getIslands = unstable_cache(fetchIslands, ["islands-list"], {
+  revalidate: REVALIDATE_SECONDS,
+  tags: ["islands"],
+});
+
 async function fetchAllCharacterIds() {
   const { data, error } = await supabase
     .from("characters")

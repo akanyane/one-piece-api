@@ -18,16 +18,19 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          name: Json | null
           updated_at: string | null
         }
         Insert: {
           created_at?: string
           id?: string
+          name?: Json | null
           updated_at?: string | null
         }
         Update: {
           created_at?: string
           id?: string
+          name?: Json | null
           updated_at?: string | null
         }
         Relationships: []
@@ -57,6 +60,45 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "bounties_character_id_fkey"
+            columns: ["character_id"]
+            isOneToOne: false
+            referencedRelation: "characters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      character_affiliations: {
+        Row: {
+          affiliation_id: string | null
+          character_id: string | null
+          created_at: string
+          id: string
+          is_active: boolean | null
+        }
+        Insert: {
+          affiliation_id?: string | null
+          character_id?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+        }
+        Update: {
+          affiliation_id?: string | null
+          character_id?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "character_affiliations_affiliation_id_fkey"
+            columns: ["affiliation_id"]
+            isOneToOne: false
+            referencedRelation: "affiliations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "character_affiliations_character_id_fkey"
             columns: ["character_id"]
             isOneToOne: false
             referencedRelation: "characters"
@@ -109,6 +151,7 @@ export type Database = {
           birthday: Json | null
           blood_type: string
           created_at: string
+          extra_data: Json | null
           height: number | null
           id: string
           image_url: string | null
@@ -120,6 +163,7 @@ export type Database = {
           birthday?: Json | null
           blood_type?: string
           created_at?: string
+          extra_data?: Json | null
           height?: number | null
           id?: string
           image_url?: string | null
@@ -131,6 +175,7 @@ export type Database = {
           birthday?: Json | null
           blood_type?: string
           created_at?: string
+          extra_data?: Json | null
           height?: number | null
           id?: string
           image_url?: string | null
@@ -172,36 +217,57 @@ export type Database = {
       islands: {
         Row: {
           created_at: string
+          extra_data: Json | null
           id: string
+          image_url: string | null
           name: Json | null
+          sea: string | null
         }
         Insert: {
           created_at?: string
+          extra_data?: Json | null
           id?: string
+          image_url?: string | null
           name?: Json | null
+          sea?: string | null
         }
         Update: {
           created_at?: string
+          extra_data?: Json | null
           id?: string
+          image_url?: string | null
           name?: Json | null
+          sea?: string | null
         }
         Relationships: []
       }
       ships: {
         Row: {
           created_at: string
+          extra_data: Json | null
           id: string
+          image_url: string | null
           name: Json | null
+          status: string
+          type: string | null
         }
         Insert: {
           created_at?: string
+          extra_data?: Json | null
           id?: string
+          image_url?: string | null
           name?: Json | null
+          status?: string
+          type?: string | null
         }
         Update: {
           created_at?: string
+          extra_data?: Json | null
           id?: string
+          image_url?: string | null
           name?: Json | null
+          status?: string
+          type?: string | null
         }
         Relationships: []
       }
