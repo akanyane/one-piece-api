@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.2.0...one-piece-api-v0.3.0) (2026-07-26)
+
+
+### Features
+
+* add ships and islands catalogs ([8f5af36](https://github.com/akanyane/one-piece-api/commit/8f5af3600dd3b6b168dd4b00419aeb69ded07ef0))
+
 ## [0.2.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.1.0...one-piece-api-v0.2.0) (2026-07-21)
 
 
