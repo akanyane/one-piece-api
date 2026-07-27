@@ -1,4 +1,5 @@
 import { ArrowLeft, BookOpen, Cherry, Coins, Users } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { CatalogNav } from "@/components/layout/catalog-nav";
@@ -6,6 +7,10 @@ import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { LogoMark } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  title: "Page not found",
+};
 
 export default function NotFound() {
   return (

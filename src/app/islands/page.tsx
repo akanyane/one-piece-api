@@ -18,6 +18,7 @@ import { IslandsPagination } from "@/components/islands/islands-pagination";
 import { CatalogNav } from "@/components/layout/catalog-nav";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { LogoMark } from "@/components/logo";
+import { JsonLd } from "@/components/seo/json-ld";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -26,13 +27,28 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { displayCharacterName } from "@/lib/character-name";
 import { getIslands } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
+const TITLE = "Islands";
+const DESCRIPTION = "Browse islands and locations from the One Piece API.";
+
 export const metadata: Metadata = {
-  title: "Islands",
-  description: "Browse islands and locations from the One Piece API.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: { canonical: "/islands" },
+  openGraph: {
+    type: "website",
+    siteName: "One Piece API",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 const LIMIT_OPTIONS = new Set([12, 24, 36]);
@@ -241,6 +257,20 @@ export default async function IslandsPage({
           </Card>
         ) : (
           <>
+            <JsonLd
+              data={{
+                "@context": "https://schema.org",
+                "@type": "ItemList",
+                itemListElement: result.data.map((island, index) => ({
+                  "@type": "ListItem",
+                  position: (page - 1) * limit + index + 1,
+                  item: {
+                    "@type": "Thing",
+                    name: displayCharacterName(island.name),
+                  },
+                })),
+              }}
+            />
             <ul className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {result.data.map((island) => (
                 <li key={island.id}>

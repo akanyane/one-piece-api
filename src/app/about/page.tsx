@@ -12,10 +12,24 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 
+const TITLE = "About";
+const DESCRIPTION = "About the One Piece API project and licensing.";
+
 export const metadata: Metadata = {
-  title: "About",
-  description: "About the One Piece API project and licensing.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: { canonical: "/about" },
+  openGraph: {
+    type: "website",
+    siteName: "One Piece API",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 export default function Page() {

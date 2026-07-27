@@ -20,6 +20,12 @@ const STATIC_ROUTES: MetadataRoute.Sitemap = [
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const characters = await getAllCharacterIds();
+  const now = new Date();
+
+  const staticRoutes: MetadataRoute.Sitemap = STATIC_ROUTES.map((route) => ({
+    ...route,
+    lastModified: now,
+  }));
 
   const characterRoutes: MetadataRoute.Sitemap = characters.map((c) => ({
     url: `${SITE_URL}/characters/${c.id}`,
@@ -28,5 +34,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5,
   }));
 
-  return [...STATIC_ROUTES, ...characterRoutes];
+  return [...staticRoutes, ...characterRoutes];
 }

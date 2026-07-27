@@ -13,6 +13,7 @@ import Link from "next/link";
 import { CatalogNav } from "@/components/layout/catalog-nav";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { LogoMark } from "@/components/logo";
+import { JsonLd } from "@/components/seo/json-ld";
 import { type ApiShipRow, ShipCard } from "@/components/ships/ship-card";
 import { ShipsPagination } from "@/components/ships/ships-pagination";
 import { Button } from "@/components/ui/button";
@@ -23,13 +24,28 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { displayCharacterName } from "@/lib/character-name";
 import { getShips } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
+const TITLE = "Ships";
+const DESCRIPTION = "Browse pirate and marine ships from the One Piece API.";
+
 export const metadata: Metadata = {
-  title: "Ships",
-  description: "Browse pirate and marine ships from the One Piece API.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: { canonical: "/ships" },
+  openGraph: {
+    type: "website",
+    siteName: "One Piece API",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 const LIMIT_OPTIONS = new Set([12, 24, 36]);
@@ -238,6 +254,20 @@ export default async function ShipsPage({
           </Card>
         ) : (
           <>
+            <JsonLd
+              data={{
+                "@context": "https://schema.org",
+                "@type": "ItemList",
+                itemListElement: result.data.map((ship, index) => ({
+                  "@type": "ListItem",
+                  position: (page - 1) * limit + index + 1,
+                  item: {
+                    "@type": "Thing",
+                    name: displayCharacterName(ship.name),
+                  },
+                })),
+              }}
+            />
             <ul className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {result.data.map((ship) => (
                 <li key={ship.id}>

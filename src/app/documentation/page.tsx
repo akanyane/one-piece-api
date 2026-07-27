@@ -13,10 +13,24 @@ import {
 } from "@/components/ui/card";
 import type { Tables } from "@/supabase/database.types";
 
+const TITLE = "Documentation";
+const DESCRIPTION = "How to use the One Piece API: REST basics and examples.";
+
 export const metadata: Metadata = {
-  title: "Documentation",
-  description: "How to use the One Piece API: REST basics and examples.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: { canonical: "/documentation" },
+  openGraph: {
+    type: "website",
+    siteName: "One Piece API",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 type ColumnRow = { field: string; type: string; notes?: string };

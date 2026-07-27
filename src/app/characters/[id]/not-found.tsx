@@ -1,9 +1,14 @@
 import { ArrowLeft, Users } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 
 import { LogoMark } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+
+export const metadata: Metadata = {
+  title: "Character not found",
+};
 
 export default function CharacterNotFound() {
   return (

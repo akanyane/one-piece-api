@@ -18,6 +18,7 @@ import { DevilFruitsPagination } from "@/components/devil-fruits/devil-fruits-pa
 import { CatalogNav } from "@/components/layout/catalog-nav";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { LogoMark } from "@/components/logo";
+import { JsonLd } from "@/components/seo/json-ld";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -26,13 +27,28 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { displayCharacterName } from "@/lib/character-name";
 import { getDevilFruits } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
+const TITLE = "Devil fruits";
+const DESCRIPTION = "Browse devil fruits from the One Piece API.";
+
 export const metadata: Metadata = {
-  title: "Devil fruits",
-  description: "Browse devil fruits from the One Piece API.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: { canonical: "/devil-fruits" },
+  openGraph: {
+    type: "website",
+    siteName: "One Piece API",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 const LIMIT_OPTIONS = new Set([12, 24, 36]);
@@ -242,6 +258,20 @@ export default async function DevilFruitsPage({
           </Card>
         ) : (
           <>
+            <JsonLd
+              data={{
+                "@context": "https://schema.org",
+                "@type": "ItemList",
+                itemListElement: result.data.map((fruit, index) => ({
+                  "@type": "ListItem",
+                  position: (page - 1) * limit + index + 1,
+                  item: {
+                    "@type": "Thing",
+                    name: displayCharacterName(fruit.name),
+                  },
+                })),
+              }}
+            />
             <ul className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {result.data.map((fruit) => (
                 <li key={fruit.id}>

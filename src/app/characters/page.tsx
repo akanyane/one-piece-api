@@ -19,6 +19,7 @@ import { CharactersPagination } from "@/components/characters/characters-paginat
 import { CatalogNav } from "@/components/layout/catalog-nav";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { LogoMark } from "@/components/logo";
+import { JsonLd } from "@/components/seo/json-ld";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -27,6 +28,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { displayCharacterName } from "@/lib/character-name";
 import {
   type AgeBand,
   buildCharactersListHref,
@@ -34,12 +36,27 @@ import {
   parseNameQuery,
 } from "@/lib/characters-catalog-url";
 import { getCharacters } from "@/lib/data";
+import { SITE_URL } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
+const TITLE = "Characters";
+const DESCRIPTION = "Browse characters from the One Piece API.";
+
 export const metadata: Metadata = {
-  title: "Characters",
-  description: "Browse characters from the One Piece API.",
+  title: TITLE,
+  description: DESCRIPTION,
   alternates: { canonical: "/characters" },
+  openGraph: {
+    type: "website",
+    siteName: "One Piece API",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+  },
 };
 
 const LIMIT_OPTIONS = new Set([12, 24, 36]);
@@ -267,6 +284,18 @@ export default async function CharactersPage({
           </Card>
         ) : (
           <>
+            <JsonLd
+              data={{
+                "@context": "https://schema.org",
+                "@type": "ItemList",
+                itemListElement: result.data.map((character, index) => ({
+                  "@type": "ListItem",
+                  position: (page - 1) * limit + index + 1,
+                  url: `${SITE_URL}/characters/${character.id}`,
+                  name: displayCharacterName(character.name),
+                })),
+              }}
+            />
             <ul className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {result.data.map((character) => (
                 <li key={character.id}>
