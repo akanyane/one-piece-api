@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.4.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.3.0...one-piece-api-v0.4.0) (2026-07-27)
+
+
+### Features
+
+* improve SEO across all routes ([d051353](https://github.com/akanyane/one-piece-api/commit/d051353397275d2c40c1ec96ce522f92f68db3c6))
+
 ## [0.3.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.2.0...one-piece-api-v0.3.0) (2026-07-26)
 
 
