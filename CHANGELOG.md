@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.6.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.5.0...one-piece-api-v0.6.0) (2026-09-12)
+
+
+### Features
+
+* **affiliations:** add affiliations catalog and API endpoint ([5dd3327](https://github.com/akanyane/one-piece-api/commit/5dd33277f76723c543c4d95b92f62998723c6faf))
+
 ## [0.5.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.4.0...one-piece-api-v0.5.0) (2026-09-12)
 
 
