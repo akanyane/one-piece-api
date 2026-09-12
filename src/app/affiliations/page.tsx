@@ -11,12 +11,15 @@ import {
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import {
+  AffiliationCard,
+  type ApiAffiliationRow,
+} from "@/components/affiliations/affiliation-card";
+import { AffiliationsPagination } from "@/components/affiliations/affiliations-pagination";
 import { CatalogNav } from "@/components/layout/catalog-nav";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { LogoMark } from "@/components/logo";
 import { JsonLd } from "@/components/seo/json-ld";
-import { type ApiShipRow, ShipCard } from "@/components/ships/ship-card";
-import { ShipsPagination } from "@/components/ships/ships-pagination";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -26,16 +29,17 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { displayCharacterName } from "@/lib/character-name";
-import { getShips } from "@/lib/data";
+import { getAffiliations } from "@/lib/data";
 import { cn } from "@/lib/utils";
 
-const TITLE = "Ships";
-const DESCRIPTION = "Browse pirate and marine ships from the One Piece API.";
+const TITLE = "Affiliations";
+const DESCRIPTION =
+  "Browse pirate crews, factions, and organizations from the One Piece API.";
 
 export const metadata: Metadata = {
   title: TITLE,
   description: DESCRIPTION,
-  alternates: { canonical: "/ships" },
+  alternates: { canonical: "/affiliations" },
   openGraph: {
     type: "website",
     siteName: "One Piece API",
@@ -51,21 +55,21 @@ export const metadata: Metadata = {
 
 const LIMIT_OPTIONS = new Set([12, 24, 36]);
 
-async function fetchShips(
+async function fetchAffiliations(
   page: number,
   limit: number,
 ): Promise<
-  { ok: true; data: ApiShipRow[]; count: number | null } | { ok: false }
+  { ok: true; data: ApiAffiliationRow[]; count: number | null } | { ok: false }
 > {
   try {
-    const { data, count } = await getShips({ page, limit });
-    return { ok: true, data: data as ApiShipRow[], count };
+    const { data, count } = await getAffiliations({ page, limit });
+    return { ok: true, data: data as ApiAffiliationRow[], count };
   } catch {
     return { ok: false };
   }
 }
 
-export default async function ShipsPage({
+export default async function AffiliationsPage({
   searchParams,
 }: {
   searchParams: Promise<{ page?: string; limit?: string }>;
@@ -75,7 +79,7 @@ export default async function ShipsPage({
   const rawLimit = Number(sp.limit);
   const limit = LIMIT_OPTIONS.has(rawLimit) ? rawLimit : 12;
 
-  const result = await fetchShips(page, limit);
+  const result = await fetchAffiliations(page, limit);
 
   return (
     <div
@@ -146,7 +150,7 @@ export default async function ShipsPage({
               Bounties
             </Button>
             <Button
-              variant="default"
+              variant="ghost"
               size="sm"
               nativeButton={false}
               render={<Link href="/ships" />}
@@ -164,7 +168,7 @@ export default async function ShipsPage({
               Islands
             </Button>
             <Button
-              variant="ghost"
+              variant="default"
               size="sm"
               nativeButton={false}
               render={<Link href="/affiliations" />}
@@ -189,33 +193,22 @@ export default async function ShipsPage({
       <main className="relative z-10 mx-auto max-w-6xl px-4 py-10 md:px-8 md:py-14">
         <div className="mb-10 max-w-2xl space-y-3">
           <p className="font-display text-[0.7rem] font-medium tracking-[0.28em] text-primary uppercase">
-            Grand Line · Vessels
+            Grand Line · Crews &amp; Factions
           </p>
           <h1 className="font-display text-3xl font-medium tracking-tight text-balance text-foreground md:text-4xl">
-            Ships
+            Affiliations
           </h1>
           <p className="text-pretty text-sm/relaxed text-muted-foreground md:text-base/relaxed">
-            Notable pirate, marine, and government ships. Names use the same
-            localized JSON shape everywhere:{" "}
-            <span className="font-mono text-[0.8125rem] text-foreground/90">
-              en
-            </span>
-            ,{" "}
-            <span className="font-mono text-[0.8125rem] text-foreground/90">
-              jp
-            </span>
-            ,{" "}
-            <span className="font-mono text-[0.8125rem] text-foreground/90">
-              romaji
-            </span>
-            .
+            Pirate crews, government agencies, families, and other groups
+            characters belong to — sorted by how many characters they have,
+            biggest first.
           </p>
         </div>
 
         {!result.ok ? (
           <Card className="border-destructive/30 bg-card/90">
             <CardHeader>
-              <CardTitle>Could not load ships</CardTitle>
+              <CardTitle>Could not load affiliations</CardTitle>
               <CardDescription>
                 The API did not return data. Try again in a moment.
               </CardDescription>
@@ -225,7 +218,7 @@ export default async function ShipsPage({
                 className="rounded-full px-3.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"
                 variant="outline"
                 nativeButton={false}
-                render={<Link href={`/ships?page=1&limit=${limit}`} />}
+                render={<Link href={`/affiliations?page=1&limit=${limit}`} />}
               >
                 Retry
               </Button>
@@ -234,7 +227,7 @@ export default async function ShipsPage({
         ) : result.data.length === 0 ? (
           <Card className="bg-card/90">
             <CardHeader>
-              <CardTitle>No ships here</CardTitle>
+              <CardTitle>No affiliations here</CardTitle>
               <CardDescription>
                 This page is empty. Go back to the first page or change how many
                 results you show per page.
@@ -244,7 +237,7 @@ export default async function ShipsPage({
               <Button
                 className="rounded-full px-3.5 has-data-[icon=inline-end]:pr-3 has-data-[icon=inline-start]:pl-3"
                 nativeButton={false}
-                render={<Link href="/ships?page=1&limit=12" />}
+                render={<Link href="/affiliations?page=1&limit=12" />}
               >
                 First page
               </Button>
@@ -254,7 +247,9 @@ export default async function ShipsPage({
                   variant="outline"
                   nativeButton={false}
                   render={
-                    <Link href={`/ships?page=${page - 1}&limit=${limit}`} />
+                    <Link
+                      href={`/affiliations?page=${page - 1}&limit=${limit}`}
+                    />
                   }
                 >
                   Previous page
@@ -268,25 +263,25 @@ export default async function ShipsPage({
               data={{
                 "@context": "https://schema.org",
                 "@type": "ItemList",
-                itemListElement: result.data.map((ship, index) => ({
+                itemListElement: result.data.map((affiliation, index) => ({
                   "@type": "ListItem",
                   position: (page - 1) * limit + index + 1,
                   item: {
                     "@type": "Thing",
-                    name: displayCharacterName(ship.name),
+                    name: displayCharacterName(affiliation.name),
                   },
                 })),
               }}
             />
             <ul className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-              {result.data.map((ship) => (
-                <li key={ship.id}>
-                  <ShipCard ship={ship} />
+              {result.data.map((affiliation) => (
+                <li key={affiliation.id}>
+                  <AffiliationCard affiliation={affiliation} />
                 </li>
               ))}
             </ul>
             <div className="mt-10">
-              <ShipsPagination
+              <AffiliationsPagination
                 count={result.count}
                 limit={limit}
                 page={page}

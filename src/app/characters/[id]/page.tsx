@@ -6,6 +6,7 @@ import {
   Coins,
   Droplets,
   Fingerprint,
+  Flag,
   MapPin,
   Ruler,
   Sailboat,
@@ -296,6 +297,15 @@ export default async function CharacterDetailPage({
               >
                 <MapPin data-icon="inline-start" />
                 Islands
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                nativeButton={false}
+                render={<Link href="/affiliations" />}
+              >
+                <Flag data-icon="inline-start" />
+                Affiliations
               </Button>
               <Button
                 variant="ghost"

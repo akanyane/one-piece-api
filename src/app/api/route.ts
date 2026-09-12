@@ -7,5 +7,6 @@ export async function GET() {
     bounties: "https://onepieceapi.com/api/bounties",
     ships: "https://onepieceapi.com/api/ships",
     islands: "https://onepieceapi.com/api/islands",
+    affiliations: "https://onepieceapi.com/api/affiliations",
   });
 }

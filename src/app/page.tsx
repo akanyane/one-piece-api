@@ -3,6 +3,7 @@ import {
   Cherry,
   Coins,
   ExternalLink,
+  Flag,
   Heart,
   MapPin,
   Sailboat,
@@ -169,6 +170,15 @@ export default function Home() {
               >
                 <MapPin data-icon="inline-start" />
                 Islands
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                nativeButton={false}
+                render={<Link href="/affiliations" />}
+              >
+                <Flag data-icon="inline-start" />
+                Affiliations
               </Button>
               <Button
                 variant="ghost"

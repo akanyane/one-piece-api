@@ -149,6 +149,23 @@ const ISLAND_ROW_FIELDS: {
   },
 ];
 
+const AFFILIATION_ROW_FIELDS: { key: string; type: string; notes?: string }[] =
+  [
+    { key: "id", type: "string", notes: "UUID primary key" },
+    { key: "created_at", type: "string", notes: "ISO 8601 timestamp" },
+    {
+      key: "name",
+      type: "object | null",
+      notes: "Localized name; CharacterNameJson shape when present",
+    },
+    {
+      key: "memberCount",
+      type: "number",
+      notes:
+        "Number of characters linked to this affiliation; computed per request, not a stored column",
+    },
+  ];
+
 function toRows(
   fields: { key: string; type: string; notes?: string }[],
 ): ColumnRow[] {
@@ -315,7 +332,8 @@ export default function DocumentationPage() {
   "devilFruits": "https://onepieceapi.com/api/devil-fruits",
   "bounties": "https://onepieceapi.com/api/bounties",
   "ships": "https://onepieceapi.com/api/ships",
-  "islands": "https://onepieceapi.com/api/islands"
+  "islands": "https://onepieceapi.com/api/islands",
+  "affiliations": "https://onepieceapi.com/api/affiliations"
 }`}
             </pre>
           </CardContent>
@@ -525,17 +543,26 @@ export default function DocumentationPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Resources not exposed yet</CardTitle>
+            <CardTitle>Affiliations</CardTitle>
             <CardDescription>
-              Planned or internal data not available as HTTP endpoints today.
+              Paginated crew, family, and organization resources.
             </CardDescription>
           </CardHeader>
-          <CardContent className="text-sm text-muted-foreground">
+          <CardContent className="flex flex-col gap-4 text-sm text-muted-foreground">
             <p>
-              Affiliations are part of the broader dataset but do not have a
-              public route in this API yet. When it ships, it will be documented
-              here with the same field-table style.
+              <EndpointCode>GET /api/affiliations</EndpointCode>
             </p>
+            <p>
+              <strong className="text-foreground">Query:</strong> pagination via{" "}
+              <EndpointCode>?page=</EndpointCode> /{" "}
+              <EndpointCode>?limit=</EndpointCode>.
+            </p>
+            <p>
+              <strong className="text-foreground">Response:</strong> a JSON
+              array of affiliation objects (fields below), sorted by member
+              count, largest first.
+            </p>
+            <FieldTable rows={toRows(AFFILIATION_ROW_FIELDS)} />
           </CardContent>
         </Card>
       </main>

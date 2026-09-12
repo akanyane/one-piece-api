@@ -1,6 +1,6 @@
 # One Piece API
 
-> Free REST API for the One Piece manga/anime: characters, devil fruits, bounties, ships, and islands, with canonical data (names in English/Japanese/romaji, images, stats) sourced from the series.
+> Free REST API for the One Piece manga/anime: characters, devil fruits, bounties, ships, islands, and affiliations, with canonical data (names in English/Japanese/romaji, images, stats) sourced from the series.
 
 All endpoints return JSON over plain HTTP, require no authentication or API key, and are safe to call directly from a browser, script, or another LLM's tool call. `GET /api` returns a map of every endpoint URL.
 
@@ -11,6 +11,7 @@ All endpoints return JSON over plain HTTP, require no authentication or API key,
 - [Bounties](https://onepieceapi.com/api/bounties): `GET /api/bounties` (list, paginated). Fields: id, amount, character_id, is_active.
 - [Ships](https://onepieceapi.com/api/ships): `GET /api/ships` (list, paginated). Fields: id, name, status (Active/Destroyed/Unknown), type, image_url, extra_data.
 - [Islands](https://onepieceapi.com/api/islands): `GET /api/islands` (list, paginated). Fields: id, name, sea, image_url, extra_data.
+- [Affiliations](https://onepieceapi.com/api/affiliations): `GET /api/affiliations` (list, paginated, biggest factions first). Fields: id, name, memberCount (number of linked characters).
 
 List endpoints share `?page=` (1-based, default 1) and `?limit=` (default 20, max 100) query params.
 
@@ -21,4 +22,4 @@ List endpoints share `?page=` (1-based, default 1) and `?limit=` (default 20, ma
 
 ## Site
 
-The same data also powers a browsable catalog for humans: [Characters](https://onepieceapi.com/characters), [Devil Fruits](https://onepieceapi.com/devil-fruits), [Bounties](https://onepieceapi.com/bounties), [Ships](https://onepieceapi.com/ships), [Islands](https://onepieceapi.com/islands).
+The same data also powers a browsable catalog for humans: [Characters](https://onepieceapi.com/characters), [Devil Fruits](https://onepieceapi.com/devil-fruits), [Bounties](https://onepieceapi.com/bounties), [Ships](https://onepieceapi.com/ships), [Islands](https://onepieceapi.com/islands), [Affiliations](https://onepieceapi.com/affiliations).

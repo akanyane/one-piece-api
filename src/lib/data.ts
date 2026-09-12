@@ -189,6 +189,54 @@ export const getIslands = unstable_cache(fetchIslands, ["islands-list"], {
   tags: ["islands"],
 });
 
+export type GetAffiliationsParams = { page: number; limit: number };
+
+async function fetchAffiliations(params: GetAffiliationsParams) {
+  const page = clampPage(params.page);
+  const limit = clampLimit(params.limit);
+
+  // affiliations carries no image/recency signal of its own; pull every row
+  // (small, fixed-size table) with a member count and sort the biggest
+  // factions first, then paginate in memory.
+  const { data, error } = await supabase
+    .from("affiliations")
+    .select("*, character_affiliations(count)");
+  if (error) throw error;
+
+  const withCounts = (data ?? []).map((row) => {
+    const { character_affiliations, ...rest } = row;
+    const memberCount = character_affiliations?.[0]?.count ?? 0;
+    return { ...rest, memberCount };
+  });
+  withCounts.sort(
+    (a, b) =>
+      b.memberCount - a.memberCount ||
+      displayCharacterNameForSort(a.name).localeCompare(
+        displayCharacterNameForSort(b.name),
+      ),
+  );
+
+  const count = withCounts.length;
+  const start = (page - 1) * limit;
+  return { data: withCounts.slice(start, start + limit), count };
+}
+
+function displayCharacterNameForSort(name: unknown): string {
+  if (!name || typeof name !== "object") return "";
+  const en = (name as Record<string, unknown>).en;
+  return typeof en === "string" ? en : "";
+}
+
+/** Cached affiliation list, biggest factions first. */
+export const getAffiliations = unstable_cache(
+  fetchAffiliations,
+  ["affiliations-list"],
+  {
+    revalidate: REVALIDATE_SECONDS,
+    tags: ["affiliations"],
+  },
+);
+
 async function fetchAllCharacterIds() {
   const { data, error } = await supabase
     .from("characters")

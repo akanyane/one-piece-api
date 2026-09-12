@@ -3,6 +3,7 @@ import {
   BookOpen,
   Cherry,
   Coins,
+  Flag,
   MapPin,
   Sailboat,
   Users,
@@ -164,6 +165,15 @@ export default async function IslandsPage({
             >
               <MapPin data-icon="inline-start" />
               Islands
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/affiliations" />}
+            >
+              <Flag data-icon="inline-start" />
+              Affiliations
             </Button>
             <Button
               variant="ghost"
