@@ -4,7 +4,9 @@ import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import {
   displayCharacterName,
+  displayFruitName,
   subtitleCharacterName,
+  subtitleFruitName,
 } from "@/lib/character-name";
 import { cn } from "@/lib/utils";
 import type { Tables } from "@/supabase/database.types";
@@ -26,8 +28,8 @@ export function DevilFruitCard({
   fruit: ApiDevilFruitRow;
   className?: string;
 }) {
-  const title = displayCharacterName(fruit.name);
-  const nameSubtitle = subtitleCharacterName(fruit.name, title);
+  const title = displayFruitName(fruit.name);
+  const nameSubtitle = subtitleFruitName(fruit.name, title);
   const modelPrimary = displayCharacterName(fruit.model);
   const modelSubtitle = subtitleCharacterName(fruit.model, modelPrimary);
   const typeLabel = formatKindLabel(fruit.type);
