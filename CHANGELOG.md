@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.5.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.4.0...one-piece-api-v0.5.0) (2026-09-12)
+
+
+### Features
+
+* **devil-fruits:** lead with the romanized name on fruit cards ([f9426c7](https://github.com/akanyane/one-piece-api/commit/f9426c79f72b5e401200b1bb451c953d21810512))
+
 ## [0.4.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.3.0...one-piece-api-v0.4.0) (2026-07-27)
 
 
