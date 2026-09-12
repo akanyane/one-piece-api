@@ -1,0 +1,24 @@
+# One Piece API
+
+> Free REST API for the One Piece manga/anime: characters, devil fruits, bounties, ships, and islands, with canonical data (names in English/Japanese/romaji, images, stats) sourced from the series.
+
+All endpoints return JSON over plain HTTP, require no authentication or API key, and are safe to call directly from a browser, script, or another LLM's tool call. `GET /api` returns a map of every endpoint URL.
+
+## Endpoints
+
+- [Characters](https://onepieceapi.com/api/characters): `GET /api/characters` (list, paginated) and `GET /api/characters/{id}` (single character, includes bounty + devil fruit). Fields: id, name ({en, jp, romaji}), age, status, height, blood_type, birthday, image_url, extra_data ({origin, epithet, occupation, affiliation, first_appearance}).
+- [Devil Fruits](https://onepieceapi.com/api/devil-fruits): `GET /api/devil-fruits` (list, paginated). Fields: id, name, model, type (Paramecia/Zoan/Logia), sub_type, image_url.
+- [Bounties](https://onepieceapi.com/api/bounties): `GET /api/bounties` (list, paginated). Fields: id, amount, character_id, is_active.
+- [Ships](https://onepieceapi.com/api/ships): `GET /api/ships` (list, paginated). Fields: id, name, status (Active/Destroyed/Unknown), type, image_url, extra_data.
+- [Islands](https://onepieceapi.com/api/islands): `GET /api/islands` (list, paginated). Fields: id, name, sea, image_url, extra_data.
+
+List endpoints share `?page=` (1-based, default 1) and `?limit=` (default 20, max 100) query params.
+
+## Docs
+
+- [Full API documentation](https://onepieceapi.com/documentation): endpoint reference, response shapes, and field tables for every resource.
+- [About](https://onepieceapi.com/about): project background.
+
+## Site
+
+The same data also powers a browsable catalog for humans: [Characters](https://onepieceapi.com/characters), [Devil Fruits](https://onepieceapi.com/devil-fruits), [Bounties](https://onepieceapi.com/bounties), [Ships](https://onepieceapi.com/ships), [Islands](https://onepieceapi.com/islands).
