@@ -52,19 +52,7 @@ export default function RootLayout({
       </head>
       <body className="bg-background text-foreground">
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <div
-            role="status"
-            aria-live="polite"
-            className="fixed top-0 right-0 left-0 z-10000 border-b border-amber-400/80 bg-amber-100 px-4 py-2 text-center text-[0.8125rem] leading-snug text-amber-950 shadow-[0_1px_0_oklch(0.75_0.12_75/0.5)] dark:border-amber-700 dark:bg-amber-950 dark:text-amber-50 dark:shadow-none"
-          >
-            <span className="font-semibold">In development</span>
-            <span className="text-amber-900/90 dark:text-amber-100/90">
-              {" "}
-              — not finished yet; the API and site are coming soon.
-            </span>
-          </div>
-          {/* pt-14 = spacing for fixed banner; min-h-dvh on this box (border-box) = one viewport tall incl. padding */}
-          <div className="box-border min-h-dvh pt-14">{children}</div>
+          <div className="box-border min-h-dvh">{children}</div>
           <Analytics />
           <SpeedInsights />
         </ThemeProvider>
