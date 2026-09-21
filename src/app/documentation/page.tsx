@@ -1,8 +1,20 @@
-import { ArrowLeft, BookOpen, Terminal } from "lucide-react";
+import {
+  ArrowLeft,
+  BookOpen,
+  Cherry,
+  Coins,
+  Flag,
+  MapPin,
+  Sailboat,
+  Terminal,
+  Users,
+} from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import Logo from "@/components/logo";
+import { CatalogNav } from "@/components/layout/catalog-nav";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { LogoMark } from "@/components/logo";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -20,6 +32,7 @@ import {
   ISLAND_FIELDS,
   SHIP_FIELDS,
 } from "@/lib/api-fields";
+import { cn } from "@/lib/utils";
 
 const TITLE = "Documentation";
 const DESCRIPTION = "How to use the One Piece API: REST basics and examples.";
@@ -106,20 +119,37 @@ const name: CharacterNameJson = {
 
 export default function DocumentationPage() {
   return (
-    <div className="min-h-[calc(100dvh-theme(spacing.14))] bg-background">
-      <header className="border-b border-border/60 bg-background/80 backdrop-blur">
-        <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-4 md:px-6">
-          <Logo />
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              nativeButton={false}
-              render={<Link href="/playground" />}
-            >
-              <Terminal data-icon="inline-start" />
-              Playground
-            </Button>
+    <div
+      className={cn(
+        "surface-story relative min-h-[calc(100dvh-theme(spacing.14))] overflow-x-clip bg-background text-foreground",
+        "[--font-heading:var(--font-display)]",
+      )}
+    >
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-0 grain-overlay opacity-60 mix-blend-multiply"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-28 left-1/2 size-[min(100vw,640px)] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(closest-side,color-mix(in_oklch,var(--color-primary)_20%,transparent),transparent_72%)] blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute right-0 bottom-0 size-[min(80vw,420px)] translate-x-1/4 rounded-full bg-[radial-gradient(circle,color-mix(in_oklch,oklch(0.55_0.12_220)_22%,transparent),transparent_70%)] blur-3xl"
+      />
+
+      <header className="relative z-10 border-b border-border/50 bg-card/40 backdrop-blur-md">
+        <div className="mx-auto flex min-w-0 max-w-6xl items-center gap-3 px-4 py-4 md:gap-4 md:px-8">
+          <Link
+            className="flex shrink-0 items-center gap-3 rounded-full border border-border/80 bg-card/85 py-2 pr-2 pl-3 shadow-sm backdrop-blur-md transition-opacity hover:opacity-90"
+            href="/"
+          >
+            <LogoMark />
+            <span className="hidden font-display text-[0.65rem] font-medium tracking-[0.2em] text-muted-foreground uppercase sm:inline">
+              API
+            </span>
+          </Link>
+          <CatalogNav>
             <Button
               variant="ghost"
               size="sm"
@@ -129,28 +159,134 @@ export default function DocumentationPage() {
               <ArrowLeft data-icon="inline-start" />
               Home
             </Button>
-          </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/characters" />}
+            >
+              <Users data-icon="inline-start" />
+              Characters
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/devil-fruits" />}
+            >
+              <Cherry data-icon="inline-start" />
+              Devil fruits
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/bounties" />}
+            >
+              <Coins data-icon="inline-start" />
+              Bounties
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/ships" />}
+            >
+              <Sailboat data-icon="inline-start" />
+              Ships
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/islands" />}
+            >
+              <MapPin data-icon="inline-start" />
+              Islands
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/affiliations" />}
+            >
+              <Flag data-icon="inline-start" />
+              Affiliations
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/playground" />}
+            >
+              <Terminal data-icon="inline-start" />
+              Playground
+            </Button>
+            <Button
+              variant="default"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/documentation" />}
+            >
+              <BookOpen data-icon="inline-start" />
+              Docs
+            </Button>
+          </CatalogNav>
+          <ThemeToggle />
         </div>
       </header>
 
-      <main className="mx-auto flex max-w-4xl flex-col gap-8 px-4 py-10 md:px-6 md:py-14">
-        <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2 text-primary">
-            <BookOpen className="size-5" aria-hidden />
-            <span className="text-xs font-medium uppercase tracking-wide">
-              Docs
-            </span>
+      <main className="relative z-10 mx-auto flex max-w-4xl flex-col gap-8 px-4 py-10 md:px-8 md:py-14">
+        <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
+          <div className="flex max-w-2xl flex-col gap-3">
+            <p className="font-display text-[0.7rem] font-medium tracking-[0.28em] text-primary uppercase">
+              Grand Line · Reference
+            </p>
+            <h1 className="font-display text-3xl font-medium tracking-tight text-balance text-foreground md:text-4xl">
+              API documentation
+            </h1>
+            <p className="text-pretty text-sm/relaxed text-muted-foreground md:text-base/relaxed">
+              JSON over HTTP. Each endpoint returns plain objects you can model
+              in any client; the field tables below describe the stable response
+              shape. Where a resource embeds another (e.g. bounties on a
+              character), that is called out explicitly.
+            </p>
           </div>
-          <h1 className="font-heading text-2xl font-semibold tracking-tight md:text-3xl">
-            API documentation
-          </h1>
-          <p className="max-w-3xl text-sm/relaxed text-muted-foreground md:text-base/relaxed">
-            JSON over HTTP. Each endpoint returns plain objects you can model in
-            any client; the field tables below describe the stable response
-            shape. Where a resource embeds another (e.g. bounties on a
-            character), that is called out explicitly.
-          </p>
+          <Button
+            className="shrink-0"
+            nativeButton={false}
+            render={<Link href="/playground" />}
+          >
+            <Terminal data-icon="inline-start" />
+            Open Playground
+          </Button>
         </div>
+
+        <Card>
+          <CardHeader>
+            <CardTitle>Quickstart</CardTitle>
+            <CardDescription>
+              No API key, no auth header — copy, run, done.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="flex flex-col gap-3 text-sm text-muted-foreground">
+            <pre className="overflow-x-auto rounded-lg border border-border/80 bg-muted/30 p-4 font-mono text-[0.75rem] leading-relaxed text-foreground">
+              {'curl -s "https://onepieceapi.com/api/characters?limit=3" | jq'}
+            </pre>
+            <p>
+              Prefer clicking over curl?{" "}
+              <Link
+                className="font-medium text-primary underline-offset-4 hover:underline"
+                href="/playground"
+              >
+                Open the Playground
+              </Link>{" "}
+              to pick an endpoint, edit query params, and see the live response
+              — including a card preview and ready-to-paste
+              cURL/JavaScript/Python snippets.
+            </p>
+          </CardContent>
+        </Card>
 
         <Card>
           <CardHeader>
@@ -177,6 +313,16 @@ export default function DocumentationPage() {
                 <strong className="text-foreground">Timestamps:</strong>{" "}
                 <InlineCode>created_at</InlineCode> values are ISO 8601
                 date-time strings (UTC).
+              </li>
+              <li>
+                <strong className="text-foreground">Caching:</strong> responses
+                carry{" "}
+                <InlineCode>
+                  Cache-Control: public, s-maxage=60, stale-while-revalidate=300
+                </InlineCode>{" "}
+                — the CDN serves a cached copy for up to 60s, then revalidates
+                in the background. Expect near-instant responses, and data that
+                can lag a fresh write by up to a minute.
               </li>
               <li>
                 <strong className="text-foreground">Errors:</strong> failed
