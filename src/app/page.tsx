@@ -9,6 +9,7 @@ import {
   Sailboat,
   Scale,
   Server,
+  Terminal,
   Users,
 } from "lucide-react";
 import type { Metadata } from "next";
@@ -188,6 +189,15 @@ export default function Home() {
               >
                 <BookOpen data-icon="inline-start" />
                 Docs
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                nativeButton={false}
+                render={<Link href="/playground" />}
+              >
+                <Terminal data-icon="inline-start" />
+                Playground
               </Button>
               <Button
                 variant="outline"

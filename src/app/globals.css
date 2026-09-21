@@ -193,6 +193,51 @@
       0 2px 6px color-mix(in oklch, var(--foreground) 5%, transparent);
   }
 
+  /* Ship's-log palette for the /playground page — a fixed "paper" look independent of the
+     light/dark toggle, so it isn't wired through the site's oklch theme tokens. */
+  .pg-surface {
+    --pg-paper: #ece3d4;
+    --pg-panel: #f5efe2;
+    --pg-sunken: #e3d8c4;
+    --pg-sunken-2: #e0d4bd;
+    --pg-sunken-3: #e6dbc2;
+    --pg-ink: #1b1713;
+    --pg-ink-on-dark: #f2e9d8;
+    --pg-snippet-text: #e9dfc9;
+    --pg-body: #6b6055;
+    --pg-muted: #8a7c64;
+    --pg-muted-2: #a1927a;
+    --pg-muted-3: #9a8c74;
+    --pg-muted-4: #bcab8e;
+    --pg-hairline: #cdc0a7;
+    --pg-hairline-2: #ddd2bc;
+    --pg-hairline-3: #d3c5ac;
+    --pg-hairline-4: #c6b89f;
+    --pg-sea: #125c6b;
+    --pg-sea-hover: #0b3d47;
+    --pg-success: #2c6b4a;
+    --pg-warning: #9c6b1f;
+    --pg-warning-bg: #e6dbc2;
+    --pg-warning-text: #6d4f18;
+    --pg-error: #9c3d27;
+    --pg-error-bg: #eddbd3;
+    --pg-error-text: #7d3020;
+    --pg-json-key: #125c6b;
+    --pg-json-str: #4a6321;
+    --pg-json-num: #a2541f;
+    --pg-json-bool: #6b3f8f;
+    --pg-json-punc: #a1927a;
+    --pg-badge-text: #5c5346;
+
+    background: var(--pg-paper);
+    color: var(--pg-ink);
+  }
+
+  .pg-surface ::selection {
+    background: var(--pg-ink);
+    color: var(--pg-panel);
+  }
+
   .grain-overlay {
     background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");
   }

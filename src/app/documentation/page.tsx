@@ -1,4 +1,4 @@
-import { ArrowLeft, BookOpen } from "lucide-react";
+import { ArrowLeft, BookOpen, Terminal } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -11,7 +11,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import type { Tables } from "@/supabase/database.types";
+import {
+  AFFILIATION_FIELDS,
+  type ApiFieldRow,
+  BOUNTY_FIELDS,
+  CHARACTER_FIELDS,
+  DEVIL_FRUIT_FIELDS,
+  ISLAND_FIELDS,
+  SHIP_FIELDS,
+} from "@/lib/api-fields";
 
 const TITLE = "Documentation";
 const DESCRIPTION = "How to use the One Piece API: REST basics and examples.";
@@ -33,150 +41,7 @@ export const metadata: Metadata = {
   },
 };
 
-type ColumnRow = { field: string; type: string; notes?: string };
-
-const CHARACTER_ROW_FIELDS: {
-  key: keyof Tables<"characters">;
-  type: string;
-  notes?: string;
-}[] = [
-  { key: "id", type: "string", notes: "UUID primary key" },
-  { key: "created_at", type: "string", notes: "ISO 8601 timestamp" },
-  {
-    key: "name",
-    type: "object | null",
-    notes: "Localized name; see CharacterNameJson when present",
-  },
-  { key: "age", type: "number | null" },
-  {
-    key: "birthday",
-    type: "object | null",
-    notes: "Structured birthday payload when present",
-  },
-  { key: "blood_type", type: "string" },
-  { key: "height", type: "number | null" },
-  { key: "status", type: "string" },
-  { key: "image_url", type: "string | null" },
-  {
-    key: "extra_data",
-    type: "object | null",
-    notes:
-      "Free-form extra fields, e.g. origin, epithet, occupation, affiliation, first_appearance",
-  },
-];
-
-const BOUNTY_ROW_FIELDS: {
-  key: keyof Tables<"bounties">;
-  type: string;
-  notes?: string;
-}[] = [
-  { key: "id", type: "string", notes: "UUID primary key" },
-  { key: "created_at", type: "string", notes: "ISO 8601 timestamp" },
-  { key: "amount", type: "number | null" },
-  { key: "character_id", type: "string | null", notes: "FK → characters.id" },
-  { key: "is_active", type: "boolean" },
-];
-
-const DEVIL_FRUIT_ROW_FIELDS: {
-  key: keyof Tables<"devil_fruits">;
-  type: string;
-  notes?: string;
-}[] = [
-  { key: "id", type: "string", notes: "UUID primary key" },
-  { key: "created_at", type: "string", notes: "ISO 8601 timestamp" },
-  {
-    key: "name",
-    type: "object | null",
-    notes:
-      "Localized fruit name; CharacterNameJson when present (en, jp, romaji)",
-  },
-  {
-    key: "model",
-    type: "object | null",
-    notes: "Localized model name; same CharacterNameJson shape when present",
-  },
-  { key: "type", type: "string | null", notes: "e.g. Paramecia, Zoan, Logia" },
-  { key: "sub_type", type: "string | null" },
-  { key: "image_url", type: "string | null" },
-];
-
-const SHIP_ROW_FIELDS: {
-  key: keyof Tables<"ships">;
-  type: string;
-  notes?: string;
-}[] = [
-  { key: "id", type: "string", notes: "UUID primary key" },
-  { key: "created_at", type: "string", notes: "ISO 8601 timestamp" },
-  {
-    key: "name",
-    type: "object | null",
-    notes: "Localized name; CharacterNameJson shape when present",
-  },
-  { key: "status", type: "string", notes: "e.g. Active, Destroyed, Unknown" },
-  { key: "type", type: "string | null", notes: "Ship class, when known" },
-  { key: "image_url", type: "string | null" },
-  {
-    key: "extra_data",
-    type: "object | null",
-    notes:
-      "Free-form extra fields, e.g. affiliation, first_appearance, length, height",
-  },
-];
-
-const ISLAND_ROW_FIELDS: {
-  key: keyof Tables<"islands">;
-  type: string;
-  notes?: string;
-}[] = [
-  { key: "id", type: "string", notes: "UUID primary key" },
-  { key: "created_at", type: "string", notes: "ISO 8601 timestamp" },
-  {
-    key: "name",
-    type: "object | null",
-    notes: "Localized name; CharacterNameJson shape when present",
-  },
-  {
-    key: "sea",
-    type: "string | null",
-    notes: "e.g. East Blue, Paradise, New World, Sky",
-  },
-  { key: "image_url", type: "string | null" },
-  {
-    key: "extra_data",
-    type: "object | null",
-    notes:
-      "Free-form extra fields, e.g. affiliation, type, population, first_appearance",
-  },
-];
-
-const AFFILIATION_ROW_FIELDS: { key: string; type: string; notes?: string }[] =
-  [
-    { key: "id", type: "string", notes: "UUID primary key" },
-    { key: "created_at", type: "string", notes: "ISO 8601 timestamp" },
-    {
-      key: "name",
-      type: "object | null",
-      notes: "Localized name; CharacterNameJson shape when present",
-    },
-    {
-      key: "memberCount",
-      type: "number",
-      notes:
-        "Number of characters linked to this affiliation; computed per request, not a stored column",
-    },
-  ];
-
-function toRows(
-  fields: { key: string; type: string; notes?: string }[],
-): ColumnRow[] {
-  return fields.map(({ key, type, notes }) => ({
-    field: key,
-    type,
-    notes,
-  }));
-}
-
-function FieldTable({ rows }: { rows: ColumnRow[] }) {
+function FieldTable({ rows }: { rows: ApiFieldRow[] }) {
   return (
     <div className="overflow-x-auto rounded-lg border border-border/80">
       <table className="w-full min-w-md text-left text-sm">
@@ -245,15 +110,26 @@ export default function DocumentationPage() {
       <header className="border-b border-border/60 bg-background/80 backdrop-blur">
         <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-4 py-4 md:px-6">
           <Logo />
-          <Button
-            variant="ghost"
-            size="sm"
-            nativeButton={false}
-            render={<Link href="/" />}
-          >
-            <ArrowLeft data-icon="inline-start" />
-            Home
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/playground" />}
+            >
+              <Terminal data-icon="inline-start" />
+              Playground
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
+              nativeButton={false}
+              render={<Link href="/" />}
+            >
+              <ArrowLeft data-icon="inline-start" />
+              Home
+            </Button>
+          </div>
         </div>
       </header>
 
@@ -409,7 +285,7 @@ export default function DocumentationPage() {
               <p className="mb-2 font-medium text-foreground">
                 Character object
               </p>
-              <FieldTable rows={toRows(CHARACTER_ROW_FIELDS)} />
+              <FieldTable rows={CHARACTER_FIELDS} />
             </div>
             <div>
               <p className="mb-2 font-medium text-foreground">
@@ -417,7 +293,7 @@ export default function DocumentationPage() {
                 <code className="font-mono text-[0.8125rem]">bounties[]</code>{" "}
                 items
               </p>
-              <FieldTable rows={toRows(BOUNTY_ROW_FIELDS)} />
+              <FieldTable rows={BOUNTY_FIELDS} />
             </div>
           </CardContent>
         </Card>
@@ -471,7 +347,7 @@ export default function DocumentationPage() {
               <strong className="text-foreground">Response:</strong> a JSON
               array of bounty objects (fields below).
             </p>
-            <FieldTable rows={toRows(BOUNTY_ROW_FIELDS)} />
+            <FieldTable rows={BOUNTY_FIELDS} />
           </CardContent>
         </Card>
 
@@ -493,7 +369,7 @@ export default function DocumentationPage() {
               <strong className="text-foreground">Response:</strong> a JSON
               array of devil fruit objects (fields below).
             </p>
-            <FieldTable rows={toRows(DEVIL_FRUIT_ROW_FIELDS)} />
+            <FieldTable rows={DEVIL_FRUIT_FIELDS} />
           </CardContent>
         </Card>
 
@@ -515,7 +391,7 @@ export default function DocumentationPage() {
               <strong className="text-foreground">Response:</strong> a JSON
               array of ship objects (fields below).
             </p>
-            <FieldTable rows={toRows(SHIP_ROW_FIELDS)} />
+            <FieldTable rows={SHIP_FIELDS} />
           </CardContent>
         </Card>
 
@@ -537,7 +413,7 @@ export default function DocumentationPage() {
               <strong className="text-foreground">Response:</strong> a JSON
               array of island objects (fields below).
             </p>
-            <FieldTable rows={toRows(ISLAND_ROW_FIELDS)} />
+            <FieldTable rows={ISLAND_FIELDS} />
           </CardContent>
         </Card>
 
@@ -562,7 +438,7 @@ export default function DocumentationPage() {
               array of affiliation objects (fields below), sorted by member
               count, largest first.
             </p>
-            <FieldTable rows={toRows(AFFILIATION_ROW_FIELDS)} />
+            <FieldTable rows={AFFILIATION_FIELDS} />
           </CardContent>
         </Card>
       </main>
