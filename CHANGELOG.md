@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.8.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.7.0...one-piece-api-v0.8.0) (2026-09-21)
+
+
+### Features
+
+* **docs:** align documentation and about pages with site's visual style ([468061f](https://github.com/akanyane/one-piece-api/commit/468061f3fb7be355564595fb4bc92b0786412fe0))
+
 ## [0.7.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.6.0...one-piece-api-v0.7.0) (2026-09-21)
 
 
