@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.10.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.9.0...one-piece-api-v0.10.0) (2026-11-01)
+
+
+### Features
+
+* **site:** devil fruit and affiliation detail pages ([388245f](https://github.com/akanyane/one-piece-api/commit/388245ffac7d95e9d9ff980da413bf8a5213ca56))
+* **site:** devil fruit and affiliation detail pages ([61894e4](https://github.com/akanyane/one-piece-api/commit/61894e44d921a013037de2e17ff8cb9b6a5e0a32))
+
 ## [0.9.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.8.0...one-piece-api-v0.9.0) (2026-11-01)
 
 
