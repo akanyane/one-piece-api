@@ -48,7 +48,7 @@ import {
 import { getCrewmates } from "@/lib/data";
 import { formatBirthday } from "@/lib/format-birthday";
 import { SITE_URL } from "@/lib/site";
-import { cn } from "@/lib/utils";
+import { cn, isUuid } from "@/lib/utils";
 
 function nameField(name: unknown, key: "en" | "jp" | "romaji") {
   if (!name || typeof name !== "object" || Array.isArray(name)) return null;
@@ -76,6 +76,7 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
+  if (!isUuid(id)) return { title: "Character not found" };
   const result = await getCharacterDetail(id);
   if (!result.ok) {
     return result.notFound
@@ -153,7 +154,11 @@ async function loadCrew(character: CharacterProfile) {
   try {
     const members = await getCrewmates(primary.affiliations.id, character.id);
     return members.length
-      ? { name: displayCharacterName(primary.affiliations.name), members }
+      ? {
+          id: primary.affiliations.id,
+          name: displayCharacterName(primary.affiliations.name),
+          members,
+        }
       : null;
   } catch {
     return null;
@@ -166,6 +171,7 @@ export default async function CharacterDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  if (!isUuid(id)) notFound();
   const result = await getCharacterDetail(id);
 
   if (!result.ok) {
@@ -433,7 +439,7 @@ export default async function CharacterDetailPage({
                           <InteractiveCard className="rounded-2xl" tilt={5}>
                             <Link
                               className="group flex items-center gap-4 rounded-2xl border border-border/80 bg-card p-3 pr-5 shadow-sm transition-colors hover:border-primary/40"
-                              href="/devil-fruits"
+                              href={`/devil-fruits/${fruit.id}`}
                             >
                               <div className="relative size-20 shrink-0 overflow-hidden rounded-xl bg-muted">
                                 {fruit.image_url ? (
@@ -495,7 +501,7 @@ export default async function CharacterDetailPage({
                               ? "border-primary/30 bg-primary/10 font-medium text-primary hover:bg-primary/15"
                               : "border-border bg-card/70 text-muted-foreground line-through decoration-muted-foreground/40 hover:text-foreground",
                           )}
-                          href="/affiliations"
+                          href={`/affiliations/${a.id}`}
                           title={a.isActive ? "Current" : "Former"}
                         >
                           {displayCharacterName(a.name)}
@@ -577,9 +583,9 @@ export default async function CharacterDetailPage({
                 </div>
                 <Link
                   className="group inline-flex items-center gap-1 text-sm font-medium text-primary"
-                  href="/affiliations"
+                  href={`/affiliations/${crew.id}`}
                 >
-                  All affiliations
+                  All members
                   <ArrowRight
                     aria-hidden
                     className="size-4 transition-transform group-hover:translate-x-0.5"

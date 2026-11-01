@@ -489,3 +489,20 @@
     }
   }
 }
+
+/* Slow-turning colour halo behind a devil fruit's art. */
+@layer components {
+  .fruit-halo {
+    animation: halo-spin 14s linear infinite;
+  }
+  @keyframes halo-spin {
+    to {
+      rotate: 360deg;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fruit-halo {
+      animation: none;
+    }
+  }
+}
