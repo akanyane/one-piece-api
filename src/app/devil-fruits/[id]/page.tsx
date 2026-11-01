@@ -14,6 +14,7 @@ import { JsonLd } from "@/components/seo/json-ld";
 import {
   displayCharacterName,
   displayFruitName,
+  isGenericFruitArt,
   subtitleFruitName,
 } from "@/lib/character-name";
 import { getDevilFruitProfile, getRelatedFruits } from "@/lib/data";
@@ -159,6 +160,11 @@ export default async function DevilFruitPage({
                   />
                 </div>
               )}
+              {isGenericFruitArt(fruit.image_url) ? (
+                <span className="absolute bottom-4 left-1/2 z-10 -translate-x-1/2 rounded-full bg-background/85 px-3 py-1 text-[0.65rem] font-medium tracking-[0.14em] whitespace-nowrap text-muted-foreground uppercase backdrop-blur-sm">
+                  Illustrative art · appearance unknown
+                </span>
+              ) : null}
               {/* Foil sheen that follows the cursor. */}
               <div
                 aria-hidden

@@ -4,6 +4,10 @@ const nextConfig: NextConfig = {
   /* config options here */
   reactCompiler: true,
   images: {
+    // Images are already webp on Supabase's CDN. Vercel's optimizer quota ran
+    // out (402 OPTIMIZED_IMAGE_REQUEST_PAYMENT_REQUIRED), which broke every
+    // portrait on the site, so serve the stored files as-is.
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: "https",

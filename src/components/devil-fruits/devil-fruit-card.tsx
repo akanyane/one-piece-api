@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import {
   displayCharacterName,
   displayFruitName,
+  isGenericFruitArt,
   subtitleCharacterName,
   subtitleFruitName,
 } from "@/lib/character-name";
@@ -63,6 +64,11 @@ export function DevilFruitCard({
                 sizes="(min-width: 1280px) 360px, (min-width: 640px) 50vw, 100vw"
                 src={fruit.image_url}
               />
+            ) : null}
+            {isGenericFruitArt(fruit.image_url) ? (
+              <span className="absolute bottom-2.5 left-1/2 z-10 -translate-x-1/2 rounded-full bg-background/80 px-2.5 py-0.5 text-[0.6rem] font-medium tracking-[0.14em] whitespace-nowrap text-muted-foreground uppercase backdrop-blur-sm">
+                Appearance unknown
+              </span>
             ) : null}
             <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6 text-center">
               {!fruit.image_url ? (
