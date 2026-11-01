@@ -3,7 +3,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next";
 import type { Metadata } from "next";
 import "./globals.css";
 
-import { Fraunces, Outfit } from "next/font/google";
+import { Fraunces, Outfit, Rye, Zen_Antique } from "next/font/google";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { SITE_URL } from "@/lib/site";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,18 @@ const fraunces = Fraunces({
   subsets: ["latin"],
   variable: "--font-display",
   axes: ["SOFT", "WONK", "opsz"],
+});
+// Wanted-poster lettering, and the brush-style face for Japanese names.
+const rye = Rye({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-wanted",
+});
+const zenAntique = Zen_Antique({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-kana",
+  preload: false,
 });
 
 const DESCRIPTION =
@@ -44,7 +56,13 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={cn("font-sans", outfit.variable, fraunces.variable)}
+      className={cn(
+        "font-sans",
+        outfit.variable,
+        fraunces.variable,
+        rye.variable,
+        zenAntique.variable,
+      )}
       suppressHydrationWarning
     >
       <head>

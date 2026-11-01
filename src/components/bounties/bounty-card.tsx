@@ -1,7 +1,8 @@
-import { Coins, UserRound } from "lucide-react";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 
-import { Badge } from "@/components/ui/badge";
+import { WantedPoster } from "@/components/characters/wanted-poster";
+import { InteractiveCard } from "@/components/fx/interactive-card";
 import { displayCharacterName } from "@/lib/character-name";
 import { cn } from "@/lib/utils";
 
@@ -11,90 +12,73 @@ export type ApiBountyRow = {
   is_active: boolean;
   character_id: string | null;
   created_at: string;
-  characters?: { name: unknown } | null;
+  characters?: {
+    name: unknown;
+    image_url?: string | null;
+    status?: string | null;
+  } | null;
 };
 
-function formatBerry(n: number | null): string {
-  if (n === null || Number.isNaN(n)) return "—";
-  return n.toLocaleString("en-US");
+function japaneseName(name: unknown): string | undefined {
+  if (!name || typeof name !== "object") return undefined;
+  const jp = (name as Record<string, unknown>).jp;
+  return typeof jp === "string" && jp.trim() ? jp : undefined;
 }
+
+const REST = [0.9, -1.1, 0.5, -0.8, 1.1, -0.6];
 
 export function BountyCard({
   bounty,
   className,
+  index = 0,
+  priority = false,
 }: {
   bounty: ApiBountyRow;
   className?: string;
+  index?: number;
+  priority?: boolean;
 }) {
-  const nameJson = bounty.characters?.name ?? null;
-  const characterTitle = bounty.character_id
-    ? displayCharacterName(nameJson)
-    : null;
+  const character = bounty.characters ?? null;
+  const name = bounty.character_id
+    ? displayCharacterName(character?.name)
+    : "Unknown";
 
-  return (
-    <article
-      className={cn(
-        "group flex h-full flex-col overflow-hidden rounded-2xl border border-border/80 bg-card/95 shadow-sm backdrop-blur-md transition-[box-shadow,transform] duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-foreground/10",
-        className,
-      )}
+  const poster = (
+    <InteractiveCard spotlight={false} tilt={7}>
+      <WantedPoster
+        bounty={bounty.amount}
+        footnote={bounty.is_active ? "Current bounty" : "Former bounty"}
+        imageUrl={character?.image_url ?? null}
+        name={name}
+        nameJp={japaneseName(character?.name)}
+        priority={priority}
+        status={character?.status}
+      />
+      {!bounty.is_active ? (
+        <span className="font-wanted pointer-events-none absolute top-[22%] right-[10%] z-10 rotate-6 rounded-[2px] border-2 border-[#5e4630] bg-[#f3e5c4]/80 px-1.5 py-0.5 text-[0.6rem] tracking-[0.18em] text-[#5e4630]">
+          REVOKED
+        </span>
+      ) : null}
+    </InteractiveCard>
+  );
+
+  const shared = {
+    className: cn(
+      "group block h-full rounded-[3px] outline-offset-4 transition-[rotate] duration-500 [rotate:var(--rest)] hover:[rotate:0deg] focus-visible:[rotate:0deg]",
+      className,
+    ),
+    style: { "--rest": `${REST[index % REST.length]}deg` } as CSSProperties,
+  };
+
+  return bounty.character_id ? (
+    <Link
+      aria-label={`${name} — open profile`}
+      href={`/characters/${bounty.character_id}`}
+      {...shared}
     >
-      <div className="relative border-b border-amber-500/15 bg-gradient-to-br from-amber-500/12 via-card to-primary/10 px-5 py-6">
-        <div
-          aria-hidden
-          className="pointer-events-none absolute inset-0 grain-overlay opacity-40 mix-blend-multiply"
-        />
-        <div className="relative flex items-start justify-between gap-3">
-          <div className="flex items-center gap-2 text-amber-900/90 dark:text-amber-100/90">
-            <Coins aria-hidden className="size-5 shrink-0 opacity-80" />
-            <span className="font-display text-[0.65rem] font-medium tracking-[0.2em] uppercase">
-              Bounty
-            </span>
-          </div>
-          <Badge
-            className={cn(
-              "rounded-full px-2.5 py-0.5 font-medium",
-              bounty.is_active
-                ? "border-emerald-500/35 bg-emerald-500/10 text-emerald-900 dark:text-emerald-100"
-                : "border-border/60 bg-muted/80 text-muted-foreground",
-            )}
-            variant="outline"
-          >
-            {bounty.is_active ? "Active" : "Inactive"}
-          </Badge>
-        </div>
-        <p className="relative mt-4 font-display text-3xl font-medium tracking-tight text-balance text-foreground tabular-nums md:text-[2rem]">
-          <span className="text-amber-700/90 dark:text-amber-200/90">฿</span>{" "}
-          {formatBerry(bounty.amount)}
-        </p>
-      </div>
-
-      <div className="flex flex-1 flex-col gap-3 p-5">
-        <div className="space-y-1.5 text-[0.8125rem] text-muted-foreground">
-          <div>
-            <span className="flex items-center gap-1.5 text-[0.65rem] font-medium tracking-wide uppercase">
-              <UserRound aria-hidden className="size-3 opacity-60" />
-              Character
-            </span>
-            {bounty.character_id ? (
-              <div className="mt-1 space-y-0.5">
-                <p className="font-display text-base font-medium leading-snug text-foreground">
-                  {characterTitle}
-                </p>
-              </div>
-            ) : (
-              <p className="mt-1 italic text-foreground/80">Not linked</p>
-            )}
-          </div>
-        </div>
-        <div className="mt-auto border-t border-border/50 pt-3">
-          <Link
-            className="mt-2 inline-flex text-[0.8125rem] font-medium text-primary underline-offset-4 hover:underline"
-            href={`/characters/${bounty.character_id}`}
-          >
-            Browse character
-          </Link>
-        </div>
-      </div>
-    </article>
+      {poster}
+    </Link>
+  ) : (
+    <div {...shared}>{poster}</div>
   );
 }

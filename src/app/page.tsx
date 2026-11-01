@@ -1,39 +1,34 @@
 import {
+  ArrowRight,
+  ArrowUpRight,
   BookOpen,
-  Cherry,
-  Coins,
-  ExternalLink,
-  Flag,
-  Heart,
-  MapPin,
-  Sailboat,
+  Gauge,
+  KeyRound,
   Scale,
-  Server,
   Terminal,
   Users,
 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { CatalogNav } from "@/components/layout/catalog-nav";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
-import Logo from "@/components/logo";
+import { WantedPoster } from "@/components/characters/wanted-poster";
+import { BlurText } from "@/components/fx/blur-text";
+import { CountUp } from "@/components/fx/count-up";
+import { InteractiveCard } from "@/components/fx/interactive-card";
+import { Marquee } from "@/components/fx/marquee";
+import { Reveal } from "@/components/fx/reveal";
+import { HeroTerminal } from "@/components/home/hero-terminal";
+import { GithubIcon } from "@/components/icons/github";
+import { PageBackdrop } from "@/components/layout/page-backdrop";
+import { SiteFooter } from "@/components/layout/site-footer";
+import { SiteHeader } from "@/components/layout/site-header";
 import { JsonLd } from "@/components/seo/json-ld";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { Separator } from "@/components/ui/separator";
+import { displayCharacterName } from "@/lib/character-name";
+import { getMostWanted, getSiteStats } from "@/lib/data";
+import { CATALOG_NAV, REPO_URL } from "@/lib/nav";
 import { SITE_URL } from "@/lib/site";
 import { cn } from "@/lib/utils";
-
-const REPO = "https://github.com/akanyane/one-piece-api";
 
 const DESCRIPTION =
   "REST API for One Piece characters, images, and canonical series data.";
@@ -55,29 +50,64 @@ export const metadata: Metadata = {
   },
 };
 
-function WaveDivider({ className }: { className?: string }) {
-  return (
-    <svg
-      aria-hidden
-      className={cn("w-full text-card", className)}
-      preserveAspectRatio="none"
-      role="presentation"
-      viewBox="0 0 1440 120"
-    >
-      <title>Decorative wave</title>
-      <path
-        className="fill-current"
-        d="M0,64 C180,20 360,100 540,56 C720,12 900,92 1080,48 C1260,4 1380,44 1440,28 L1440,120 L0,120 Z"
-      />
-      <path
-        className="fill-current opacity-50"
-        d="M0,88 C200,40 400,110 600,64 C800,18 1000,96 1200,52 C1320,28 1400,56 1440,44 L1440,120 L0,120 Z"
-      />
-    </svg>
-  );
+type Stats = Awaited<ReturnType<typeof getSiteStats>>;
+type Wanted = Awaited<ReturnType<typeof getMostWanted>>;
+
+/** Homepage data is decoration: if the database hiccups, render without it. */
+async function loadHomeData(): Promise<{
+  stats: Stats | null;
+  wanted: Wanted;
+}> {
+  const [stats, wanted] = await Promise.allSettled([
+    getSiteStats(),
+    getMostWanted(14),
+  ]);
+  return {
+    stats: stats.status === "fulfilled" ? stats.value : null,
+    wanted: wanted.status === "fulfilled" ? wanted.value : [],
+  };
 }
 
-export default function Home() {
+const STAT_FOR_HREF: Record<string, keyof Stats> = {
+  "/characters": "characters",
+  "/devil-fruits": "devil_fruits",
+  "/bounties": "bounties",
+  "/ships": "ships",
+  "/islands": "islands",
+  "/affiliations": "affiliations",
+};
+
+const FEATURES = [
+  {
+    icon: KeyRound,
+    title: "No keys, no sign-up",
+    body: "Every endpoint is public. Paste a URL in the browser and you already have JSON.",
+  },
+  {
+    icon: Gauge,
+    title: "Cached at the edge",
+    body: "Responses ship with Cache-Control headers, so repeat calls are fast and cheap.",
+  },
+  {
+    icon: Scale,
+    title: "Open source, MIT",
+    body: "Read the code, file an issue, or send a PR — the dataset grows with the crew.",
+  },
+];
+
+export default async function Home() {
+  const { stats, wanted } = await loadHomeData();
+  const featured = wanted[0];
+  const sample = featured
+    ? {
+        id: featured.id,
+        name: featured.name,
+        status: featured.status,
+        bounty: featured.amount,
+        image_url: featured.image_url,
+      }
+    : { id: "…", name: { en: "Monkey D. Luffy" }, status: "Alive" };
+
   return (
     <>
       <JsonLd
@@ -96,324 +126,294 @@ export default function Home() {
       />
       <div
         className={cn(
-          "surface-story relative min-h-[calc(100dvh-theme(spacing.14))] overflow-x-clip bg-background text-foreground",
+          "surface-story relative min-h-dvh overflow-x-clip bg-background text-foreground",
           "[--font-heading:var(--font-display)]",
         )}
       >
-        {/* Ambient: soft organic light + grain */}
-        <div
-          aria-hidden
-          className="pointer-events-none fixed inset-0 grain-overlay opacity-70 mix-blend-multiply"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute -top-32 left-1/2 size-[min(120vw,720px)] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(closest-side,color-mix(in_oklch,var(--color-primary)_22%,transparent),transparent_75%)] blur-3xl home-blob"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute top-[38%] -right-32 size-80 rounded-full bg-[radial-gradient(circle,color-mix(in_oklch,oklch(0.72_0.14_85)_35%,transparent),transparent_70%)] blur-2xl"
-        />
-        <div
-          aria-hidden
-          className="pointer-events-none absolute bottom-[15%] -left-24 size-72 rounded-full bg-[radial-gradient(circle,color-mix(in_oklch,oklch(0.55_0.12_220)_28%,transparent),transparent_72%)] blur-2xl"
-        />
-
-        <header className="relative z-20 px-4 pt-6 md:px-8">
-          <div className="mx-auto flex min-w-0 max-w-5xl items-center gap-3 md:gap-4">
-            <div className="home-animate-fade flex shrink-0 items-center gap-3 rounded-full border border-border/80 bg-card/85 py-2 pr-2 pl-3 shadow-sm backdrop-blur-md">
-              <Logo />
-              <span className="hidden font-display text-[0.65rem] font-medium tracking-[0.2em] text-muted-foreground uppercase sm:inline">
-                API
-              </span>
-            </div>
-            <CatalogNav className="home-animate-fade home-delay-1">
-              <Button
-                variant="ghost"
-                size="sm"
-                nativeButton={false}
-                render={<Link href="/characters" />}
-              >
-                <Users data-icon="inline-start" />
-                Characters
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                nativeButton={false}
-                render={<Link href="/devil-fruits" />}
-              >
-                <Cherry data-icon="inline-start" />
-                Devil fruits
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                nativeButton={false}
-                render={<Link href="/bounties" />}
-              >
-                <Coins data-icon="inline-start" />
-                Bounties
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                nativeButton={false}
-                render={<Link href="/ships" />}
-              >
-                <Sailboat data-icon="inline-start" />
-                Ships
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                nativeButton={false}
-                render={<Link href="/islands" />}
-              >
-                <MapPin data-icon="inline-start" />
-                Islands
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                nativeButton={false}
-                render={<Link href="/affiliations" />}
-              >
-                <Flag data-icon="inline-start" />
-                Affiliations
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                nativeButton={false}
-                render={<Link href="/documentation" />}
-              >
-                <BookOpen data-icon="inline-start" />
-                Docs
-              </Button>
-              <Button
-                variant="ghost"
-                size="sm"
-                nativeButton={false}
-                render={<Link href="/playground" />}
-              >
-                <Terminal data-icon="inline-start" />
-                Playground
-              </Button>
-              <Button
-                variant="outline"
-                size="sm"
-                nativeButton={false}
-                render={<a href={REPO} rel="noreferrer" target="_blank" />}
-              >
-                <ExternalLink data-icon="inline-start" />
-                GitHub
-              </Button>
-            </CatalogNav>
-            <ThemeToggle />
-          </div>
-        </header>
+        <PageBackdrop />
+        <SiteHeader />
 
         <main className="relative z-10">
-          {/* Hero */}
-          <section className="relative mx-auto max-w-5xl px-4 pt-10 pb-0 md:px-8 md:pt-14">
-            <p className="home-animate-rise font-display text-[0.7rem] font-medium tracking-[0.28em] text-primary uppercase">
-              Grand Line · REST
-            </p>
-            <h1 className="home-animate-rise home-delay-1 mt-4 max-w-[18ch] font-display text-[clamp(2.75rem,8vw,4.25rem)] leading-[0.95] font-medium tracking-[-0.03em] text-balance text-foreground">
-              One Piece
-              <span className="mt-1 block text-[0.42em] font-normal tracking-[0.02em] text-muted-foreground">
-                API
-              </span>
-            </h1>
-            <p className="home-animate-rise home-delay-2 mt-8 max-w-xl text-pretty text-base/relaxed text-muted-foreground md:text-lg/relaxed">
-              Character and world data from the series, in an API built for
-              developers and fans alike — clear, open, and straightforward to
-              integrate.
-            </p>
-            <div className="home-animate-rise home-delay-3 mt-6 flex flex-wrap gap-2">
-              <Badge
-                className="rounded-full border-primary/25 bg-primary/10 px-3 py-0.5 font-medium text-primary"
-                variant="outline"
+          {/* ---------- Hero ---------- */}
+          <section className="mx-auto grid max-w-6xl items-center gap-12 px-4 pt-10 pb-16 md:px-8 md:pt-16 lg:grid-cols-[1.1fr_1fr] lg:gap-10 lg:pb-24">
+            <div>
+              <Link
+                className="home-animate-fade group inline-flex items-center gap-2 rounded-full border border-border/80 bg-card/80 py-1 pr-3 pl-1 text-[0.75rem] shadow-sm backdrop-blur-md transition-colors hover:border-primary/40"
+                href="/playground"
               >
-                REST
-              </Badge>
-              <Badge
-                className="rounded-full border-border/80 px-3 py-0.5"
-                variant="outline"
-              >
-                MIT
-              </Badge>
+                <span className="rounded-full bg-primary px-2 py-0.5 text-[0.65rem] font-semibold tracking-wide text-primary-foreground uppercase">
+                  New
+                </span>
+                <span className="shiny-text font-medium text-muted-foreground">
+                  Try the interactive playground
+                </span>
+                <ArrowRight
+                  aria-hidden
+                  className="size-3.5 text-muted-foreground transition-transform group-hover:translate-x-0.5"
+                />
+              </Link>
+
+              <h1 className="mt-6 font-display text-[clamp(2.6rem,6.4vw,4.6rem)] leading-[0.98] font-medium tracking-[-0.035em] text-balance text-foreground">
+                <BlurText text="Every pirate, fruit and bounty," />{" "}
+                <BlurText
+                  className="text-primary italic"
+                  delay={0.35}
+                  text="one request away."
+                />
+              </h1>
+
+              <p className="home-animate-rise home-delay-4 mt-6 max-w-xl text-pretty text-base/relaxed text-muted-foreground md:text-lg/relaxed">
+                A free, open REST API for the world of One Piece — characters
+                with portraits, devil fruits, bounties, ships, islands and
+                crews. Built for developers and fans alike.
+              </p>
+
+              <div className="home-animate-rise home-delay-5 mt-8 flex flex-wrap gap-3">
+                <Button
+                  className="h-10 rounded-full px-5 shadow-lg shadow-primary/20"
+                  nativeButton={false}
+                  render={<Link href="/characters" />}
+                >
+                  <Users data-icon="inline-start" />
+                  Explore characters
+                </Button>
+                <Button
+                  className="h-10 rounded-full bg-card/80 px-5 backdrop-blur-md"
+                  nativeButton={false}
+                  render={<Link href="/documentation" />}
+                  variant="outline"
+                >
+                  <BookOpen data-icon="inline-start" />
+                  Read the docs
+                </Button>
+              </div>
+
+              <p className="home-animate-fade home-delay-5 mt-6 font-mono text-[0.75rem] text-muted-foreground">
+                <span className="text-primary">GET</span> {SITE_URL}
+                /api/characters
+              </p>
             </div>
-            <div className="home-animate-rise home-delay-4 mt-10 flex flex-wrap gap-3">
-              <Button
-                className="rounded-full px-5 shadow-md shadow-primary/15"
-                nativeButton={false}
-                render={<Link href="/documentation" />}
-              >
-                <BookOpen data-icon="inline-start" />
-                Documentation
-              </Button>
+
+            <div className="home-animate-rise home-delay-3 min-w-0">
+              <HeroTerminal
+                command={`curl ${SITE_URL.replace("https://", "")}/api/characters/${featured ? `${featured.id.slice(0, 8)}…` : "{id}"}`}
+                response={sample}
+              />
             </div>
           </section>
 
-          <div className="relative -mb-px mt-14 md:mt-20">
-            <WaveDivider />
-          </div>
-
-          {/* Content */}
-          <section className="relative bg-card pb-16 pt-2 md:pb-24">
-            <div className="mx-auto max-w-5xl px-4 md:px-8">
-              <div className="home-animate-rise home-delay-5 flex flex-col gap-2 border-b border-border/70 pb-10">
-                <h2 className="font-display text-xl font-medium tracking-tight text-foreground md:text-2xl">
-                  About the project
-                </h2>
-                <p className="max-w-2xl text-sm/relaxed text-muted-foreground md:text-base/relaxed">
-                  Essentials, licensing, and how to get involved — in one place,
-                  written to be easy to read.
-                </p>
-              </div>
-
-              <div className="mt-10 grid gap-5 md:grid-cols-2 md:gap-6">
-                <Card className="md:col-span-2 md:flex md:flex-row md:overflow-hidden md:rounded-2xl">
-                  <div className="hidden w-1 shrink-0 bg-linear-to-b from-primary/50 via-primary/30 to-accent/40 md:block" />
-                  <div className="min-w-0 flex-1">
-                    <CardHeader className="pb-2">
-                      <CardTitle className="font-display text-lg md:text-xl">
-                        Overview
-                      </CardTitle>
-                      <CardDescription className="text-[0.8125rem]">
-                        What this API offers
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex flex-col gap-3 text-muted-foreground">
-                      <p>
-                        A REST interface focused on the series, with characters
-                        and images aligned to reference material.
-                      </p>
-                      <p>
-                        The docs cover routes, parameters, and response formats
-                        so you can integrate without friction.
-                      </p>
-                    </CardContent>
-                    <CardFooter className="border-t border-border/60 pt-4">
-                      <Button
-                        className="rounded-full px-3 has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5"
-                        size="sm"
-                        variant="secondary"
-                        nativeButton={false}
-                        render={<Link href="/documentation" />}
-                      >
-                        <BookOpen data-icon="inline-start" />
-                        Open documentation
-                      </Button>
-                    </CardFooter>
-                  </div>
-                </Card>
-
-                <Card className="rounded-2xl md:rounded-2xl">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 font-display text-lg">
-                      <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                        <Heart aria-hidden className="size-4" />
-                      </span>
-                      Motivation
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-muted-foreground">
-                    <p>
-                      A project born from love for the story and a desire to
-                      give something useful back to the community as open
-                      source.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="rounded-2xl md:rounded-2xl">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 font-display text-lg">
-                      <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                        <Server aria-hidden className="size-4" />
-                      </span>
-                      Stack
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-muted-foreground">
-                    <p>
-                      Hosted on Vercel, with Node.js and Next.js serving both
-                      the API and the site.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="md:col-span-2 rounded-2xl">
-                  <CardHeader>
-                    <CardTitle className="font-display text-lg md:text-xl">
-                      Contributing
-                    </CardTitle>
-                    <CardDescription>
-                      Issues, pull requests, and ideas are welcome
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent className="text-muted-foreground">
-                    <p>
-                      Sharing the repo or opening discussions helps other
-                      developers discover the project.
-                    </p>
-                  </CardContent>
-                  <CardFooter className="border-t border-border/60">
-                    <Button
-                      className="rounded-full px-3 has-data-[icon=inline-end]:pr-2.5 has-data-[icon=inline-start]:pl-2.5"
-                      size="sm"
-                      variant="outline"
-                      nativeButton={false}
-                      render={
-                        <a href={REPO} rel="noreferrer" target="_blank" />
-                      }
+          {/* ---------- Stats ---------- */}
+          {stats ? (
+            <section
+              aria-label="Dataset size"
+              className="mx-auto max-w-6xl px-4 md:px-8"
+            >
+              <Reveal>
+                <dl className="grid grid-cols-2 overflow-hidden rounded-2xl border border-border/80 bg-border/80 shadow-sm sm:grid-cols-3 lg:grid-cols-6 [&>div]:bg-card/90">
+                  {CATALOG_NAV.map(({ href, label, icon: Icon }) => (
+                    <div
+                      className="flex flex-col gap-1 p-5 backdrop-blur-md"
+                      key={href}
                     >
-                      <ExternalLink data-icon="inline-start" />
-                      Repository on GitHub
-                    </Button>
-                  </CardFooter>
-                </Card>
+                      <dt className="flex items-center gap-1.5 text-[0.7rem] font-medium tracking-[0.14em] text-muted-foreground uppercase">
+                        <Icon aria-hidden className="size-3.5" />
+                        {label}
+                      </dt>
+                      <dd className="font-display text-3xl font-medium tracking-tight text-foreground">
+                        <CountUp to={stats[STAT_FOR_HREF[href]]} />
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </Reveal>
+            </section>
+          ) : null}
 
-                <Card className="rounded-2xl md:rounded-2xl">
-                  <CardHeader>
-                    <CardTitle className="font-display text-lg">
-                      Copyright
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-muted-foreground">
-                    <p>
-                      One Piece is the work of Eiichiro Oda. Data and images are
-                      used without claiming ownership; rights remain with their
-                      respective owners.
-                    </p>
-                  </CardContent>
-                </Card>
-
-                <Card className="rounded-2xl md:rounded-2xl">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2 font-display text-lg">
-                      <span className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                        <Scale aria-hidden className="size-4" />
-                      </span>
-                      License
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="text-muted-foreground">
-                    <p>Open source under the MIT license.</p>
-                  </CardContent>
-                </Card>
+          {/* ---------- Most wanted ---------- */}
+          {wanted.length > 0 ? (
+            <section className="mt-20 md:mt-28">
+              <div className="mx-auto flex max-w-6xl flex-wrap items-end justify-between gap-4 px-4 md:px-8">
+                <Reveal>
+                  <p className="font-display text-[0.7rem] font-medium tracking-[0.28em] text-primary uppercase">
+                    Grand Line · Most wanted
+                  </p>
+                  <h2 className="mt-2 font-display text-3xl font-medium tracking-tight md:text-4xl">
+                    The highest prices on the sea
+                  </h2>
+                </Reveal>
+                <Link
+                  className="group inline-flex items-center gap-1 text-sm font-medium text-primary"
+                  href="/bounties?sort=high"
+                >
+                  All bounties
+                  <ArrowRight
+                    aria-hidden
+                    className="size-4 transition-transform group-hover:translate-x-0.5"
+                  />
+                </Link>
               </div>
+              <Marquee className="mt-4" duration={70}>
+                {wanted.map((c, i) => (
+                  <Link
+                    className="group block w-[11.5rem] shrink-0 transition-[rotate] duration-500 hover:[rotate:0deg]"
+                    href={`/characters/${c.id}`}
+                    key={c.id}
+                    style={{ rotate: `${i % 2 ? 1.2 : -1.2}deg` }}
+                  >
+                    <InteractiveCard spotlight={false} tilt={9}>
+                      <WantedPoster
+                        bounty={c.amount}
+                        imageUrl={c.image_url}
+                        name={displayCharacterName(c.name)}
+                        size="sm"
+                        status={c.status}
+                      />
+                    </InteractiveCard>
+                  </Link>
+                ))}
+              </Marquee>
+            </section>
+          ) : null}
 
-              <Separator className="mt-14 bg-border/80" />
-
-              <p className="mt-8 text-center text-[0.7rem] tracking-wide text-muted-foreground">
-                Made with care · Data inspired by the work of Eiichiro Oda
+          {/* ---------- Sections ---------- */}
+          <section className="mx-auto mt-16 max-w-6xl px-4 md:mt-24 md:px-8">
+            <Reveal>
+              <p className="font-display text-[0.7rem] font-medium tracking-[0.28em] text-primary uppercase">
+                Grand Line · Catalog
               </p>
+              <h2 className="mt-2 max-w-xl font-display text-3xl font-medium tracking-tight text-balance md:text-4xl">
+                Six resources, all browsable right here
+              </h2>
+            </Reveal>
+            <ul className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {CATALOG_NAV.map(({ href, label, icon: Icon, blurb }, i) => (
+                <li key={href}>
+                  <Reveal className="h-full" index={i}>
+                    <InteractiveCard className="rounded-2xl" tilt={4}>
+                      <Link
+                        className="group flex h-full flex-col gap-6 overflow-hidden rounded-2xl border border-border/80 bg-card/90 p-6 shadow-sm backdrop-blur-md transition-[border-color,box-shadow] duration-300 hover:border-primary/40 hover:shadow-xl hover:shadow-foreground/10"
+                        href={href}
+                      >
+                        <div className="flex items-start justify-between">
+                          <span className="flex size-11 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-6">
+                            <Icon aria-hidden className="size-5" />
+                          </span>
+                          <ArrowUpRight
+                            aria-hidden
+                            className="size-5 text-muted-foreground transition-[transform,color] duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-primary"
+                          />
+                        </div>
+                        <div className="mt-auto">
+                          <p className="font-mono text-[0.7rem] text-muted-foreground">
+                            /api{href}
+                            {stats ? (
+                              <span className="ml-2 rounded-full bg-secondary px-1.5 py-0.5 text-[0.65rem] text-secondary-foreground">
+                                {stats[STAT_FOR_HREF[href]].toLocaleString(
+                                  "en-US",
+                                )}
+                              </span>
+                            ) : null}
+                          </p>
+                          <h3 className="mt-1.5 font-display text-2xl font-medium tracking-tight">
+                            {label}
+                          </h3>
+                          <p className="mt-1.5 text-sm/relaxed text-muted-foreground">
+                            {blurb}
+                          </p>
+                        </div>
+                      </Link>
+                    </InteractiveCard>
+                  </Reveal>
+                </li>
+              ))}
+            </ul>
+          </section>
+
+          {/* ---------- Developers ---------- */}
+          <section className="mx-auto mt-20 max-w-6xl px-4 pb-24 md:mt-28 md:px-8">
+            <div className="grid gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-center">
+              <Reveal>
+                <p className="font-display text-[0.7rem] font-medium tracking-[0.28em] text-primary uppercase">
+                  Grand Line · Developers
+                </p>
+                <h2 className="mt-2 font-display text-3xl font-medium tracking-tight text-balance md:text-4xl">
+                  Set sail in three lines of code
+                </h2>
+                <ul className="mt-8 flex flex-col gap-5">
+                  {FEATURES.map(({ icon: Icon, title, body }) => (
+                    <li className="flex gap-4" key={title}>
+                      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                        <Icon aria-hidden className="size-4" />
+                      </span>
+                      <div>
+                        <p className="font-medium text-foreground">{title}</p>
+                        <p className="mt-0.5 text-sm/relaxed text-muted-foreground">
+                          {body}
+                        </p>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+                <div className="mt-8 flex flex-wrap gap-3">
+                  <Button
+                    className="rounded-full px-4"
+                    nativeButton={false}
+                    render={<Link href="/playground" />}
+                  >
+                    <Terminal data-icon="inline-start" />
+                    Open playground
+                  </Button>
+                  <Button
+                    className="rounded-full px-4"
+                    nativeButton={false}
+                    render={
+                      <a href={REPO_URL} rel="noreferrer" target="_blank" />
+                    }
+                    variant="outline"
+                  >
+                    <GithubIcon className="size-4" data-icon="inline-start" />
+                    Star on GitHub
+                  </Button>
+                </div>
+              </Reveal>
+
+              <Reveal delay={0.1}>
+                <InteractiveCard className="rounded-2xl" tilt={3}>
+                  <figure className="overflow-hidden rounded-2xl border border-border/80 bg-[#17120d] text-[#e9dfc9] shadow-xl">
+                    <figcaption className="flex items-center justify-between border-b border-white/8 px-4 py-2.5 font-mono text-[0.7rem] text-[#8d8170]">
+                      <span>crew.ts</span>
+                      <span>TypeScript</span>
+                    </figcaption>
+                    <pre className="overflow-x-auto p-5 font-mono text-[0.8rem] leading-relaxed">
+                      <code>
+                        <span className="text-[#d7a6ff]">const</span> res ={" "}
+                        <span className="text-[#d7a6ff]">await</span>{" "}
+                        <span className="text-[#7fd3dc]">fetch</span>({"\n  "}
+                        <span className="text-[#c9e59a]">
+                          &quot;{SITE_URL}/api/characters?q=luffy&quot;
+                        </span>
+                        {"\n"});{"\n"}
+                        <span className="text-[#d7a6ff]">const</span> [luffy] ={" "}
+                        <span className="text-[#d7a6ff]">await</span> res.
+                        <span className="text-[#7fd3dc]">json</span>();{"\n\n"}
+                        luffy.bounties
+                        {"\n  "}.<span className="text-[#7fd3dc]">filter</span>
+                        ((b) =&gt; b.is_active){"\n  "}.
+                        <span className="text-[#7fd3dc]">map</span>((b) =&gt;
+                        b.amount);{" "}
+                        <span className="text-[#8d8170]">
+                          {"// "}[3000000000]
+                        </span>
+                      </code>
+                    </pre>
+                  </figure>
+                </InteractiveCard>
+              </Reveal>
             </div>
           </section>
         </main>
+
+        <SiteFooter />
       </div>
     </>
   );

@@ -1,8 +1,7 @@
 import { ArrowLeft, Users } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
-
-import { LogoMark } from "@/components/logo";
+import { SiteHeader } from "@/components/layout/site-header";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -18,25 +17,7 @@ export default function CharacterNotFound() {
         "[--font-heading:var(--font-display)]",
       )}
     >
-      <header className="relative z-10 border-b border-border/50 bg-card/40 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4 md:px-8">
-          <Link
-            className="flex items-center gap-3 rounded-full border border-border/80 bg-card/85 py-2 pr-2 pl-3 shadow-sm backdrop-blur-md transition-opacity hover:opacity-90"
-            href="/"
-          >
-            <LogoMark />
-          </Link>
-          <Button
-            variant="ghost"
-            size="sm"
-            nativeButton={false}
-            render={<Link href="/characters" />}
-          >
-            <Users data-icon="inline-start" />
-            Characters
-          </Button>
-        </div>
-      </header>
+      <SiteHeader />
       <main className="relative z-10 mx-auto flex max-w-lg flex-1 flex-col justify-center px-4 py-16 text-center md:px-8">
         <p className="font-display text-[0.7rem] font-medium tracking-[0.28em] text-primary uppercase">
           Catalog

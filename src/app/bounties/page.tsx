@@ -1,13 +1,3 @@
-import {
-  ArrowLeft,
-  BookOpen,
-  Cherry,
-  Coins,
-  Flag,
-  MapPin,
-  Sailboat,
-  Users,
-} from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
@@ -20,9 +10,10 @@ import {
   type ApiBountyRow,
   BountyCard,
 } from "@/components/bounties/bounty-card";
-import { CatalogNav } from "@/components/layout/catalog-nav";
-import { ThemeToggle } from "@/components/layout/theme-toggle";
-import { LogoMark } from "@/components/logo";
+import { Reveal } from "@/components/fx/reveal";
+import { PageBackdrop } from "@/components/layout/page-backdrop";
+import { SiteFooter } from "@/components/layout/site-footer";
+import { SiteHeader } from "@/components/layout/site-header";
 import { JsonLd } from "@/components/seo/json-ld";
 import { Button } from "@/components/ui/button";
 import {
@@ -117,107 +108,9 @@ export default async function BountiesPage({
         "[--font-heading:var(--font-display)]",
       )}
     >
-      <div
-        aria-hidden
-        className="pointer-events-none fixed inset-0 grain-overlay opacity-60 mix-blend-multiply"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-28 left-1/2 size-[min(100vw,640px)] -translate-x-1/2 rounded-[50%] bg-[radial-gradient(closest-side,color-mix(in_oklch,var(--color-primary)_20%,transparent),transparent_72%)] blur-3xl"
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute right-0 bottom-0 size-[min(80vw,420px)] translate-x-1/4 rounded-full bg-[radial-gradient(circle,color-mix(in_oklch,oklch(0.72_0.12_85)_22%,transparent),transparent_70%)] blur-3xl"
-      />
+      <PageBackdrop />
 
-      <header className="relative z-10 border-b border-border/50 bg-card/40 backdrop-blur-md">
-        <div className="mx-auto flex min-w-0 max-w-6xl items-center gap-3 px-4 py-4 md:gap-4 md:px-8">
-          <Link
-            className="flex shrink-0 items-center gap-3 rounded-full border border-border/80 bg-card/85 py-2 pr-2 pl-3 shadow-sm backdrop-blur-md transition-opacity hover:opacity-90"
-            href="/"
-          >
-            <LogoMark />
-            <span className="hidden font-display text-[0.65rem] font-medium tracking-[0.2em] text-muted-foreground uppercase sm:inline">
-              API
-            </span>
-          </Link>
-          <CatalogNav>
-            <Button
-              variant="ghost"
-              size="sm"
-              nativeButton={false}
-              render={<Link href="/" />}
-            >
-              <ArrowLeft data-icon="inline-start" />
-              Home
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              nativeButton={false}
-              render={<Link href="/characters" />}
-            >
-              <Users data-icon="inline-start" />
-              Characters
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              nativeButton={false}
-              render={<Link href="/devil-fruits" />}
-            >
-              <Cherry data-icon="inline-start" />
-              Devil fruits
-            </Button>
-            <Button
-              variant="default"
-              size="sm"
-              nativeButton={false}
-              render={<Link href="/bounties" />}
-            >
-              <Coins data-icon="inline-start" />
-              Bounties
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              nativeButton={false}
-              render={<Link href="/ships" />}
-            >
-              <Sailboat data-icon="inline-start" />
-              Ships
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              nativeButton={false}
-              render={<Link href="/islands" />}
-            >
-              <MapPin data-icon="inline-start" />
-              Islands
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              nativeButton={false}
-              render={<Link href="/affiliations" />}
-            >
-              <Flag data-icon="inline-start" />
-              Affiliations
-            </Button>
-            <Button
-              variant="ghost"
-              size="sm"
-              nativeButton={false}
-              render={<Link href="/documentation" />}
-            >
-              <BookOpen data-icon="inline-start" />
-              Docs
-            </Button>
-          </CatalogNav>
-          <ThemeToggle />
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="relative z-10 mx-auto max-w-6xl px-4 py-10 md:px-8 md:py-14">
         <div className="mb-8 flex flex-col gap-6 md:mb-10 md:flex-row md:items-end md:justify-between">
@@ -324,10 +217,12 @@ export default async function BountiesPage({
                 })),
               }}
             />
-            <ul className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-              {result.data.map((bounty) => (
+            <ul className="grid grid-cols-2 gap-x-4 gap-y-8 sm:gap-x-6 md:grid-cols-3 lg:grid-cols-4 lg:gap-y-10">
+              {result.data.map((bounty, i) => (
                 <li key={bounty.id}>
-                  <BountyCard bounty={bounty} />
+                  <Reveal className="h-full" index={i}>
+                    <BountyCard bounty={bounty} index={i} priority={i < 4} />
+                  </Reveal>
                 </li>
               ))}
             </ul>
@@ -344,6 +239,7 @@ export default async function BountiesPage({
           </>
         )}
       </main>
+      <SiteFooter />
     </div>
   );
 }

@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
-import { JetBrains_Mono } from "next/font/google";
+import localFont from "next/font/local";
 
 import { SITE_URL } from "@/lib/site";
 import { PlaygroundClient } from "./playground-client";
 
-const jetbrainsMono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
+// Self-hosted (latin, variable 400–700): fetching it through next/font/google
+// broke Vercel's Turbopack build ("next/font/google queries have exactly one entry").
+const jetbrainsMono = localFont({
+  src: "./fonts/jetbrains-mono-latin.woff2",
+  weight: "400 700",
   variable: "--font-pg-mono",
+  fallback: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"],
 });
 
 const TITLE = "Playground";
