@@ -115,7 +115,7 @@ async function fetchBounties(params: GetBountiesParams) {
 
   let query = supabase
     .from("bounties")
-    .select("*, characters(name)", { count: "exact" });
+    .select("*, characters(name, image_url, status)", { count: "exact" });
 
   if (params.isActive !== undefined) {
     query = query.eq("is_active", params.isActive);
@@ -253,3 +253,66 @@ export const getAllCharacterIds = unstable_cache(
   ["characters-all-ids"],
   { revalidate: REVALIDATE_SECONDS, tags: ["characters"] },
 );
+
+async function fetchSiteStats() {
+  const tables = [
+    "characters",
+    "devil_fruits",
+    "bounties",
+    "ships",
+    "islands",
+    "affiliations",
+  ] as const;
+  const counts = await Promise.all(
+    tables.map(async (table) => {
+      const { count, error } = await supabase
+        .from(table)
+        .select("*", { count: "exact", head: true });
+      if (error) throw error;
+      return [table, count ?? 0] as const;
+    }),
+  );
+  return Object.fromEntries(counts) as Record<(typeof tables)[number], number>;
+}
+
+/** Row counts per resource, for the homepage stats strip. */
+export const getSiteStats = unstable_cache(fetchSiteStats, ["site-stats"], {
+  revalidate: REVALIDATE_SECONDS,
+  tags: ["characters", "devil-fruits", "bounties", "ships", "islands"],
+});
+
+async function fetchMostWanted(limit: number) {
+  // Over-fetch: a character can hold several active bounties, and some have no portrait.
+  const { data, error } = await supabase
+    .from("bounties")
+    .select("amount, characters!inner(id, name, image_url, status)")
+    .eq("is_active", true)
+    .not("amount", "is", null)
+    .not("characters.image_url", "is", null)
+    .order("amount", { ascending: false })
+    .limit(limit * 3);
+  if (error) throw error;
+
+  const seen = new Set<string>();
+  const out: {
+    id: string;
+    name: unknown;
+    image_url: string | null;
+    status: string;
+    amount: number;
+  }[] = [];
+  for (const row of data ?? []) {
+    const c = row.characters;
+    if (!c || seen.has(c.id) || row.amount == null) continue;
+    seen.add(c.id);
+    out.push({ ...c, amount: row.amount });
+    if (out.length === limit) break;
+  }
+  return out;
+}
+
+/** Highest active bounties with a portrait, one per character — the homepage marquee. */
+export const getMostWanted = unstable_cache(fetchMostWanted, ["most-wanted"], {
+  revalidate: REVALIDATE_SECONDS,
+  tags: ["bounties", "characters"],
+});
