@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.9.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.8.0...one-piece-api-v0.9.0) (2026-11-01)
+
+
+### Features
+
+* **site:** rich character profile, animated header and footer ([7d787fa](https://github.com/akanyane/one-piece-api/commit/7d787fa1d2d1bd7ec09b67008e45487a241649ea))
+* **site:** rich character profile, animated header and footer ([7a1c9ce](https://github.com/akanyane/one-piece-api/commit/7a1c9ce72985f7e616159a9eccdba3687b95ca7e))
+* **site:** wanted-poster cards, animated homepage and shared layout ([878683e](https://github.com/akanyane/one-piece-api/commit/878683e7c242b43bb5db8476d6fe139aff6ee151))
+* **site:** wanted-poster cards, animated homepage and shared layout ([47cea25](https://github.com/akanyane/one-piece-api/commit/47cea2542da79ba1b9324ad4725a32941c5339f9))
+
+
+### Bug Fixes
+
+* **playground:** self-host JetBrains Mono to unblock Vercel build ([dda0890](https://github.com/akanyane/one-piece-api/commit/dda08906fb304df992efff1cea08f62f6b086a9d))
+
 ## [0.8.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.7.0...one-piece-api-v0.8.0) (2026-09-21)
 
 
