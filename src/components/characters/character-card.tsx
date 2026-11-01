@@ -29,10 +29,10 @@ export type ApiCharacter = {
 
 /** The highest active bounty, or the highest overall when none is active. */
 export function headlineBounty(
-  bounties: ApiBounty[] | null | undefined,
+  bounties: Pick<ApiBounty, "amount" | "is_active">[] | null | undefined,
 ): number | null {
   const withAmount = (bounties ?? []).filter(
-    (b): b is ApiBounty & { amount: number } => b.amount != null,
+    (b): b is { amount: number; is_active: boolean } => b.amount != null,
   );
   const active = withAmount.filter((b) => b.is_active);
   const pool = active.length ? active : withAmount;
