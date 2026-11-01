@@ -468,3 +468,24 @@
   inherits: false;
   initial-value: 0deg;
 }
+
+/* Footer swell: the two back layers drift sideways at different speeds. */
+@layer components {
+  .footer-wave {
+    animation: wave-drift 9s ease-in-out infinite alternate;
+  }
+  .footer-wave-slow {
+    animation-duration: 13s;
+    animation-direction: alternate-reverse;
+  }
+  @keyframes wave-drift {
+    to {
+      transform: translateX(-80px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .footer-wave {
+      animation: none;
+    }
+  }
+}

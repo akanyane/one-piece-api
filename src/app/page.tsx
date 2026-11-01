@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
+import type { CSSProperties } from "react";
 
 import { WantedPoster } from "@/components/characters/wanted-poster";
 import { BlurText } from "@/components/fx/blur-text";
@@ -255,10 +256,12 @@ export default async function Home() {
               <Marquee className="mt-4" duration={70}>
                 {wanted.map((c, i) => (
                   <Link
-                    className="group block w-[11.5rem] shrink-0 transition-[rotate] duration-500 hover:[rotate:0deg]"
+                    className="group block w-[11.5rem] shrink-0 transition-[rotate] duration-500 [rotate:var(--rest)] hover:[rotate:0deg]"
                     href={`/characters/${c.id}`}
                     key={c.id}
-                    style={{ rotate: `${i % 2 ? 1.2 : -1.2}deg` }}
+                    style={
+                      { "--rest": `${i % 2 ? 1.2 : -1.2}deg` } as CSSProperties
+                    }
                   >
                     <InteractiveCard spotlight={false} tilt={9}>
                       <WantedPoster

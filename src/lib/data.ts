@@ -316,3 +316,48 @@ export const getMostWanted = unstable_cache(fetchMostWanted, ["most-wanted"], {
   revalidate: REVALIDATE_SECONDS,
   tags: ["bounties", "characters"],
 });
+
+async function fetchCharacterProfile(id: string) {
+  const { data, error } = await supabase
+    .from("characters")
+    .select(
+      "*, bounties(*), character_affiliations(is_active, affiliations(id, name)), character_devil_fruits(is_active, devil_fruits(id, name, type, sub_type, image_url))",
+    )
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+/** Character + bounties + affiliations + devil fruits, for the profile page (the public API keeps its own shape). */
+export const getCharacterProfile = unstable_cache(
+  fetchCharacterProfile,
+  ["character-profile"],
+  { revalidate: REVALIDATE_SECONDS, tags: ["characters"] },
+);
+
+async function fetchCrewmates(affiliationId: string, excludeId: string) {
+  const { data, error } = await supabase
+    .from("character_affiliations")
+    .select(
+      "characters!inner(id, name, image_url, status, bounties(amount, is_active))",
+    )
+    .eq("affiliation_id", affiliationId)
+    .neq("character_id", excludeId)
+    .not("characters.image_url", "is", null)
+    .limit(40);
+  if (error) throw error;
+  const rows = (data ?? []).flatMap((r) =>
+    r.characters ? [r.characters] : [],
+  );
+  // Best-known faces first: highest bounty leads.
+  const top = (c: (typeof rows)[number]) =>
+    Math.max(0, ...(c.bounties ?? []).map((b) => b.amount ?? 0));
+  return rows.sort((a, b) => top(b) - top(a)).slice(0, 8);
+}
+
+/** Other members of an affiliation (with portraits), highest bounty first. */
+export const getCrewmates = unstable_cache(fetchCrewmates, ["crewmates"], {
+  revalidate: REVALIDATE_SECONDS,
+  tags: ["characters"],
+});
