@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.10.1](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.10.0...one-piece-api-v0.10.1) (2026-11-01)
+
+
+### Bug Fixes
+
+* **images:** serve images unoptimized; label generic fruit art ([7083284](https://github.com/akanyane/one-piece-api/commit/7083284e86aa01b0dd3720ea2c40017460cedc89))
+* **images:** serve images unoptimized; label generic fruit art ([bf406c3](https://github.com/akanyane/one-piece-api/commit/bf406c395004f0f258e1151412f83df46d3ad890))
+
 ## [0.10.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.9.0...one-piece-api-v0.10.0) (2026-11-01)
 
 
