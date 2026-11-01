@@ -361,3 +361,83 @@ export const getCrewmates = unstable_cache(fetchCrewmates, ["crewmates"], {
   revalidate: REVALIDATE_SECONDS,
   tags: ["characters"],
 });
+
+const MEMBER_FIELDS =
+  "is_active, characters(id, name, image_url, status, bounties(amount, is_active))";
+
+async function fetchDevilFruitProfile(id: string) {
+  const { data, error } = await supabase
+    .from("devil_fruits")
+    .select(`*, character_devil_fruits(${MEMBER_FIELDS})`)
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+/** Devil fruit + every character who has eaten it (current and former). */
+export const getDevilFruitProfile = unstable_cache(
+  fetchDevilFruitProfile,
+  ["devil-fruit-profile"],
+  { revalidate: REVALIDATE_SECONDS, tags: ["devil-fruits", "characters"] },
+);
+
+async function fetchAffiliationProfile(id: string) {
+  const { data, error } = await supabase
+    .from("affiliations")
+    .select(`*, character_affiliations(${MEMBER_FIELDS})`)
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+/** Affiliation + its members (current and former). */
+export const getAffiliationProfile = unstable_cache(
+  fetchAffiliationProfile,
+  ["affiliation-profile"],
+  { revalidate: REVALIDATE_SECONDS, tags: ["affiliations", "characters"] },
+);
+
+async function fetchAllIds(table: "devil_fruits" | "affiliations") {
+  const { data, error } = await supabase
+    .from(table)
+    .select("id, created_at")
+    .limit(10000);
+  if (error) throw error;
+  return data;
+}
+
+/** Every devil fruit / affiliation id, for the sitemap. */
+export const getAllDevilFruitIds = unstable_cache(
+  () => fetchAllIds("devil_fruits"),
+  ["devil-fruits-all-ids"],
+  { revalidate: REVALIDATE_SECONDS, tags: ["devil-fruits"] },
+);
+export const getAllAffiliationIds = unstable_cache(
+  () => fetchAllIds("affiliations"),
+  ["affiliations-all-ids"],
+  { revalidate: REVALIDATE_SECONDS, tags: ["affiliations"] },
+);
+
+async function fetchRelatedFruits(type: string, excludeId: string) {
+  const { data, error } = await supabase
+    .from("devil_fruits")
+    .select("id, name, type, sub_type, image_url")
+    .eq("type", type)
+    .neq("id", excludeId)
+    .not("image_url", "is", null)
+    .limit(24);
+  if (error) throw error;
+  // Rotate the pick per fruit so neighbours differ from page to page.
+  const rows = data ?? [];
+  const offset = excludeId.charCodeAt(0) % Math.max(1, rows.length);
+  return [...rows.slice(offset), ...rows.slice(0, offset)].slice(0, 4);
+}
+
+/** A few other fruits of the same type, with art. */
+export const getRelatedFruits = unstable_cache(
+  fetchRelatedFruits,
+  ["related-fruits"],
+  { revalidate: REVALIDATE_SECONDS, tags: ["devil-fruits"] },
+);

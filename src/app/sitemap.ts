@@ -1,6 +1,10 @@
 import type { MetadataRoute } from "next";
 
-import { getAllCharacterIds } from "@/lib/data";
+import {
+  getAllAffiliationIds,
+  getAllCharacterIds,
+  getAllDevilFruitIds,
+} from "@/lib/data";
 import { SITE_URL } from "@/lib/site";
 
 const STATIC_ROUTES: MetadataRoute.Sitemap = [
@@ -24,7 +28,11 @@ const STATIC_ROUTES: MetadataRoute.Sitemap = [
 ];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const characters = await getAllCharacterIds();
+  const [characters, fruits, affiliations] = await Promise.all([
+    getAllCharacterIds(),
+    getAllDevilFruitIds(),
+    getAllAffiliationIds(),
+  ]);
   const now = new Date();
 
   const staticRoutes: MetadataRoute.Sitemap = STATIC_ROUTES.map((route) => ({
@@ -39,5 +47,21 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.5,
   }));
 
-  return [...staticRoutes, ...characterRoutes];
+  const detailRoutes = (
+    rows: { id: string; created_at: string }[],
+    base: string,
+  ): MetadataRoute.Sitemap =>
+    rows.map((r) => ({
+      url: `${SITE_URL}/${base}/${r.id}`,
+      lastModified: r.created_at,
+      changeFrequency: "monthly",
+      priority: 0.4,
+    }));
+
+  return [
+    ...staticRoutes,
+    ...characterRoutes,
+    ...detailRoutes(fruits, "devil-fruits"),
+    ...detailRoutes(affiliations, "affiliations"),
+  ];
 }
