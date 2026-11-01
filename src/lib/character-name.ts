@@ -48,3 +48,10 @@ export function subtitleFruitName(
   if (jp && jp !== primary) return jp;
   return undefined;
 }
+
+/** True when a fruit uses the shared stand-in art (its real appearance is unknown). */
+export function isGenericFruitArt(
+  imageUrl: string | null | undefined,
+): boolean {
+  return /\/devil-fruits\/fruit\/generic(-[a-z]+)?\.webp$/.test(imageUrl ?? "");
+}
