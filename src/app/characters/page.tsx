@@ -62,7 +62,13 @@ async function fetchCharacters(
   { ok: true; data: ApiCharacter[]; count: number | null } | { ok: false }
 > {
   try {
-    const { data, count } = await getCharacters({ page, limit, q, ageBand });
+    const { data, count } = await getCharacters({
+      page,
+      limit,
+      q,
+      ageBand,
+      portraitsFirst: true,
+    });
     return { ok: true, data: data as ApiCharacter[], count };
   } catch {
     return { ok: false };
