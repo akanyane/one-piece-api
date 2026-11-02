@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.11.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.10.1...one-piece-api-v0.11.0) (2026-11-02)
+
+
+### Features
+
+* **characters:** portraits first in catalog; unique character names ([323075a](https://github.com/akanyane/one-piece-api/commit/323075af726750bce15ecc1e3e341810761a1535))
+* **characters:** portraits first in catalog; unique character names ([afc0b0c](https://github.com/akanyane/one-piece-api/commit/afc0b0ca99532b7050086e609cecb383b52e5501))
+
 ## [0.10.1](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.10.0...one-piece-api-v0.10.1) (2026-11-01)
 
 
