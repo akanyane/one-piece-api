@@ -26,6 +26,8 @@ export type GetCharactersParams = {
   limit: number;
   q?: string;
   ageBand?: AgeBand;
+  /** Site catalog only: characters with a portrait first (the public API keeps newest-first). */
+  portraitsFirst?: boolean;
 };
 
 async function fetchCharacters(params: GetCharactersParams) {
@@ -34,8 +36,13 @@ async function fetchCharacters(params: GetCharactersParams) {
 
   let query = supabase
     .from("characters")
-    .select("*, bounties(*)", { count: "exact" })
-    .order("created_at", { ascending: false });
+    .select("*, bounties(*)", { count: "exact" });
+  if (params.portraitsFirst) {
+    // PostgREST can't order by "is null", so sort by the URL itself with nulls
+    // last — portraits come first, roughly alphabetical by file slug.
+    query = query.order("image_url", { ascending: true, nullsFirst: false });
+  }
+  query = query.order("created_at", { ascending: false });
 
   if (params.q) {
     const pattern = `%${escapeIlike(params.q)}%`;
