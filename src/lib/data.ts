@@ -1,24 +1,21 @@
 import { unstable_cache } from "next/cache";
+import { clampLimit, clampPage } from "@/lib/api-params";
 import type { BountySort } from "@/lib/bounties-catalog-url";
 import type { AgeBand } from "@/lib/characters-catalog-url";
 import { ageRangeForBand } from "@/lib/characters-catalog-url";
 import { supabase } from "@/supabase/client";
 
-const MAX_LIMIT = 100;
 /** Reference data (characters, devil fruits, bounties) only changes when someone runs a data pass. */
 const REVALIDATE_SECONDS = 60;
-
-function clampPage(page: number): number {
-  return Math.max(1, Math.floor(page || 1));
-}
-
-function clampLimit(limit: number): number {
-  return Math.min(Math.max(1, Math.floor(limit || 20)), MAX_LIMIT);
-}
 
 /** Escape `%` and `_` so user input is literal in SQL `ILIKE`. */
 function escapeIlike(s: string): string {
   return s.replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
+}
+
+/** PostgREST answers a page past the end with PGRST103 (416); the API treats that as an empty page. */
+function isPastLastPage(error: { code?: string }): boolean {
+  return error.code === "PGRST103";
 }
 
 export type GetCharactersParams = {
@@ -59,7 +56,10 @@ async function fetchCharacters(params: GetCharactersParams) {
     (page - 1) * limit,
     page * limit - 1,
   );
-  if (error) throw error;
+  if (error) {
+    if (isPastLastPage(error)) return { data: [], count: null };
+    throw error;
+  }
   return { data, count: count ?? null };
 }
 
@@ -98,7 +98,10 @@ async function fetchDevilFruits(params: GetDevilFruitsParams) {
     .select("*", { count: "exact" })
     .order("created_at", { ascending: false })
     .range((page - 1) * limit, page * limit - 1);
-  if (error) throw error;
+  if (error) {
+    if (isPastLastPage(error)) return { data: [], count: null };
+    throw error;
+  }
   return { data, count: count ?? null };
 }
 
@@ -144,7 +147,10 @@ async function fetchBounties(params: GetBountiesParams) {
     (page - 1) * limit,
     page * limit - 1,
   );
-  if (error) throw error;
+  if (error) {
+    if (isPastLastPage(error)) return { data: [], count: null };
+    throw error;
+  }
   return { data, count: count ?? null };
 }
 
@@ -165,7 +171,10 @@ async function fetchShips(params: GetShipsParams) {
     .select("*", { count: "exact" })
     .order("created_at", { ascending: false })
     .range((page - 1) * limit, page * limit - 1);
-  if (error) throw error;
+  if (error) {
+    if (isPastLastPage(error)) return { data: [], count: null };
+    throw error;
+  }
   return { data, count: count ?? null };
 }
 
@@ -186,7 +195,10 @@ async function fetchIslands(params: GetIslandsParams) {
     .select("*", { count: "exact" })
     .order("created_at", { ascending: false })
     .range((page - 1) * limit, page * limit - 1);
-  if (error) throw error;
+  if (error) {
+    if (isPastLastPage(error)) return { data: [], count: null };
+    throw error;
+  }
   return { data, count: count ?? null };
 }
 

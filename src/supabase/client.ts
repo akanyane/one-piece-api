@@ -1,3 +1,5 @@
+// Uses the secret (RLS-bypassing) key: fail the build if a client component ever imports this.
+import "server-only";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "./database.types";
 
