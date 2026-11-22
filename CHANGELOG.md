@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.11.1](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.11.0...one-piece-api-v0.11.1) (2026-11-22)
+
+
+### Bug Fixes
+
+* **csp:** allow the Vercel toolbar on preview deployments ([7681292](https://github.com/akanyane/one-piece-api/commit/7681292a5162d8296e7b46c48ba17eae5b50dad3))
+* **deps:** drop source-map-js override unsupported by Vercel's pnpm 9 ([2a4279d](https://github.com/akanyane/one-piece-api/commit/2a4279d6b4668343ee2d0abacd30bec9ab1e20ab))
+* **security:** upgrade Next.js, add CSP, harden API params ([99116f2](https://github.com/akanyane/one-piece-api/commit/99116f289df2f4c8b2e2c5752ca35311d43138aa))
+* **security:** upgrade Next.js, add CSP, harden API params ([01800e3](https://github.com/akanyane/one-piece-api/commit/01800e3a7558493b941b256b0a43aa569d569f70))
+
 ## [0.11.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.10.1...one-piece-api-v0.11.0) (2026-11-02)
 
 
