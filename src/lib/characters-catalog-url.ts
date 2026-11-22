@@ -19,7 +19,13 @@ const MAX_Q = 120;
 
 export function parseNameQuery(raw: string | string[] | undefined): string {
   const v = (Array.isArray(raw) ? raw[0] : raw) ?? "";
-  return v.trim().slice(0, MAX_Q).replace(/,/g, " ");
+  // The query goes into a PostgREST `or=(...)` filter: drop its syntax chars
+  // (`,` `(` `)` `"` `\`), plus `*`, which PostgREST treats as a LIKE wildcard.
+  return v
+    .slice(0, MAX_Q)
+    .replace(/[,()"\\*]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 export function buildCharactersListHref(opts: {
