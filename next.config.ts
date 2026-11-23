@@ -38,7 +38,16 @@ const nextConfig: NextConfig = {
     ],
   },
   async headers() {
+    // Public, read-only, unauthenticated data: any site may call it from the browser.
+    const cors = [
+      { key: "Access-Control-Allow-Origin", value: "*" },
+      { key: "Access-Control-Allow-Methods", value: "GET, HEAD, OPTIONS" },
+      { key: "Access-Control-Allow-Headers", value: "Content-Type" },
+      { key: "Access-Control-Max-Age", value: "86400" },
+    ];
     return [
+      { source: "/api/:path*", headers: cors },
+      { source: "/openapi.json", headers: cors },
       {
         source: "/:path*",
         headers: [

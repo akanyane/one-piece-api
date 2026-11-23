@@ -154,7 +154,9 @@ export default function DocumentationPage() {
           </CardHeader>
           <CardContent className="flex flex-col gap-3 text-sm text-muted-foreground">
             <pre className="overflow-x-auto rounded-lg border border-border/80 bg-muted/30 p-4 font-mono text-[0.75rem] leading-relaxed text-foreground">
-              {'curl -s "https://onepieceapi.com/api/characters?limit=3" | jq'}
+              {
+                'curl -s "https://www.onepieceapi.com/api/characters?limit=3" | jq'
+              }
             </pre>
             <p>
               Prefer clicking over curl?{" "}
@@ -167,6 +169,18 @@ export default function DocumentationPage() {
               to pick an endpoint, edit query params, and see the live response
               — including a card preview and ready-to-paste
               cURL/JavaScript/Python snippets.
+            </p>
+            <p>
+              CORS is open to every origin, so you can call the API straight
+              from a browser app with <EndpointCode>fetch</EndpointCode>. A
+              machine-readable OpenAPI 3.1 spec lives at{" "}
+              <a
+                className="font-medium text-primary underline-offset-4 hover:underline"
+                href="/openapi.json"
+              >
+                /openapi.json
+              </a>{" "}
+              — import it into Postman, Insomnia or a client generator.
             </p>
           </CardContent>
         </Card>
@@ -233,12 +247,14 @@ export default function DocumentationPage() {
             </p>
             <pre className="overflow-x-auto rounded-lg border border-border/80 bg-muted/30 p-4 font-mono text-[0.75rem] leading-relaxed text-foreground">
               {`{
-  "characters": "https://onepieceapi.com/api/characters",
-  "devilFruits": "https://onepieceapi.com/api/devil-fruits",
-  "bounties": "https://onepieceapi.com/api/bounties",
-  "ships": "https://onepieceapi.com/api/ships",
-  "islands": "https://onepieceapi.com/api/islands",
-  "affiliations": "https://onepieceapi.com/api/affiliations"
+  "characters": "https://www.onepieceapi.com/api/characters",
+  "devilFruits": "https://www.onepieceapi.com/api/devil-fruits",
+  "bounties": "https://www.onepieceapi.com/api/bounties",
+  "ships": "https://www.onepieceapi.com/api/ships",
+  "islands": "https://www.onepieceapi.com/api/islands",
+  "affiliations": "https://www.onepieceapi.com/api/affiliations",
+  "openapi": "https://www.onepieceapi.com/openapi.json",
+  "documentation": "https://www.onepieceapi.com/documentation"
 }`}
             </pre>
           </CardContent>

@@ -2,24 +2,25 @@
 
 > Free REST API for the One Piece manga/anime: characters, devil fruits, bounties, ships, islands, and affiliations, with canonical data (names in English/Japanese/romaji, images, stats) sourced from the series.
 
-All endpoints return JSON over plain HTTP, require no authentication or API key, and are safe to call directly from a browser, script, or another LLM's tool call. `GET /api` returns a map of every endpoint URL.
+All endpoints return JSON over plain HTTP, require no authentication or API key, and are safe to call directly from a browser, script, or another LLM's tool call. `GET /api` returns a map of every endpoint URL. CORS is open to every origin. A machine-readable OpenAPI 3.1 spec is at https://www.onepieceapi.com/openapi.json.
 
 ## Endpoints
 
-- [Characters](https://onepieceapi.com/api/characters): `GET /api/characters` (list, paginated) and `GET /api/characters/{id}` (single character, includes bounty + devil fruit). Fields: id, name ({en, jp, romaji}), age, status, height, blood_type, birthday, image_url, extra_data ({origin, epithet, occupation, affiliation, first_appearance}).
-- [Devil Fruits](https://onepieceapi.com/api/devil-fruits): `GET /api/devil-fruits` (list, paginated). Fields: id, name, model, type (Paramecia/Zoan/Logia), sub_type, image_url.
-- [Bounties](https://onepieceapi.com/api/bounties): `GET /api/bounties` (list, paginated). Fields: id, amount, character_id, is_active.
-- [Ships](https://onepieceapi.com/api/ships): `GET /api/ships` (list, paginated). Fields: id, name, status (Active/Destroyed/Unknown), type, image_url, extra_data.
-- [Islands](https://onepieceapi.com/api/islands): `GET /api/islands` (list, paginated). Fields: id, name, sea, image_url, extra_data.
-- [Affiliations](https://onepieceapi.com/api/affiliations): `GET /api/affiliations` (list, paginated, biggest factions first). Fields: id, name, memberCount (number of linked characters).
+- [Characters](https://www.onepieceapi.com/api/characters): `GET /api/characters` (list, paginated; filter with `q` for a name search and `ageBand` = 0-12/13-17/18-29/30-59/60+) and `GET /api/characters/{id}` (single character, includes their bounties). Fields: id, name ({en, jp, romaji}), age, status, height, blood_type, birthday, image_url, extra_data ({origin, epithet, occupation, affiliation, first_appearance}).
+- [Devil Fruits](https://www.onepieceapi.com/api/devil-fruits): `GET /api/devil-fruits` (list, paginated). Fields: id, name, model, type (Paramecia/Zoan/Logia), sub_type, image_url.
+- [Bounties](https://www.onepieceapi.com/api/bounties): `GET /api/bounties` (list, paginated). Fields: id, amount, character_id, is_active, characters ({name, status, image_url}). Query params: `isActive` (true/false), `sort` (newest/high/low).
+- [Ships](https://www.onepieceapi.com/api/ships): `GET /api/ships` (list, paginated). Fields: id, name, status (Active/Destroyed/Unknown), type, image_url, extra_data.
+- [Islands](https://www.onepieceapi.com/api/islands): `GET /api/islands` (list, paginated). Fields: id, name, sea, image_url, extra_data.
+- [Affiliations](https://www.onepieceapi.com/api/affiliations): `GET /api/affiliations` (list, paginated, biggest factions first). Fields: id, name, memberCount (number of linked characters).
 
 List endpoints share `?page=` (1-based, default 1) and `?limit=` (default 20, max 100) query params.
 
 ## Docs
 
-- [Full API documentation](https://onepieceapi.com/documentation): endpoint reference, response shapes, and field tables for every resource.
-- [About](https://onepieceapi.com/about): project background.
+- [OpenAPI spec](https://www.onepieceapi.com/openapi.json): OpenAPI 3.1 description of every endpoint, parameter and response schema.
+- [Full API documentation](https://www.onepieceapi.com/documentation): endpoint reference, response shapes, and field tables for every resource.
+- [About](https://www.onepieceapi.com/about): project background.
 
 ## Site
 
-The same data also powers a browsable catalog for humans: [Characters](https://onepieceapi.com/characters), [Devil Fruits](https://onepieceapi.com/devil-fruits), [Bounties](https://onepieceapi.com/bounties), [Ships](https://onepieceapi.com/ships), [Islands](https://onepieceapi.com/islands), [Affiliations](https://onepieceapi.com/affiliations).
+The same data also powers a browsable catalog for humans: [Characters](https://www.onepieceapi.com/characters), [Devil Fruits](https://www.onepieceapi.com/devil-fruits), [Bounties](https://www.onepieceapi.com/bounties), [Ships](https://www.onepieceapi.com/ships), [Islands](https://www.onepieceapi.com/islands), [Affiliations](https://www.onepieceapi.com/affiliations).
