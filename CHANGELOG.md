@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.12.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.11.1...one-piece-api-v0.12.0) (2026-11-23)
+
+
+### Features
+
+* **api:** enable CORS and publish an OpenAPI 3.1 spec ([ed2e2ce](https://github.com/akanyane/one-piece-api/commit/ed2e2ced844d9080af3e1223d3526a4c0515ea5b))
+* **api:** enable CORS and publish an OpenAPI 3.1 spec ([7ead040](https://github.com/akanyane/one-piece-api/commit/7ead040a8cbfeac0c71f35cdfe8a94fdc7dce7ac))
+
 ## [0.11.1](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.11.0...one-piece-api-v0.11.1) (2026-11-22)
 
 
