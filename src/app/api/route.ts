@@ -1,12 +1,15 @@
 import { apiJson } from "@/lib/api-response";
+import { SITE_URL } from "@/lib/site";
 
 export async function GET() {
   return apiJson({
-    characters: "https://onepieceapi.com/api/characters",
-    devilFruits: "https://onepieceapi.com/api/devil-fruits",
-    bounties: "https://onepieceapi.com/api/bounties",
-    ships: "https://onepieceapi.com/api/ships",
-    islands: "https://onepieceapi.com/api/islands",
-    affiliations: "https://onepieceapi.com/api/affiliations",
+    characters: `${SITE_URL}/api/characters`,
+    devilFruits: `${SITE_URL}/api/devil-fruits`,
+    bounties: `${SITE_URL}/api/bounties`,
+    ships: `${SITE_URL}/api/ships`,
+    islands: `${SITE_URL}/api/islands`,
+    affiliations: `${SITE_URL}/api/affiliations`,
+    openapi: `${SITE_URL}/openapi.json`,
+    documentation: `${SITE_URL}/documentation`,
   });
 }
