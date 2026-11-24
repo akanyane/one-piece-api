@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.13.1](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.13.0...one-piece-api-v0.13.1) (2026-11-24)
+
+
+### Performance Improvements
+
+* **db:** index foreign keys flagged by the Supabase advisor ([570c6e3](https://github.com/akanyane/one-piece-api/commit/570c6e3d1810e6d753efdc35f1026baed1285c0d))
+* **db:** index foreign keys flagged by the Supabase advisor ([05d1075](https://github.com/akanyane/one-piece-api/commit/05d10758acb9735c19269e8f418d78cb606db70f))
+
 ## [0.13.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.12.0...one-piece-api-v0.13.0) (2026-11-24)
 
 
