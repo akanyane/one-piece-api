@@ -35,6 +35,33 @@ export type Database = {
         }
         Relationships: []
       }
+      api_usage_daily: {
+        Row: {
+          client: string
+          country: string
+          day: string
+          hits: number
+          origin: string
+          path: string
+        }
+        Insert: {
+          client: string
+          country?: string
+          day?: string
+          hits?: number
+          origin?: string
+          path: string
+        }
+        Update: {
+          client?: string
+          country?: string
+          day?: string
+          hits?: number
+          origin?: string
+          path?: string
+        }
+        Relationships: []
+      }
       bounties: {
         Row: {
           amount: number | null
@@ -276,7 +303,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      track_api_hit: {
+        Args: {
+          p_client: string
+          p_country?: string
+          p_origin?: string
+          p_path: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
