@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.13.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.12.0...one-piece-api-v0.13.0) (2026-11-24)
+
+
+### Features
+
+* **api:** count API usage with anonymous daily counters ([50819f5](https://github.com/akanyane/one-piece-api/commit/50819f5f691d4c6643ddaeb8f8f061461d955e86))
+* **api:** count API usage with anonymous daily counters ([aceb89c](https://github.com/akanyane/one-piece-api/commit/aceb89c69b758d997da7e2e85c4e092ed95e1a95))
+
 ## [0.12.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.11.1...one-piece-api-v0.12.0) (2026-11-23)
 
 
