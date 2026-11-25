@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.15.1](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.15.0...one-piece-api-v0.15.1) (2026-11-25)
+
+
+### Bug Fixes
+
+* **api:** make pagination order stable and ignore invalid isActive values ([012c3c0](https://github.com/akanyane/one-piece-api/commit/012c3c099330342d3b71eb048408256eb285866f))
+
 ## [0.15.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.14.0...one-piece-api-v0.15.0) (2026-11-25)
 
 
