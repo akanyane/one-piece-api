@@ -124,3 +124,72 @@ export const DEVIL_FRUIT_FIELDS = toRows(DEVIL_FRUIT_FIELD_DEFS);
 export const SHIP_FIELDS = toRows(SHIP_FIELD_DEFS);
 export const ISLAND_FIELDS = toRows(ISLAND_FIELD_DEFS);
 export const AFFILIATION_FIELDS = toRows(AFFILIATION_FIELD_DEFS);
+
+/** Relation arrays embedded in API responses (not table columns). */
+
+export const CHARACTER_RELATION_FIELDS: ApiFieldRow[] = [
+  {
+    field: "bounties",
+    type: "array",
+    notes:
+      "Bounty objects (same fields as GET /api/bounties items, without `characters`)",
+  },
+  {
+    field: "devil_fruits",
+    type: "array",
+    notes: "Devil fruits eaten, current first; items below",
+  },
+  {
+    field: "affiliations",
+    type: "array",
+    notes: "Crews and organizations, current first; items below",
+  },
+];
+
+export const LINKED_DEVIL_FRUIT_FIELDS: ApiFieldRow[] = [
+  { field: "id", type: "string", notes: "Devil fruit UUID" },
+  { field: "name", type: "object | null", notes: "Localized name" },
+  {
+    field: "type",
+    type: "string | null",
+    notes: "e.g. Paramecia, Zoan, Logia",
+  },
+  { field: "sub_type", type: "string | null" },
+  { field: "image_url", type: "string | null" },
+  { field: "is_active", type: "boolean", notes: "false = former user" },
+];
+
+export const LINKED_AFFILIATION_FIELDS: ApiFieldRow[] = [
+  { field: "id", type: "string", notes: "Affiliation UUID" },
+  { field: "name", type: "object | null", notes: "Localized name" },
+  { field: "is_active", type: "boolean", notes: "false = former member" },
+];
+
+export const LINKED_CHARACTER_FIELDS: ApiFieldRow[] = [
+  { field: "id", type: "string", notes: "Character UUID" },
+  { field: "name", type: "object | null", notes: "Localized name" },
+  { field: "image_url", type: "string | null" },
+  { field: "status", type: "string", notes: "Alive, Deceased or Unknown" },
+  {
+    field: "is_active",
+    type: "boolean",
+    notes: "false = former user / member",
+  },
+];
+
+export const DEVIL_FRUIT_RELATION_FIELDS: ApiFieldRow[] = [
+  {
+    field: "users",
+    type: "array",
+    notes: "Characters who ate the fruit, current user first; items below",
+  },
+];
+
+export const AFFILIATION_DETAIL_FIELDS: ApiFieldRow[] = [
+  {
+    field: "members",
+    type: "array",
+    notes:
+      "GET /api/affiliations/{id} only: every member (current and former), current first",
+  },
+];

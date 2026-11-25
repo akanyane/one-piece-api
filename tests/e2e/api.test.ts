@@ -144,7 +144,7 @@ describe.skipIf(!BASE)(`API contract against ${BASE}`, () => {
     const ajv = new Ajv2020({ strict: false, allErrors: true });
     addFormats(ajv);
     ajv.addSchema({ $id: "spec", components: spec.components });
-    for (const r of RESOURCES) {
+    for (const r of [...RESOURCES, { schema: "AffiliationDetail" }]) {
       const validate = ajv.getSchema(`spec#/components/schemas/${r.schema}`);
       if (!validate) throw new Error(`/openapi.json has no ${r.schema} schema`);
       validators.set(r.schema, validate);
@@ -222,12 +222,22 @@ describe.skipIf(!BASE)(`API contract against ${BASE}`, () => {
       expect(seen.size).toBe(total);
     });
 
-    it("detail returns the same object as the list", async () => {
+    it("detail returns the list item (affiliations add members)", async () => {
       const { body } = await get(`${path}?limit=3`);
       for (const item of body as Item[]) {
         const detail = await get(`${path}/${item.id}`);
         expect(detail.res.status).toBe(200);
-        expect(detail.body).toEqual(item);
+        if (path !== "/api/affiliations") {
+          expect(detail.body).toEqual(item);
+          continue;
+        }
+        const { members, ...rest } = detail.body as Item & { members: Item[] };
+        expect(rest).toEqual(item);
+        expect(members).toHaveLength(item.memberCount as number);
+        const validate = validators.get("AffiliationDetail");
+        expect(validate?.(detail.body), JSON.stringify(validate?.errors)).toBe(
+          true,
+        );
       }
     });
 
@@ -315,6 +325,62 @@ describe.skipIf(!BASE)(`API contract against ${BASE}`, () => {
       const { body } = await get("/api/affiliations?limit=100");
       const counts = (body as Item[]).map((a) => a.memberCount as number);
       expect(counts).toEqual([...counts].sort((a, b) => b - a));
+    });
+  });
+
+  describe("relations", () => {
+    const sortedCurrentFirst = (links: { is_active: boolean }[]) =>
+      links.every((l, i) => i === 0 || links[i - 1].is_active || !l.is_active);
+
+    it("links point both ways: fruit users ↔ character devil_fruits", async () => {
+      const { body } = await get("/api/devil-fruits?limit=100");
+      const fruits = (
+        body as (Item & { users: (Item & { is_active: boolean })[] })[]
+      ).filter((f) => f.users.length > 0);
+      expect(fruits.length).toBeGreaterThan(0);
+      for (const fruit of fruits.slice(0, 8)) {
+        expect(sortedCurrentFirst(fruit.users)).toBe(true);
+        for (const user of fruit.users) {
+          const c = (await get(`/api/characters/${user.id}`)).body as Item & {
+            devil_fruits: (Item & { is_active: boolean })[];
+          };
+          const link = c.devil_fruits.find((f) => f.id === fruit.id);
+          expect(link, `${user.id} → ${fruit.id}`).toBeDefined();
+          expect(link?.is_active).toBe(user.is_active);
+        }
+      }
+    });
+
+    it("links point both ways: affiliation members ↔ character affiliations", async () => {
+      const { body } = await get(
+        "/api/affiliations?q=straw%20hat%20pirates&limit=1",
+      );
+      const [crew] = body as Item[];
+      const detail = (await get(`/api/affiliations/${crew.id}`))
+        .body as Item & {
+        members: (Item & { is_active: boolean })[];
+      };
+      expect(sortedCurrentFirst(detail.members)).toBe(true);
+      for (const member of detail.members.slice(0, 6)) {
+        const c = (await get(`/api/characters/${member.id}`)).body as Item & {
+          affiliations: (Item & { is_active: boolean })[];
+        };
+        expect(c.affiliations.find((a) => a.id === crew.id)?.is_active).toBe(
+          member.is_active,
+        );
+      }
+    });
+
+    it("Big Mom is the current Soul-Soul Fruit user", async () => {
+      const { body } = await get(
+        "/api/characters?q=charlotte%20linlin&limit=1",
+      );
+      const [linlin] = body as (Item & {
+        devil_fruits: { name: Name; is_active: boolean }[];
+      })[];
+      expect(
+        linlin.devil_fruits.map((f) => [f.name?.en, f.is_active]),
+      ).toContainEqual(["Soul-Soul Fruit", true]);
     });
   });
 

@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 import { GET } from "@/app/api/characters/route";
 import {
+  CHARACTER_SELECT,
   expectListResponse,
   LIMIT_CASES,
   nameOr,
@@ -12,6 +13,12 @@ import { apiUrl, combinations, label } from "../../helpers/combos";
 import { call, calls, recorded, respond } from "../../helpers/supabase-mock";
 
 const ROWS = [{ id: "a" }, { id: "b" }];
+/** Rows without junction embeds come back with empty relation arrays. */
+const API_ROWS = ROWS.map((r) => ({
+  ...r,
+  devil_fruits: [],
+  affiliations: [],
+}));
 const TOTAL = 1431;
 
 /** [raw ageBand, expected gte, expected lte] (null = no filter). */
@@ -59,7 +66,7 @@ describe("GET /api/characters: every combination of page × limit × q × ageBan
     const query = recorded[0];
     expect(query.table).toBe("characters");
     expect(call(query, "select")).toEqual([
-      "*, bounties(*)",
+      CHARACTER_SELECT,
       { count: "exact", head: false },
     ]);
     expect(calls(query, "order")).toEqual([
@@ -81,7 +88,7 @@ describe("GET /api/characters: every combination of page × limit × q × ageBan
       page: expPage,
       limit: expLimit,
       total: TOTAL,
-      body: ROWS,
+      body: API_ROWS,
     });
   });
 });
@@ -107,7 +114,7 @@ describe("GET /api/characters: edge cases", () => {
     expect(call(pageQuery, "range")).toEqual([1960, 1979]);
     // Same filters, count only.
     expect(call(countQuery, "select")).toEqual([
-      "*, bounties(*)",
+      CHARACTER_SELECT,
       { count: "exact", head: true },
     ]);
     expect(calls(countQuery, "gte")).toEqual([["age", 60]]);
