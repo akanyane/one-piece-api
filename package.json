@@ -2,6 +2,7 @@
   "name": "one-piece-api",
   "version": "0.13.1",
   "private": true,
+  "packageManager": "pnpm@12.16.1",
   "author": {
     "name": "Demos Alexas",
     "email": "demosalexas@tuta.io",

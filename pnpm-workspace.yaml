@@ -9,3 +9,9 @@ onlyBuiltDependencies:
 
 packages:
   - .
+
+# Security: minimatch < 11.0.1 has a DoS via globparts amplification (Dependabot #6).
+# Pulled in only by the shadcn CLI (shadcn > ts-morph > @ts-morph/common,
+# which pins ^10). Drop this once shadcn ships a ts-morph that uses ^11.
+overrides:
+  minimatch: ^11.0.1
