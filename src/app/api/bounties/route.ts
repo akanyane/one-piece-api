@@ -1,13 +1,14 @@
 import type { PostgrestError } from "@supabase/supabase-js";
 
 import { errorResponse } from "@/lib/api-error";
-import { parsePagination } from "@/lib/api-params";
+import { parsePagination, parseSearch } from "@/lib/api-params";
 import { apiJson } from "@/lib/api-response";
 import { getBounties } from "@/lib/data";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
   const { page, limit } = parsePagination(url.searchParams);
+  const q = parseSearch(url.searchParams);
 
   const isActiveParam = url.searchParams.get("isActive");
   const isActive =
@@ -18,7 +19,7 @@ export async function GET(request: Request) {
     sortParam === "high" || sortParam === "low" ? sortParam : "newest";
 
   try {
-    const { data } = await getBounties({ page, limit, isActive, sort });
+    const { data } = await getBounties({ page, limit, isActive, sort, q });
     return apiJson(data);
   } catch (error) {
     return errorResponse(error as PostgrestError);

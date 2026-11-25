@@ -48,6 +48,44 @@ function listOperation(opts: {
   };
 }
 
+/** `q` name search, shared by every list endpoint. */
+function searchParam(description: string, example: string) {
+  return {
+    name: "q",
+    in: "query",
+    description: `${description} Case-insensitive substring match, max 120 characters.`,
+    schema: { type: "string", maxLength: 120 },
+    example,
+  };
+}
+
+function detailOperation(opts: {
+  operationId: string;
+  summary: string;
+  description: string;
+  tag: string;
+  schema: string;
+}) {
+  return {
+    get: {
+      operationId: opts.operationId,
+      summary: opts.summary,
+      description: opts.description,
+      tags: [opts.tag],
+      parameters: [{ $ref: "#/components/parameters/id" }],
+      responses: {
+        "200": {
+          description: "The resource.",
+          content: { "application/json": { schema: ref(opts.schema) } },
+        },
+        "400": { $ref: "#/components/responses/BadRequest" },
+        "404": { $ref: "#/components/responses/NotFound" },
+        "500": { $ref: "#/components/responses/ServerError" },
+      },
+    },
+  };
+}
+
 export const openApiSpec = {
   openapi: "3.1.0",
   info: {
@@ -106,14 +144,7 @@ export const openApiSpec = {
       tag: "Characters",
       schema: "Character",
       extraParams: [
-        {
-          name: "q",
-          in: "query",
-          description:
-            "Case-insensitive substring match on the English, Japanese or romaji name (max 120 characters).",
-          schema: { type: "string", maxLength: 120 },
-          example: "luffy",
-        },
+        searchParam("Filter by English, Japanese or romaji name.", "luffy"),
         {
           name: "ageBand",
           in: "query",
@@ -127,35 +158,28 @@ export const openApiSpec = {
         },
       ],
     }),
-    "/api/characters/{id}": {
-      get: {
-        operationId: "getCharacter",
-        summary: "Get a character",
-        description: "A single character with their bounties.",
-        tags: ["Characters"],
-        parameters: [
-          {
-            name: "id",
-            in: "path",
-            required: true,
-            schema: { type: "string", format: "uuid" },
-          },
-        ],
-        responses: {
-          "200": {
-            description: "The character.",
-            content: { "application/json": { schema: ref("Character") } },
-          },
-          "400": { $ref: "#/components/responses/BadRequest" },
-          "404": { $ref: "#/components/responses/NotFound" },
-          "500": { $ref: "#/components/responses/ServerError" },
-        },
-      },
-    },
+    "/api/characters/{id}": detailOperation({
+      operationId: "getCharacter",
+      summary: "Get a character",
+      description: "A single character with their bounties.",
+      tag: "Characters",
+      schema: "Character",
+    }),
     "/api/devil-fruits": listOperation({
       operationId: "listDevilFruits",
       summary: "List devil fruits",
-      description: "Devil fruits, newest first.",
+      description:
+        "Devil fruits, newest first. Search by name or Zoan model with `q`.",
+      tag: "Devil Fruits",
+      schema: "DevilFruit",
+      extraParams: [
+        searchParam("Filter by fruit name or Zoan model name.", "nika"),
+      ],
+    }),
+    "/api/devil-fruits/{id}": detailOperation({
+      operationId: "getDevilFruit",
+      summary: "Get a devil fruit",
+      description: "A single devil fruit, same shape as a list item.",
       tag: "Devil Fruits",
       schema: "DevilFruit",
     }),
@@ -167,6 +191,7 @@ export const openApiSpec = {
       tag: "Bounties",
       schema: "Bounty",
       extraParams: [
+        searchParam("Filter by the bounty holder's name.", "luffy"),
         {
           name: "isActive",
           in: "query",
@@ -187,10 +212,25 @@ export const openApiSpec = {
         },
       ],
     }),
+    "/api/bounties/{id}": detailOperation({
+      operationId: "getBounty",
+      summary: "Get a bounty",
+      description: "A single bounty, same shape as a list item.",
+      tag: "Bounties",
+      schema: "Bounty",
+    }),
     "/api/ships": listOperation({
       operationId: "listShips",
       summary: "List ships",
       description: "Ships, newest first.",
+      tag: "Ships",
+      schema: "Ship",
+      extraParams: [searchParam("Filter by ship name.", "sunny")],
+    }),
+    "/api/ships/{id}": detailOperation({
+      operationId: "getShip",
+      summary: "Get a ship",
+      description: "A single ship, same shape as a list item.",
       tag: "Ships",
       schema: "Ship",
     }),
@@ -198,6 +238,14 @@ export const openApiSpec = {
       operationId: "listIslands",
       summary: "List islands",
       description: "Islands, newest first.",
+      tag: "Islands",
+      schema: "Island",
+      extraParams: [searchParam("Filter by island name.", "wano")],
+    }),
+    "/api/islands/{id}": detailOperation({
+      operationId: "getIsland",
+      summary: "Get an island",
+      description: "A single island, same shape as a list item.",
       tag: "Islands",
       schema: "Island",
     }),
@@ -208,10 +256,28 @@ export const openApiSpec = {
         "Crews and organizations, biggest first (by number of linked characters).",
       tag: "Affiliations",
       schema: "Affiliation",
+      extraParams: [
+        searchParam("Filter by crew or organization name.", "straw hat"),
+      ],
+    }),
+    "/api/affiliations/{id}": detailOperation({
+      operationId: "getAffiliation",
+      summary: "Get an affiliation",
+      description:
+        "A single affiliation with its `memberCount`, same shape as a list item.",
+      tag: "Affiliations",
+      schema: "Affiliation",
     }),
   },
   components: {
     parameters: {
+      id: {
+        name: "id",
+        in: "path",
+        required: true,
+        description: "UUID of the resource, from a list response.",
+        schema: { type: "string", format: "uuid" },
+      },
       page: {
         name: "page",
         in: "query",
@@ -232,7 +298,8 @@ export const openApiSpec = {
     },
     responses: {
       BadRequest: {
-        description: "Malformed input, e.g. an id that is not a UUID.",
+        description:
+          'Malformed input, e.g. an id that is not a UUID (`{ "error": "Invalid id" }`).',
         content: { "application/json": { schema: ref("Error") } },
       },
       NotFound: {

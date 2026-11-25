@@ -13,6 +13,20 @@ function escapeIlike(s: string): string {
   return s.replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
 }
 
+/**
+ * PostgREST `or` filter: case-insensitive substring match of `q` on the
+ * localized name (English, Japanese, romaji), plus any extra JSON columns.
+ * `q` must already be sanitized with `parseNameQuery`.
+ */
+function nameFilter(q: string, columns: string[] = ["name"]): string {
+  const pattern = `%${escapeIlike(q)}%`;
+  return columns
+    .flatMap((col) =>
+      ["en", "jp", "romaji"].map((key) => `${col}->>${key}.ilike.${pattern}`),
+    )
+    .join(",");
+}
+
 /** PostgREST answers a page past the end with PGRST103 (416); the API treats that as an empty page. */
 function isPastLastPage(error: { code?: string }): boolean {
   return error.code === "PGRST103";
@@ -41,12 +55,7 @@ async function fetchCharacters(params: GetCharactersParams) {
   }
   query = query.order("created_at", { ascending: false });
 
-  if (params.q) {
-    const pattern = `%${escapeIlike(params.q)}%`;
-    query = query.or(
-      `name->>en.ilike.${pattern},name->>jp.ilike.${pattern},name->>romaji.ilike.${pattern}`,
-    );
-  }
+  if (params.q) query = query.or(nameFilter(params.q));
 
   const { min, max } = ageRangeForBand(params.ageBand ?? "all");
   if (min !== null) query = query.gte("age", min);
@@ -87,17 +96,23 @@ export const getCharacterById = unstable_cache(
   { revalidate: REVALIDATE_SECONDS, tags: ["characters"] },
 );
 
-export type GetDevilFruitsParams = { page: number; limit: number };
+export type GetDevilFruitsParams = { page: number; limit: number; q?: string };
 
 async function fetchDevilFruits(params: GetDevilFruitsParams) {
   const page = clampPage(params.page);
   const limit = clampLimit(params.limit);
 
-  const { data, error, count } = await supabase
+  let query = supabase
     .from("devil_fruits")
     .select("*", { count: "exact" })
-    .order("created_at", { ascending: false })
-    .range((page - 1) * limit, page * limit - 1);
+    .order("created_at", { ascending: false });
+  // Zoan models are searchable too, e.g. "nika" finds Hito Hito no Mi, Model: Nika.
+  if (params.q) query = query.or(nameFilter(params.q, ["name", "model"]));
+
+  const { data, error, count } = await query.range(
+    (page - 1) * limit,
+    page * limit - 1,
+  );
   if (error) {
     if (isPastLastPage(error)) return { data: [], count: null };
     throw error;
@@ -112,11 +127,30 @@ export const getDevilFruits = unstable_cache(
   { revalidate: REVALIDATE_SECONDS, tags: ["devil-fruits"] },
 );
 
+async function fetchDevilFruitById(id: string) {
+  const { data, error } = await supabase
+    .from("devil_fruits")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+/** Cached single devil fruit, same shape as a list item. */
+export const getDevilFruitById = unstable_cache(
+  fetchDevilFruitById,
+  ["devil-fruit-by-id"],
+  { revalidate: REVALIDATE_SECONDS, tags: ["devil-fruits"] },
+);
+
 export type GetBountiesParams = {
   page: number;
   limit: number;
   isActive?: boolean;
   sort: BountySort;
+  /** Matches the bounty holder's name. */
+  q?: string;
 };
 
 async function fetchBounties(params: GetBountiesParams) {
@@ -126,6 +160,19 @@ async function fetchBounties(params: GetBountiesParams) {
   let query = supabase
     .from("bounties")
     .select("*, characters(name, image_url, status)", { count: "exact" });
+  if (params.q) {
+    // Searching by name needs an inner join, so the filter on the embedded
+    // character drops non-matching bounties instead of nulling `characters`.
+    // Same row shape, so the cast only papers over the select-string typing.
+    query = supabase
+      .from("bounties")
+      .select("*, characters!inner(name, image_url, status)", {
+        count: "exact",
+      })
+      .or(nameFilter(params.q), {
+        referencedTable: "characters",
+      }) as unknown as typeof query;
+  }
 
   if (params.isActive !== undefined) {
     query = query.eq("is_active", params.isActive);
@@ -160,17 +207,38 @@ export const getBounties = unstable_cache(fetchBounties, ["bounties-list"], {
   tags: ["bounties"],
 });
 
-export type GetShipsParams = { page: number; limit: number };
+async function fetchBountyById(id: string) {
+  const { data, error } = await supabase
+    .from("bounties")
+    .select("*, characters(name, image_url, status)")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+/** Cached single bounty, same shape as a list item. */
+export const getBountyById = unstable_cache(fetchBountyById, ["bounty-by-id"], {
+  revalidate: REVALIDATE_SECONDS,
+  tags: ["bounties"],
+});
+
+export type GetShipsParams = { page: number; limit: number; q?: string };
 
 async function fetchShips(params: GetShipsParams) {
   const page = clampPage(params.page);
   const limit = clampLimit(params.limit);
 
-  const { data, error, count } = await supabase
+  let query = supabase
     .from("ships")
     .select("*", { count: "exact" })
-    .order("created_at", { ascending: false })
-    .range((page - 1) * limit, page * limit - 1);
+    .order("created_at", { ascending: false });
+  if (params.q) query = query.or(nameFilter(params.q));
+
+  const { data, error, count } = await query.range(
+    (page - 1) * limit,
+    page * limit - 1,
+  );
   if (error) {
     if (isPastLastPage(error)) return { data: [], count: null };
     throw error;
@@ -184,17 +252,38 @@ export const getShips = unstable_cache(fetchShips, ["ships-list"], {
   tags: ["ships"],
 });
 
-export type GetIslandsParams = { page: number; limit: number };
+async function fetchShipById(id: string) {
+  const { data, error } = await supabase
+    .from("ships")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+/** Cached single ship, same shape as a list item. */
+export const getShipById = unstable_cache(fetchShipById, ["ship-by-id"], {
+  revalidate: REVALIDATE_SECONDS,
+  tags: ["ships"],
+});
+
+export type GetIslandsParams = { page: number; limit: number; q?: string };
 
 async function fetchIslands(params: GetIslandsParams) {
   const page = clampPage(params.page);
   const limit = clampLimit(params.limit);
 
-  const { data, error, count } = await supabase
+  let query = supabase
     .from("islands")
     .select("*", { count: "exact" })
-    .order("created_at", { ascending: false })
-    .range((page - 1) * limit, page * limit - 1);
+    .order("created_at", { ascending: false });
+  if (params.q) query = query.or(nameFilter(params.q));
+
+  const { data, error, count } = await query.range(
+    (page - 1) * limit,
+    page * limit - 1,
+  );
   if (error) {
     if (isPastLastPage(error)) return { data: [], count: null };
     throw error;
@@ -208,7 +297,33 @@ export const getIslands = unstable_cache(fetchIslands, ["islands-list"], {
   tags: ["islands"],
 });
 
-export type GetAffiliationsParams = { page: number; limit: number };
+async function fetchIslandById(id: string) {
+  const { data, error } = await supabase
+    .from("islands")
+    .select("*")
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+/** Cached single island, same shape as a list item. */
+export const getIslandById = unstable_cache(fetchIslandById, ["island-by-id"], {
+  revalidate: REVALIDATE_SECONDS,
+  tags: ["islands"],
+});
+
+export type GetAffiliationsParams = { page: number; limit: number; q?: string };
+
+const AFFILIATION_WITH_COUNT = "*, character_affiliations(count)";
+
+/** Flattens PostgREST's `character_affiliations: [{ count }]` into `memberCount`. */
+function withMemberCount<
+  T extends { character_affiliations: { count: number }[] | null },
+>(row: T) {
+  const { character_affiliations, ...rest } = row;
+  return { ...rest, memberCount: character_affiliations?.[0]?.count ?? 0 };
+}
 
 async function fetchAffiliations(params: GetAffiliationsParams) {
   const page = clampPage(params.page);
@@ -217,16 +332,12 @@ async function fetchAffiliations(params: GetAffiliationsParams) {
   // affiliations carries no image/recency signal of its own; pull every row
   // (small, fixed-size table) with a member count and sort the biggest
   // factions first, then paginate in memory.
-  const { data, error } = await supabase
-    .from("affiliations")
-    .select("*, character_affiliations(count)");
+  let query = supabase.from("affiliations").select(AFFILIATION_WITH_COUNT);
+  if (params.q) query = query.or(nameFilter(params.q));
+  const { data, error } = await query;
   if (error) throw error;
 
-  const withCounts = (data ?? []).map((row) => {
-    const { character_affiliations, ...rest } = row;
-    const memberCount = character_affiliations?.[0]?.count ?? 0;
-    return { ...rest, memberCount };
-  });
+  const withCounts = (data ?? []).map(withMemberCount);
   withCounts.sort(
     (a, b) =>
       b.memberCount - a.memberCount ||
@@ -253,6 +364,26 @@ export const getAffiliations = unstable_cache(
   {
     revalidate: REVALIDATE_SECONDS,
     tags: ["affiliations"],
+  },
+);
+
+async function fetchAffiliationById(id: string) {
+  const { data, error } = await supabase
+    .from("affiliations")
+    .select(AFFILIATION_WITH_COUNT)
+    .eq("id", id)
+    .maybeSingle();
+  if (error) throw error;
+  return data ? withMemberCount(data) : null;
+}
+
+/** Cached single affiliation, same shape as a list item (with `memberCount`). */
+export const getAffiliationById = unstable_cache(
+  fetchAffiliationById,
+  ["affiliation-by-id"],
+  {
+    revalidate: REVALIDATE_SECONDS,
+    tags: ["affiliations", "characters"],
   },
 );
 

@@ -1,3 +1,5 @@
+import { parseNameQuery } from "@/lib/characters-catalog-url";
+
 export const MAX_LIMIT = 100;
 /** Far beyond any real catalog; keeps `(page - 1) * limit` inside Postgres' integer range. */
 export const MAX_PAGE = 10_000;
@@ -19,4 +21,9 @@ export function parsePagination(params: URLSearchParams): {
     page: clampPage(Number(params.get("page"))),
     limit: clampLimit(Number(params.get("limit"))),
   };
+}
+
+/** Sanitized `q` name search from a public API request, or `undefined` when blank. */
+export function parseSearch(params: URLSearchParams): string | undefined {
+  return parseNameQuery(params.get("q") ?? undefined) || undefined;
 }

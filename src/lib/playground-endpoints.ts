@@ -120,7 +120,10 @@ export const PLAYGROUND_ENDPOINTS: PlaygroundEndpoint[] = [
     title: "Devil fruits",
     figure: "03",
     description: "Paginated list of devil fruits by class and model.",
-    params: PAGINATION_PARAMS,
+    params: [
+      ...PAGINATION_PARAMS,
+      { name: "q", placeholder: "nika", hint: "name search" },
+    ],
     fields: DEVIL_FRUIT_FIELDS,
   },
   {
@@ -133,6 +136,7 @@ export const PLAYGROUND_ENDPOINTS: PlaygroundEndpoint[] = [
       "Paginated bounty records, with optional status filter and sort order.",
     params: [
       ...PAGINATION_PARAMS,
+      { name: "q", placeholder: "luffy", hint: "holder's name" },
       { name: "isActive", placeholder: "true", hint: "true or false" },
       { name: "sort", placeholder: "high", hint: "high, low or newest" },
     ],
@@ -145,7 +149,10 @@ export const PLAYGROUND_ENDPOINTS: PlaygroundEndpoint[] = [
     title: "Ships",
     figure: "05",
     description: "Paginated list of ships and their fate in the series.",
-    params: PAGINATION_PARAMS,
+    params: [
+      ...PAGINATION_PARAMS,
+      { name: "q", placeholder: "sunny", hint: "name search" },
+    ],
     fields: SHIP_FIELDS,
   },
   {
@@ -155,7 +162,10 @@ export const PLAYGROUND_ENDPOINTS: PlaygroundEndpoint[] = [
     title: "Islands",
     figure: "06",
     description: "Paginated list of islands grouped by sea.",
-    params: PAGINATION_PARAMS,
+    params: [
+      ...PAGINATION_PARAMS,
+      { name: "q", placeholder: "wano", hint: "name search" },
+    ],
     fields: ISLAND_FIELDS,
   },
   {
@@ -166,7 +176,10 @@ export const PLAYGROUND_ENDPOINTS: PlaygroundEndpoint[] = [
     figure: "07",
     description:
       "Paginated list of factions, biggest first, with the number of linked characters.",
-    params: PAGINATION_PARAMS,
+    params: [
+      ...PAGINATION_PARAMS,
+      { name: "q", placeholder: "straw hat", hint: "name search" },
+    ],
     fields: AFFILIATION_FIELDS,
   },
 ];
