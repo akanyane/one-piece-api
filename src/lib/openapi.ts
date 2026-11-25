@@ -36,6 +36,10 @@ function listOperation(opts: {
         "200": {
           description:
             "One page of results. A page past the end returns an empty array.",
+          headers: {
+            "X-Total-Count": { $ref: "#/components/headers/X-Total-Count" },
+            Link: { $ref: "#/components/headers/Link" },
+          },
           content: {
             "application/json": {
               schema: { type: "array", items: ref(opts.schema) },
@@ -92,7 +96,7 @@ export const openApiSpec = {
     title: "One Piece API",
     version: "1.0.0",
     description:
-      "Free, read-only REST API for the One Piece manga/anime: characters, devil fruits, bounties, ships, islands and affiliations. No API key or authentication. CORS is enabled for every origin, so it can be called straight from the browser.",
+      "Free, read-only REST API for the One Piece manga/anime: characters, devil fruits, bounties, ships, islands and affiliations. No API key or authentication. CORS is enabled for every origin, so it can be called straight from the browser. List endpoints return a plain JSON array; pagination metadata is in the `X-Total-Count` and `Link` response headers.",
     license: {
       name: "MIT",
       url: "https://github.com/akanyane/one-piece-api/blob/main/LICENSE",
@@ -270,6 +274,19 @@ export const openApiSpec = {
     }),
   },
   components: {
+    headers: {
+      "X-Total-Count": {
+        description:
+          "Total number of items matching the query, across all pages.",
+        schema: { type: "integer", minimum: 0 },
+        example: 50,
+      },
+      Link: {
+        description:
+          'RFC 8288 pagination links: `first` and `last` always, `prev` and `next` when they exist. Other query params are kept, e.g. `<https://www.onepieceapi.com/api/ships?page=2&limit=20>; rel="next"`.',
+        schema: { type: "string" },
+      },
+    },
     parameters: {
       id: {
         name: "id",

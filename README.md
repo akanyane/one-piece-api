@@ -64,6 +64,15 @@ Every list endpoint accepts:
 | `limit` | `20` | Items per page, up to `100`. |
 | `q` | | Case-insensitive name search across English, Japanese and romaji. On `/api/devil-fruits` it also matches the Zoan model, and on `/api/bounties` the bounty holder's name. |
 
+List responses stay plain JSON arrays. The pagination info is in the response headers:
+
+```http
+X-Total-Count: 50
+Link: <https://www.onepieceapi.com/api/ships?page=1&limit=20>; rel="first", <https://www.onepieceapi.com/api/ships?page=2&limit=20>; rel="next", <https://www.onepieceapi.com/api/ships?page=3&limit=20>; rel="last"
+```
+
+`X-Total-Count` is the number of matching items across all pages. `Link` has `first`, `prev`, `next` and `last` URLs that keep your other params. Both headers are readable from browser code.
+
 Some endpoints take extra filters:
 
 | Endpoint | Param | Values |

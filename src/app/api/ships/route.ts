@@ -2,7 +2,7 @@ import type { PostgrestError } from "@supabase/supabase-js";
 
 import { errorResponse } from "@/lib/api-error";
 import { parsePagination, parseSearch } from "@/lib/api-params";
-import { apiJson } from "@/lib/api-response";
+import { apiPage } from "@/lib/api-response";
 import { getShips } from "@/lib/data";
 
 export async function GET(request: Request) {
@@ -11,8 +11,8 @@ export async function GET(request: Request) {
   const q = parseSearch(url.searchParams);
 
   try {
-    const { data } = await getShips({ page, limit, q });
-    return apiJson(data);
+    const { data, count } = await getShips({ page, limit, q });
+    return apiPage(request, data, { page, limit, total: count });
   } catch (error) {
     return errorResponse(error as PostgrestError);
   }

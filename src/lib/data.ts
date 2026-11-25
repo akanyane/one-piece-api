@@ -1,3 +1,4 @@
+import type { PostgrestError } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
 import { clampLimit, clampPage } from "@/lib/api-params";
 import type { BountySort } from "@/lib/bounties-catalog-url";
@@ -32,6 +33,32 @@ function isPastLastPage(error: { code?: string }): boolean {
   return error.code === "PGRST103";
 }
 
+type PageResult<T> = {
+  data: T[] | null;
+  error: PostgrestError | null;
+  count: number | null;
+};
+
+/**
+ * Runs one page of a filtered list query and returns its rows plus the total
+ * row count. A page past the end comes back from PostgREST as an error with
+ * no count, so the same filters are re-run as a count-only (HEAD) query.
+ */
+async function pageWithTotal<T>(
+  pageQuery: PromiseLike<PageResult<T>>,
+  countOnly: () => PromiseLike<{
+    error: PostgrestError | null;
+    count: number | null;
+  }>,
+): Promise<{ data: T[]; count: number }> {
+  const { data, error, count } = await pageQuery;
+  if (!error) return { data: data ?? [], count: count ?? 0 };
+  if (!isPastLastPage(error)) throw error;
+  const head = await countOnly();
+  if (head.error) throw head.error;
+  return { data: [], count: head.count ?? 0 };
+}
+
 export type GetCharactersParams = {
   page: number;
   limit: number;
@@ -45,31 +72,31 @@ async function fetchCharacters(params: GetCharactersParams) {
   const page = clampPage(params.page);
   const limit = clampLimit(params.limit);
 
-  let query = supabase
-    .from("characters")
-    .select("*, bounties(*)", { count: "exact" });
-  if (params.portraitsFirst) {
-    // PostgREST can't order by "is null", so sort by the URL itself with nulls
-    // last — portraits come first, roughly alphabetical by file slug.
-    query = query.order("image_url", { ascending: true, nullsFirst: false });
-  }
-  query = query.order("created_at", { ascending: false });
+  // Built twice: once for the page, once as a count-only query when the
+  // page is past the end (see pageWithTotal).
+  const build = (head = false) => {
+    let query = supabase
+      .from("characters")
+      .select("*, bounties(*)", { count: "exact", head });
+    if (params.portraitsFirst) {
+      // PostgREST can't order by "is null", so sort by the URL itself with nulls
+      // last — portraits come first, roughly alphabetical by file slug.
+      query = query.order("image_url", { ascending: true, nullsFirst: false });
+    }
+    query = query.order("created_at", { ascending: false });
 
-  if (params.q) query = query.or(nameFilter(params.q));
+    if (params.q) query = query.or(nameFilter(params.q));
 
-  const { min, max } = ageRangeForBand(params.ageBand ?? "all");
-  if (min !== null) query = query.gte("age", min);
-  if (max !== null) query = query.lte("age", max);
+    const { min, max } = ageRangeForBand(params.ageBand ?? "all");
+    if (min !== null) query = query.gte("age", min);
+    if (max !== null) query = query.lte("age", max);
+    return query;
+  };
 
-  const { data, error, count } = await query.range(
-    (page - 1) * limit,
-    page * limit - 1,
+  return pageWithTotal(
+    build().range((page - 1) * limit, page * limit - 1),
+    () => build(true),
   );
-  if (error) {
-    if (isPastLastPage(error)) return { data: [], count: null };
-    throw error;
-  }
-  return { data, count: count ?? null };
 }
 
 /** Cached character list. Revalidates every {@link REVALIDATE_SECONDS}s or on-demand via `revalidateTag("characters")`. */
@@ -102,22 +129,22 @@ async function fetchDevilFruits(params: GetDevilFruitsParams) {
   const page = clampPage(params.page);
   const limit = clampLimit(params.limit);
 
-  let query = supabase
-    .from("devil_fruits")
-    .select("*", { count: "exact" })
-    .order("created_at", { ascending: false });
-  // Zoan models are searchable too, e.g. "nika" finds Hito Hito no Mi, Model: Nika.
-  if (params.q) query = query.or(nameFilter(params.q, ["name", "model"]));
+  // Built twice: once for the page, once as a count-only query when the
+  // page is past the end (see pageWithTotal).
+  const build = (head = false) => {
+    let query = supabase
+      .from("devil_fruits")
+      .select("*", { count: "exact", head })
+      .order("created_at", { ascending: false });
+    // Zoan models are searchable too, e.g. "nika" finds Hito Hito no Mi, Model: Nika.
+    if (params.q) query = query.or(nameFilter(params.q, ["name", "model"]));
+    return query;
+  };
 
-  const { data, error, count } = await query.range(
-    (page - 1) * limit,
-    page * limit - 1,
+  return pageWithTotal(
+    build().range((page - 1) * limit, page * limit - 1),
+    () => build(true),
   );
-  if (error) {
-    if (isPastLastPage(error)) return { data: [], count: null };
-    throw error;
-  }
-  return { data, count: count ?? null };
 }
 
 /** Cached devil fruit list. */
@@ -157,48 +184,52 @@ async function fetchBounties(params: GetBountiesParams) {
   const page = clampPage(params.page);
   const limit = clampLimit(params.limit);
 
-  let query = supabase
-    .from("bounties")
-    .select("*, characters(name, image_url, status)", { count: "exact" });
-  if (params.q) {
-    // Searching by name needs an inner join, so the filter on the embedded
-    // character drops non-matching bounties instead of nulling `characters`.
-    // Same row shape, so the cast only papers over the select-string typing.
-    query = supabase
+  // Built twice: once for the page, once as a count-only query when the
+  // page is past the end (see pageWithTotal).
+  const build = (head = false) => {
+    let query = supabase
       .from("bounties")
-      .select("*, characters!inner(name, image_url, status)", {
+      .select("*, characters(name, image_url, status)", {
         count: "exact",
-      })
-      .or(nameFilter(params.q), {
-        referencedTable: "characters",
-      }) as unknown as typeof query;
-  }
+        head,
+      });
+    if (params.q) {
+      // Searching by name needs an inner join, so the filter on the embedded
+      // character drops non-matching bounties instead of nulling `characters`.
+      // Same row shape, so the cast only papers over the select-string typing.
+      query = supabase
+        .from("bounties")
+        .select("*, characters!inner(name, image_url, status)", {
+          count: "exact",
+          head,
+        })
+        .or(nameFilter(params.q), {
+          referencedTable: "characters",
+        }) as unknown as typeof query;
+    }
 
-  if (params.isActive !== undefined) {
-    query = query.eq("is_active", params.isActive);
-  }
+    if (params.isActive !== undefined) {
+      query = query.eq("is_active", params.isActive);
+    }
 
-  if (params.sort === "high") {
-    query = query
-      .order("amount", { ascending: false })
-      .order("created_at", { ascending: false });
-  } else if (params.sort === "low") {
-    query = query
-      .order("amount", { ascending: true })
-      .order("created_at", { ascending: false });
-  } else {
-    query = query.order("created_at", { ascending: false });
-  }
+    if (params.sort === "high") {
+      query = query
+        .order("amount", { ascending: false })
+        .order("created_at", { ascending: false });
+    } else if (params.sort === "low") {
+      query = query
+        .order("amount", { ascending: true })
+        .order("created_at", { ascending: false });
+    } else {
+      query = query.order("created_at", { ascending: false });
+    }
+    return query;
+  };
 
-  const { data, error, count } = await query.range(
-    (page - 1) * limit,
-    page * limit - 1,
+  return pageWithTotal(
+    build().range((page - 1) * limit, page * limit - 1),
+    () => build(true),
   );
-  if (error) {
-    if (isPastLastPage(error)) return { data: [], count: null };
-    throw error;
-  }
-  return { data, count: count ?? null };
 }
 
 /** Cached bounty list. */
@@ -229,21 +260,21 @@ async function fetchShips(params: GetShipsParams) {
   const page = clampPage(params.page);
   const limit = clampLimit(params.limit);
 
-  let query = supabase
-    .from("ships")
-    .select("*", { count: "exact" })
-    .order("created_at", { ascending: false });
-  if (params.q) query = query.or(nameFilter(params.q));
+  // Built twice: once for the page, once as a count-only query when the
+  // page is past the end (see pageWithTotal).
+  const build = (head = false) => {
+    let query = supabase
+      .from("ships")
+      .select("*", { count: "exact", head })
+      .order("created_at", { ascending: false });
+    if (params.q) query = query.or(nameFilter(params.q));
+    return query;
+  };
 
-  const { data, error, count } = await query.range(
-    (page - 1) * limit,
-    page * limit - 1,
+  return pageWithTotal(
+    build().range((page - 1) * limit, page * limit - 1),
+    () => build(true),
   );
-  if (error) {
-    if (isPastLastPage(error)) return { data: [], count: null };
-    throw error;
-  }
-  return { data, count: count ?? null };
 }
 
 /** Cached ship list. */
@@ -274,21 +305,21 @@ async function fetchIslands(params: GetIslandsParams) {
   const page = clampPage(params.page);
   const limit = clampLimit(params.limit);
 
-  let query = supabase
-    .from("islands")
-    .select("*", { count: "exact" })
-    .order("created_at", { ascending: false });
-  if (params.q) query = query.or(nameFilter(params.q));
+  // Built twice: once for the page, once as a count-only query when the
+  // page is past the end (see pageWithTotal).
+  const build = (head = false) => {
+    let query = supabase
+      .from("islands")
+      .select("*", { count: "exact", head })
+      .order("created_at", { ascending: false });
+    if (params.q) query = query.or(nameFilter(params.q));
+    return query;
+  };
 
-  const { data, error, count } = await query.range(
-    (page - 1) * limit,
-    page * limit - 1,
+  return pageWithTotal(
+    build().range((page - 1) * limit, page * limit - 1),
+    () => build(true),
   );
-  if (error) {
-    if (isPastLastPage(error)) return { data: [], count: null };
-    throw error;
-  }
-  return { data, count: count ?? null };
 }
 
 /** Cached island list. */
