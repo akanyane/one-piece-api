@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.13.2](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.13.1...one-piece-api-v0.13.2) (2026-11-25)
+
+
+### Bug Fixes
+
+* **deps:** override minimatch to ^11.0.1 for the DoS advisory ([efd6a93](https://github.com/akanyane/one-piece-api/commit/efd6a936e0490b3e5db25e5663812a7516c4b0e6))
+* **deps:** override minimatch to ^11.0.1 for the DoS advisory ([b421af1](https://github.com/akanyane/one-piece-api/commit/b421af16f4beb7b9df5628a6db026be676bea537))
+
 ## [0.13.1](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.13.0...one-piece-api-v0.13.1) (2026-11-24)
 
 
