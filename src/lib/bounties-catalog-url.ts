@@ -21,6 +21,14 @@ export function parseBountySort(
   return "newest";
 }
 
+/** API `?isActive=`: `true` / `false` (any case); anything else, including blank, means no filter. */
+export function parseIsActive(raw: string | null): boolean | undefined {
+  const v = raw?.trim().toLowerCase();
+  if (v === "true") return true;
+  if (v === "false") return false;
+  return undefined;
+}
+
 export function buildBountiesListHref(opts: {
   page: number;
   limit: number;

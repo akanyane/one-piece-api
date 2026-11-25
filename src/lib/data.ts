@@ -33,6 +33,13 @@ function isPastLastPage(error: { code?: string }): boolean {
   return error.code === "PGRST103";
 }
 
+/**
+ * Every paginated list ends its ORDER BY with `id`. Many rows share a
+ * `created_at` (bulk imports: 1431 characters, 102 distinct timestamps), and
+ * without a unique tie-breaker Postgres may return overlapping pages.
+ */
+const BY_ID = { ascending: true } as const;
+
 type PageResult<T> = {
   data: T[] | null;
   error: PostgrestError | null;
@@ -83,7 +90,7 @@ async function fetchCharacters(params: GetCharactersParams) {
       // last — portraits come first, roughly alphabetical by file slug.
       query = query.order("image_url", { ascending: true, nullsFirst: false });
     }
-    query = query.order("created_at", { ascending: false });
+    query = query.order("created_at", { ascending: false }).order("id", BY_ID);
 
     if (params.q) query = query.or(nameFilter(params.q));
 
@@ -135,7 +142,8 @@ async function fetchDevilFruits(params: GetDevilFruitsParams) {
     let query = supabase
       .from("devil_fruits")
       .select("*", { count: "exact", head })
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .order("id", BY_ID);
     // Zoan models are searchable too, e.g. "nika" finds Hito Hito no Mi, Model: Nika.
     if (params.q) query = query.or(nameFilter(params.q, ["name", "model"]));
     return query;
@@ -187,34 +195,36 @@ async function fetchBounties(params: GetBountiesParams) {
   // Built twice: once for the page, once as a count-only query when the
   // page is past the end (see pageWithTotal).
   const build = (head = false) => {
-    let query = supabase
-      .from("bounties")
-      .select("*, characters(name, image_url, status)", {
-        count: "exact",
-        head,
-      });
-    if (params.q) {
-      // Searching by name needs an inner join, so the filter on the embedded
-      // character drops non-matching bounties instead of nulling `characters`.
-      // Same row shape, so the cast only papers over the select-string typing.
-      query = supabase
+    const plain = () =>
+      supabase
         .from("bounties")
-        .select("*, characters!inner(name, image_url, status)", {
+        .select("*, characters(name, image_url, status)", {
           count: "exact",
           head,
-        })
-        .or(nameFilter(params.q), {
-          referencedTable: "characters",
-        }) as unknown as typeof query;
-    }
+        });
+    // Searching by name needs an inner join, so the filter on the embedded
+    // character drops non-matching bounties instead of nulling `characters`.
+    // Same row shape, so the cast only papers over the select-string typing.
+    let query = params.q
+      ? (supabase
+          .from("bounties")
+          .select("*, characters!inner(name, image_url, status)", {
+            count: "exact",
+            head,
+          })
+          .or(nameFilter(params.q), {
+            referencedTable: "characters",
+          }) as unknown as ReturnType<typeof plain>)
+      : plain();
 
     if (params.isActive !== undefined) {
       query = query.eq("is_active", params.isActive);
     }
 
     if (params.sort === "high") {
+      // Postgres sorts NULLs first in DESC order; an unknown amount isn't "high".
       query = query
-        .order("amount", { ascending: false })
+        .order("amount", { ascending: false, nullsFirst: false })
         .order("created_at", { ascending: false });
     } else if (params.sort === "low") {
       query = query
@@ -223,7 +233,7 @@ async function fetchBounties(params: GetBountiesParams) {
     } else {
       query = query.order("created_at", { ascending: false });
     }
-    return query;
+    return query.order("id", BY_ID);
   };
 
   return pageWithTotal(
@@ -266,7 +276,8 @@ async function fetchShips(params: GetShipsParams) {
     let query = supabase
       .from("ships")
       .select("*", { count: "exact", head })
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .order("id", BY_ID);
     if (params.q) query = query.or(nameFilter(params.q));
     return query;
   };
@@ -311,7 +322,8 @@ async function fetchIslands(params: GetIslandsParams) {
     let query = supabase
       .from("islands")
       .select("*", { count: "exact", head })
-      .order("created_at", { ascending: false });
+      .order("created_at", { ascending: false })
+      .order("id", BY_ID);
     if (params.q) query = query.or(nameFilter(params.q));
     return query;
   };
@@ -374,7 +386,8 @@ async function fetchAffiliations(params: GetAffiliationsParams) {
       b.memberCount - a.memberCount ||
       displayCharacterNameForSort(a.name).localeCompare(
         displayCharacterNameForSort(b.name),
-      ),
+      ) ||
+      a.id.localeCompare(b.id),
   );
 
   const count = withCounts.length;
