@@ -91,7 +91,8 @@ const ISLAND_FIELD_DEFS: FieldDef<keyof Tables<"islands">>[] = [
   {
     key: "sea",
     type: "string | null",
-    notes: "e.g. East Blue, Paradise, New World, Sky",
+    notes:
+      "East Blue, West Blue, North Blue, South Blue, Paradise, New World, Grand Line, Calm Belt, Red Line or Sky; null if unknown",
   },
   { key: "image_url", type: "string | null" },
   {

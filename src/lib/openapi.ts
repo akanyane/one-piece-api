@@ -521,7 +521,24 @@ export const openApiSpec = {
           id: { type: "string", format: "uuid" },
           created_at: { type: "string", format: "date-time" },
           name: ref("LocalizedName"),
-          sea: nullable("string", { example: "Grand Line" }),
+          sea: nullable("string", {
+            description:
+              "The sea or region the island is in. `null` when the series never says (e.g. Rommel Kingdom).",
+            enum: [
+              "East Blue",
+              "West Blue",
+              "North Blue",
+              "South Blue",
+              "Paradise",
+              "New World",
+              "Grand Line",
+              "Calm Belt",
+              "Red Line",
+              "Sky",
+              null,
+            ],
+            example: "Paradise",
+          }),
           image_url: nullable("string", { format: "uri" }),
           extra_data: {
             type: ["object", "null"],
