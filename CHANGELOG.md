@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.16.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.15.1...one-piece-api-v0.16.0) (2026-11-25)
+
+
+### Features
+
+* **api:** embed devil fruits, affiliations, users and members ([e50ac26](https://github.com/akanyane/one-piece-api/commit/e50ac264504976f9de65d283ad91c887d305bd05))
+* **api:** embed devil fruits, affiliations, users and members ([d057866](https://github.com/akanyane/one-piece-api/commit/d057866e657eb8aea6ec01f01b7d5c7b14be26a6))
+
 ## [0.15.1](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.15.0...one-piece-api-v0.15.1) (2026-11-25)
 
 
