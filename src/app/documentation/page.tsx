@@ -231,14 +231,14 @@ export default function DocumentationPage() {
                 date-time strings (UTC).
               </li>
               <li>
-                <strong className="text-foreground">Caching:</strong> responses
-                carry{" "}
-                <InlineCode>
-                  Cache-Control: public, s-maxage=60, stale-while-revalidate=300
-                </InlineCode>{" "}
-                — the CDN serves a cached copy for up to 60s, then revalidates
-                in the background. Expect near-instant responses, and data that
-                can lag a fresh write by up to a minute.
+                <strong className="text-foreground">Caching:</strong> the CDN
+                serves a cached copy of each response for up to 60s, then
+                revalidates it in the background (the response you receive says{" "}
+                <InlineCode>Cache-Control: public</InlineCode>, and{" "}
+                <InlineCode>X-Vercel-Cache</InlineCode> shows{" "}
+                <InlineCode>HIT</InlineCode> or <InlineCode>MISS</InlineCode>).
+                Expect near-instant responses, and data that can lag a fresh
+                write by up to a minute.
               </li>
               <li>
                 <strong className="text-foreground">Errors:</strong> failed

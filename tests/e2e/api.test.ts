@@ -327,7 +327,19 @@ describe.skipIf(!BASE)(`API contract against ${BASE}`, () => {
       expect(res.headers.get("access-control-expose-headers")).toBe(
         "X-Total-Count, Link",
       );
-      expect(res.headers.get("cache-control")).toContain("s-maxage=60");
+      // Vercel's CDN consumes s-maxage / stale-while-revalidate and hands
+      // clients plain `public`; `next start` passes the full header through.
+      expect(res.headers.get("cache-control")).toMatch(/^public\b/);
+    });
+
+    it("is cached by the CDN when deployed on Vercel", async (ctx) => {
+      const first = await get("/api/islands?limit=3");
+      if (!first.res.headers.has("x-vercel-cache")) ctx.skip();
+      const second = await get("/api/islands?limit=3");
+      expect(["HIT", "STALE", "PRERENDER"]).toContain(
+        second.res.headers.get("x-vercel-cache"),
+      );
+      expect(second.body).toEqual(first.body);
     });
 
     it("answers CORS preflight", async () => {
