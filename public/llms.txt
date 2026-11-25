@@ -7,13 +7,13 @@ All endpoints return JSON over plain HTTP, require no authentication or API key,
 ## Endpoints
 
 - [Characters](https://www.onepieceapi.com/api/characters): `GET /api/characters` (list, paginated; filter with `q` for a name search and `ageBand` = 0-12/13-17/18-29/30-59/60+) and `GET /api/characters/{id}` (single character, includes their bounties). Fields: id, name ({en, jp, romaji}), age, status, height, blood_type, birthday, image_url, extra_data ({origin, epithet, occupation, affiliation, first_appearance}).
-- [Devil Fruits](https://www.onepieceapi.com/api/devil-fruits): `GET /api/devil-fruits` (list, paginated). Fields: id, name, model, type (Paramecia/Zoan/Logia), sub_type, image_url.
-- [Bounties](https://www.onepieceapi.com/api/bounties): `GET /api/bounties` (list, paginated). Fields: id, amount, character_id, is_active, characters ({name, status, image_url}). Query params: `isActive` (true/false), `sort` (newest/high/low).
-- [Ships](https://www.onepieceapi.com/api/ships): `GET /api/ships` (list, paginated). Fields: id, name, status (Active/Destroyed/Unknown), type, image_url, extra_data.
-- [Islands](https://www.onepieceapi.com/api/islands): `GET /api/islands` (list, paginated). Fields: id, name, sea, image_url, extra_data.
-- [Affiliations](https://www.onepieceapi.com/api/affiliations): `GET /api/affiliations` (list, paginated, biggest factions first). Fields: id, name, memberCount (number of linked characters).
+- [Devil Fruits](https://www.onepieceapi.com/api/devil-fruits): `GET /api/devil-fruits` (list, paginated; `q` searches the name and Zoan model) and `GET /api/devil-fruits/{id}`. Fields: id, name, model, type (Paramecia/Zoan/Logia), sub_type, image_url.
+- [Bounties](https://www.onepieceapi.com/api/bounties): `GET /api/bounties` (list, paginated) and `GET /api/bounties/{id}`. Fields: id, amount, character_id, is_active, characters ({name, status, image_url}). Query params: `q` (bounty holder's name), `isActive` (true/false), `sort` (newest/high/low).
+- [Ships](https://www.onepieceapi.com/api/ships): `GET /api/ships` (list, paginated) and `GET /api/ships/{id}`. Fields: id, name, status (Active/Destroyed/Unknown), type, image_url, extra_data.
+- [Islands](https://www.onepieceapi.com/api/islands): `GET /api/islands` (list, paginated) and `GET /api/islands/{id}`. Fields: id, name, sea, image_url, extra_data.
+- [Affiliations](https://www.onepieceapi.com/api/affiliations): `GET /api/affiliations` (list, paginated, biggest factions first) and `GET /api/affiliations/{id}`. Fields: id, name, memberCount (number of linked characters).
 
-List endpoints share `?page=` (1-based, default 1) and `?limit=` (default 20, max 100) query params.
+List endpoints share `?page=` (1-based, default 1), `?limit=` (default 20, max 100) and `?q=` (case-insensitive name search across en/jp/romaji). Every detail route returns one object with the same shape as a list item: 400 for an id that isn't a UUID, 404 when not found.
 
 ## Docs
 

@@ -46,12 +46,12 @@ for fruit in fruits:
 |:--|:--|:--|
 | `GET` | [`/api`](https://www.onepieceapi.com/api) | Map of every endpoint URL |
 | `GET` | [`/api/characters`](https://www.onepieceapi.com/api/characters) | Characters, newest first, each with their bounties |
-| `GET` | `/api/characters/{id}` | A single character by UUID |
 | `GET` | [`/api/devil-fruits`](https://www.onepieceapi.com/api/devil-fruits) | Devil fruits: Paramecia, Zoan and Logia, with Zoan models |
 | `GET` | [`/api/bounties`](https://www.onepieceapi.com/api/bounties) | Bounties, each with a summary of its character |
 | `GET` | [`/api/ships`](https://www.onepieceapi.com/api/ships) | Ships: type, status and affiliation |
 | `GET` | [`/api/islands`](https://www.onepieceapi.com/api/islands) | Islands and the sea they belong to |
 | `GET` | [`/api/affiliations`](https://www.onepieceapi.com/api/affiliations) | Crews and organizations, biggest first |
+| `GET` | `/api/{resource}/{id}` | One item by UUID, for any resource above (e.g. `/api/ships/{id}`) |
 | `GET` | [`/openapi.json`](https://www.onepieceapi.com/openapi.json) | OpenAPI 3.1 description of all of the above |
 
 ### Query parameters
@@ -62,12 +62,12 @@ Every list endpoint accepts:
 |:--|:--|:--|
 | `page` | `1` | 1-based page number. A page past the end returns `[]`. |
 | `limit` | `20` | Items per page, up to `100`. |
+| `q` | | Case-insensitive name search across English, Japanese and romaji. On `/api/devil-fruits` it also matches the Zoan model, and on `/api/bounties` the bounty holder's name. |
 
 Some endpoints take extra filters:
 
 | Endpoint | Param | Values |
 |:--|:--|:--|
-| `/api/characters` | `q` | Case-insensitive name search across English, Japanese and romaji |
 | `/api/characters` | `ageBand` | `all`, `0-12`, `13-17`, `18-29`, `30-59`, `60+` |
 | `/api/bounties` | `isActive` | `true` (current bounties only) or `false` (superseded only) |
 | `/api/bounties` | `sort` | `newest` (default), `high`, `low` |
@@ -99,7 +99,7 @@ Every field is described in the [documentation](https://www.onepieceapi.com/docu
 
 ### Good to know
 
-- **Responses are plain JSON arrays** (or a single object for `/api/characters/{id}`). Errors look like `{ "error": "Not found" }`, with status `400`, `404` or `500`.
+- **Responses are plain JSON arrays**, or a single object for detail routes (`/api/{resource}/{id}`), with the same shape as a list item. Errors look like `{ "error": "Not found" }`: `400` for an id that isn't a UUID, `404` when it doesn't exist, `500` otherwise.
 - **Names are localized objects.** `name.en`, `name.jp` and `name.romaji`. Any key may be missing.
 - **Responses are cached at the edge** for about a minute. The data only changes when the dataset is updated.
 - **Use the `www` host.** `onepieceapi.com` redirects to `www.onepieceapi.com`, and that redirect does not carry CORS headers.

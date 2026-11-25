@@ -207,6 +207,19 @@ export default function DocumentationPage() {
                 <InlineCode>20</InlineCode>).
               </li>
               <li>
+                <strong className="text-foreground">Search:</strong> every list
+                endpoint accepts <EndpointCode>?q=</EndpointCode>, a
+                case-insensitive name search across <InlineCode>en</InlineCode>,{" "}
+                <InlineCode>jp</InlineCode> and <InlineCode>romaji</InlineCode>{" "}
+                (max 120 characters).
+              </li>
+              <li>
+                <strong className="text-foreground">Detail routes:</strong>{" "}
+                every resource has{" "}
+                <EndpointCode>{"GET /api/{resource}/{id}"}</EndpointCode>,
+                returning one object with the same shape as a list item.
+              </li>
+              <li>
                 <strong className="text-foreground">Timestamps:</strong>{" "}
                 <InlineCode>created_at</InlineCode> values are ISO 8601
                 date-time strings (UTC).
@@ -224,10 +237,10 @@ export default function DocumentationPage() {
               <li>
                 <strong className="text-foreground">Errors:</strong> failed
                 requests return JSON{" "}
-                <InlineCode>{`{ "error": string }`}</InlineCode>. Most server
-                errors return HTTP <InlineCode>500</InlineCode>; some detail
-                routes return <InlineCode>404</InlineCode> when an id is
-                missing.
+                <InlineCode>{`{ "error": string }`}</InlineCode>. Detail routes
+                return <InlineCode>400</InlineCode> for an id that is not a UUID
+                and <InlineCode>404</InlineCode> when it doesn&apos;t exist;
+                unexpected failures return <InlineCode>500</InlineCode>.
               </li>
             </ul>
           </CardContent>
@@ -352,11 +365,12 @@ export default function DocumentationPage() {
           </CardHeader>
           <CardContent className="flex flex-col gap-4 text-sm text-muted-foreground">
             <p>
-              <EndpointCode>GET /api/characters/[id]</EndpointCode>
+              <EndpointCode>{"GET /api/characters/{id}"}</EndpointCode>
             </p>
             <p>
               <strong className="text-foreground">Response:</strong> a single
-              character object (same fields as list items), or{" "}
+              character object (same fields as list items),{" "}
+              <InlineCode>400</InlineCode> for a malformed id, or{" "}
               <InlineCode>404</InlineCode> when not found.
             </p>
           </CardContent>
@@ -378,7 +392,9 @@ export default function DocumentationPage() {
               <EndpointCode>?isActive=true</EndpointCode> or{" "}
               <EndpointCode>?isActive=false</EndpointCode> filters{" "}
               <InlineCode>is_active</InlineCode>. If omitted, no filter is
-              applied (returns both active and inactive).
+              applied (returns both active and inactive).{" "}
+              <EndpointCode>?q=</EndpointCode> matches the bounty holder&apos;s
+              name.
             </p>
             <p>
               <strong className="text-foreground">Sort:</strong>{" "}
@@ -387,6 +403,11 @@ export default function DocumentationPage() {
               <EndpointCode>?sort=low</EndpointCode> ascending (smallest first).
               Omit <EndpointCode>sort</EndpointCode> for newest first by{" "}
               <InlineCode>created_at</InlineCode>.
+            </p>
+            <p>
+              <strong className="text-foreground">Detail:</strong>{" "}
+              <EndpointCode>{"GET /api/bounties/{id}"}</EndpointCode> returns
+              one bounty (same fields), or <InlineCode>404</InlineCode>.
             </p>
             <p>
               <strong className="text-foreground">Response:</strong> a JSON
@@ -408,7 +429,14 @@ export default function DocumentationPage() {
             <p>
               <strong className="text-foreground">Query:</strong> pagination via{" "}
               <EndpointCode>?page=</EndpointCode> /{" "}
-              <EndpointCode>?limit=</EndpointCode>.
+              <EndpointCode>?limit=</EndpointCode>, and{" "}
+              <EndpointCode>?q=</EndpointCode> to search by name or Zoan model
+              (e.g. <InlineCode>nika</InlineCode>).
+            </p>
+            <p>
+              <strong className="text-foreground">Detail:</strong>{" "}
+              <EndpointCode>{"GET /api/devil-fruits/{id}"}</EndpointCode>{" "}
+              returns one object (same fields), or <InlineCode>404</InlineCode>.
             </p>
             <p>
               <strong className="text-foreground">Response:</strong> a JSON
@@ -430,7 +458,13 @@ export default function DocumentationPage() {
             <p>
               <strong className="text-foreground">Query:</strong> pagination via{" "}
               <EndpointCode>?page=</EndpointCode> /{" "}
-              <EndpointCode>?limit=</EndpointCode>.
+              <EndpointCode>?limit=</EndpointCode>, and{" "}
+              <EndpointCode>?q=</EndpointCode> to search by name.
+            </p>
+            <p>
+              <strong className="text-foreground">Detail:</strong>{" "}
+              <EndpointCode>{"GET /api/ships/{id}"}</EndpointCode> returns one
+              object (same fields), or <InlineCode>404</InlineCode>.
             </p>
             <p>
               <strong className="text-foreground">Response:</strong> a JSON
@@ -452,7 +486,13 @@ export default function DocumentationPage() {
             <p>
               <strong className="text-foreground">Query:</strong> pagination via{" "}
               <EndpointCode>?page=</EndpointCode> /{" "}
-              <EndpointCode>?limit=</EndpointCode>.
+              <EndpointCode>?limit=</EndpointCode>, and{" "}
+              <EndpointCode>?q=</EndpointCode> to search by name.
+            </p>
+            <p>
+              <strong className="text-foreground">Detail:</strong>{" "}
+              <EndpointCode>{"GET /api/islands/{id}"}</EndpointCode> returns one
+              object (same fields), or <InlineCode>404</InlineCode>.
             </p>
             <p>
               <strong className="text-foreground">Response:</strong> a JSON
@@ -476,7 +516,13 @@ export default function DocumentationPage() {
             <p>
               <strong className="text-foreground">Query:</strong> pagination via{" "}
               <EndpointCode>?page=</EndpointCode> /{" "}
-              <EndpointCode>?limit=</EndpointCode>.
+              <EndpointCode>?limit=</EndpointCode>, and{" "}
+              <EndpointCode>?q=</EndpointCode> to search by name.
+            </p>
+            <p>
+              <strong className="text-foreground">Detail:</strong>{" "}
+              <EndpointCode>{"GET /api/affiliations/{id}"}</EndpointCode>{" "}
+              returns one object (same fields), or <InlineCode>404</InlineCode>.
             </p>
             <p>
               <strong className="text-foreground">Response:</strong> a JSON

@@ -1,10 +1,10 @@
+import { isUuid } from "@/lib/uuid";
+
 /**
  * Anonymous API usage counting, used by `src/proxy.ts`.
  * Only coarse, non-identifying dimensions are recorded (see the
  * `api_usage_daily` migration): never IPs or full user agents.
  */
-
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 const KNOWN_PATHS = new Set([
   "/api",
@@ -24,11 +24,11 @@ const KNOWN_PATHS = new Set([
 export function normalizeApiPath(pathname: string): string {
   const path = pathname.length > 1 ? pathname.replace(/\/+$/, "") : pathname;
   if (KNOWN_PATHS.has(path)) return path;
-  const id = path.match(/^\/api\/characters\/([^/]+)$/);
-  if (id)
-    return UUID.test(id[1])
-      ? "/api/characters/{id}"
-      : "/api/characters/{invalid}";
+  // Detail routes: /api/{resource}/{id} → one template per resource.
+  const detail = path.match(/^(\/api\/[a-z-]+)\/([^/]+)$/);
+  if (detail && KNOWN_PATHS.has(detail[1])) {
+    return `${detail[1]}/${isUuid(detail[2]) ? "{id}" : "{invalid}"}`;
+  }
   return "other";
 }
 
