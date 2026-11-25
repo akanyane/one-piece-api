@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.14.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.13.2...one-piece-api-v0.14.0) (2026-11-25)
+
+
+### Features
+
+* **api:** add q search to every list endpoint and detail routes for all resources ([4d37eb3](https://github.com/akanyane/one-piece-api/commit/4d37eb36a131ced30d02b60a376ab0705ead6388))
+* **api:** add q search to every list endpoint and detail routes for all resources ([bad1a48](https://github.com/akanyane/one-piece-api/commit/bad1a48aa93aed69edcce1adb4bd24ec002417e7))
+
 ## [0.13.2](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.13.1...one-piece-api-v0.13.2) (2026-11-25)
 
 
