@@ -132,6 +132,7 @@ There is also an interactive [Playground](https://www.onepieceapi.com/playground
 - [Next.js](https://nextjs.org) 16 (App Router, React Compiler) on [Vercel](https://vercel.com)
 - [Supabase](https://supabase.com) (Postgres with Row Level Security, plus Storage for images)
 - [Tailwind CSS](https://tailwindcss.com) 4 and [shadcn/ui](https://ui.shadcn.com)
+- [Vitest](https://vitest.dev) for unit and end-to-end tests
 - [Biome](https://biomejs.dev) for linting and formatting, [Conventional Commits](https://www.conventionalcommits.org) with commitlint, and [release-please](https://github.com/googleapis/release-please) for releases
 
 ## Running locally
@@ -151,7 +152,27 @@ pnpm dev               # http://localhost:3000
 | `SUPABASE_URL` | Your project URL, e.g. `https://<ref>.supabase.co` |
 | `SUPABASE_SECRET_KEY` | A **secret** key, used on the server only. Never expose it to the browser. |
 
-Other scripts: `pnpm build`, `pnpm start` and `pnpm lint`.
+Other scripts: `pnpm build`, `pnpm start`, `pnpm lint` and `pnpm typecheck`.
+
+## Tests
+
+| Command | What it runs |
+|:--|:--|
+| `pnpm test` | Unit tests ([Vitest](https://vitest.dev)), ~22k cases in a few seconds |
+| `pnpm test:coverage` | The same, with coverage. CI fails below 100% lines/functions on the API code |
+| `pnpm test:watch` | Unit tests in watch mode |
+| `pnpm test:e2e` | Contract tests against a live deployment (needs `API_BASE_URL`) |
+
+**Unit tests** (`tests/unit`) call every route handler directly, with Supabase replaced by an in-memory mock that records the exact query built (filters, ordering, range). Each list endpoint runs every combination of its params, valid and invalid: `page` × `limit` × `q`, plus `ageBand` for characters and `isActive` × `sort` for bounties. The tests check the query, the body, `X-Total-Count` and every `Link` URL. Detail routes, errors (400/404/500), the usage-tracking proxy, the parsers and the OpenAPI spec are covered too. They also check that the spec documents exactly the routes that exist.
+
+**End-to-end tests** (`tests/e2e`) hit a real deployment and validate every response against the schemas in `/openapi.json`. They also check that filters really filter: names match `q`, ages fall in the `ageBand`, bounties come back in `sort` order, and following `Link: rel="next"` visits every item exactly once.
+
+```bash
+pnpm build && pnpm start                         # in one terminal
+API_BASE_URL=http://localhost:3000 pnpm test:e2e # in another
+```
+
+CI runs lint, typecheck and the unit tests on every pull request. The e2e suite runs against production after each deploy, or manually from the *e2e* workflow.
 
 ## Contributing
 
@@ -159,7 +180,7 @@ Issues and pull requests are welcome, whether it's a bug, a data correction or a
 
 - Branch off `main`. `main` is protected, so all changes go through a pull request.
 - Commit messages follow [Conventional Commits](https://www.conventionalcommits.org) (`feat:`, `fix:`, `docs:`, …) and are checked by commitlint.
-- Run `pnpm lint` and `pnpm build` before opening a PR.
+- Run `pnpm lint`, `pnpm typecheck`, `pnpm test` and `pnpm build` before opening a PR. New routes or params need tests, and the coverage threshold enforces it.
 - Versions and the [CHANGELOG](CHANGELOG.md) are generated automatically by release-please.
 
 Found wrong or missing data? [Open an issue](https://github.com/akanyane/one-piece-api/issues) and include the character or item and a source.

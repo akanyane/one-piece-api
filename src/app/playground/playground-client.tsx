@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { JsonViewer } from "@/components/playground/json-viewer";
 import { ResponseCards } from "@/components/playground/response-cards";
+import { type PageRel, parseLinkPages } from "@/lib/link-header";
 import { cardsFor, listFromResponse } from "@/lib/playground-cards";
 import {
   buildRequestUrl,
@@ -28,8 +29,6 @@ type HistoryEntry = {
   values: Record<string, string>;
 };
 
-type PageRel = "first" | "prev" | "next" | "last";
-
 type ResponseMeta = {
   status: number;
   ok: boolean;
@@ -52,18 +51,6 @@ const HISTORY_LIMIT = 12;
 const COPY_FLASH_MS = 1400;
 const MONO = "font-[family-name:var(--font-pg-mono)]";
 const EYEBROW = `${MONO} text-[9.5px] uppercase tracking-[0.28em] text-[var(--pg-muted)]`;
-
-/** Page number per rel from an RFC 8288 `Link` header, e.g. `<…?page=2>; rel="next"`. */
-function parseLinkPages(header: string | null): ResponseMeta["pages"] {
-  const pages: ResponseMeta["pages"] = {};
-  for (const [, url, rel] of (header ?? "").matchAll(
-    /<([^>]+)>;\s*rel="(first|prev|next|last)"/g,
-  )) {
-    const page = Number(new URL(url, "http://x").searchParams.get("page"));
-    if (page > 0) pages[rel as PageRel] = page;
-  }
-  return pages;
-}
 
 function formatBytes(bytes: number): string {
   return bytes > 1024 ? `${(bytes / 1024).toFixed(1)} KB` : `${bytes} B`;
