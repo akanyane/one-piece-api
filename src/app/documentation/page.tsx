@@ -204,7 +204,13 @@ export default function DocumentationPage() {
                 <EndpointCode>?page=</EndpointCode> (1-based, default{" "}
                 <InlineCode>1</InlineCode>),{" "}
                 <EndpointCode>?limit=</EndpointCode> (default{" "}
-                <InlineCode>20</InlineCode>).
+                <InlineCode>20</InlineCode>, max <InlineCode>100</InlineCode>).
+                The body stays a plain array; every list response also carries{" "}
+                <InlineCode>X-Total-Count</InlineCode> (items across all pages)
+                and a <InlineCode>Link</InlineCode> header with{" "}
+                <InlineCode>first</InlineCode>, <InlineCode>prev</InlineCode>,{" "}
+                <InlineCode>next</InlineCode> and <InlineCode>last</InlineCode>{" "}
+                URLs. Both are readable from browser code (CORS exposes them).
               </li>
               <li>
                 <strong className="text-foreground">Search:</strong> every list

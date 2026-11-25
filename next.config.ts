@@ -44,6 +44,8 @@ const nextConfig: NextConfig = {
       { key: "Access-Control-Allow-Methods", value: "GET, HEAD, OPTIONS" },
       { key: "Access-Control-Allow-Headers", value: "Content-Type" },
       { key: "Access-Control-Max-Age", value: "86400" },
+      // Without this, browser code can't read the pagination headers.
+      { key: "Access-Control-Expose-Headers", value: "X-Total-Count, Link" },
     ];
     return [
       { source: "/api/:path*", headers: cors },
