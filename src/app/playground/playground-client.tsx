@@ -28,12 +28,42 @@ type HistoryEntry = {
   values: Record<string, string>;
 };
 
-type ResponseMeta = { status: number; ok: boolean; ms: number; bytes: number };
+type PageRel = "first" | "prev" | "next" | "last";
+
+type ResponseMeta = {
+  status: number;
+  ok: boolean;
+  ms: number;
+  bytes: number;
+  /** `X-Total-Count`: items across all pages (list endpoints only). */
+  total?: number;
+  /** Page numbers from the `Link` header, by rel. */
+  pages: Partial<Record<PageRel, number>>;
+};
+
+const PAGE_RELS: [PageRel, string][] = [
+  ["first", "« First"],
+  ["prev", "‹ Prev"],
+  ["next", "Next ›"],
+  ["last", "Last »"],
+];
 
 const HISTORY_LIMIT = 12;
 const COPY_FLASH_MS = 1400;
 const MONO = "font-[family-name:var(--font-pg-mono)]";
 const EYEBROW = `${MONO} text-[9.5px] uppercase tracking-[0.28em] text-[var(--pg-muted)]`;
+
+/** Page number per rel from an RFC 8288 `Link` header, e.g. `<…?page=2>; rel="next"`. */
+function parseLinkPages(header: string | null): ResponseMeta["pages"] {
+  const pages: ResponseMeta["pages"] = {};
+  for (const [, url, rel] of (header ?? "").matchAll(
+    /<([^>]+)>;\s*rel="(first|prev|next|last)"/g,
+  )) {
+    const page = Number(new URL(url, "http://x").searchParams.get("page"));
+    if (page > 0) pages[rel as PageRel] = page;
+  }
+  return pages;
+}
 
 function formatBytes(bytes: number): string {
   return bytes > 1024 ? `${(bytes / 1024).toFixed(1)} KB` : `${bytes} B`;
@@ -129,11 +159,14 @@ export function PlaygroundClient({ siteUrl }: { siteUrl: string }) {
         parsed = text;
       }
       setData(parsed);
+      const totalHeader = res.headers.get("X-Total-Count");
       setMeta({
         status: res.status,
         ok: res.ok,
         ms,
         bytes: new Blob([text]).size,
+        total: totalHeader === null ? undefined : Number(totalHeader),
+        pages: parseLinkPages(res.headers.get("Link")),
       });
       historyIdRef.current += 1;
       setHistory((prev) =>
@@ -175,6 +208,12 @@ export function PlaygroundClient({ siteUrl }: { siteUrl: string }) {
     } finally {
       setLoading(false);
     }
+  }
+
+  function goToPage(page: number) {
+    const vals = { ...currentValues, page: String(page) };
+    setValues((prev) => ({ ...prev, [endpointId]: vals }));
+    send(endpointId, vals);
   }
 
   function replay(entry: HistoryEntry) {
@@ -574,7 +613,9 @@ export function PlaygroundClient({ siteUrl }: { siteUrl: string }) {
                     {formatBytes(meta.bytes)}
                   </span>
                   <span className="text-[var(--pg-body)]">
-                    {list.length} {list.length === 1 ? "record" : "records"}
+                    {list.length}
+                    {meta.total !== undefined && ` of ${meta.total}`}{" "}
+                    {(meta.total ?? list.length) === 1 ? "record" : "records"}
                   </span>
                 </div>
               )}
@@ -612,6 +653,48 @@ export function PlaygroundClient({ siteUrl }: { siteUrl: string }) {
                 {copied === "resp" ? "Copied" : "Copy response"}
               </button>
             </div>
+
+            {meta?.total !== undefined && (
+              <div
+                className={cn(
+                  MONO,
+                  "flex flex-wrap items-center gap-x-3 gap-y-2 px-4 pb-3 text-[11px] text-[var(--pg-body)] sm:px-7",
+                )}
+              >
+                <span className={EYEBROW}>Headers</span>
+                <code title="Items across all pages">
+                  X-Total-Count: {meta.total}
+                </code>
+                {meta.pages.last !== undefined && (
+                  <span title="From the Link header">
+                    · page{" "}
+                    {Math.min(Number(currentValues.page) || 1, meta.pages.last)}{" "}
+                    of {meta.pages.last}
+                  </span>
+                )}
+                <div className="flex-1" />
+                <nav
+                  aria-label="Pages from the Link header"
+                  className="flex gap-1.5"
+                >
+                  {PAGE_RELS.map(([rel, label]) => {
+                    const page = meta.pages[rel];
+                    return (
+                      <button
+                        className="border border-[var(--pg-hairline-4)] px-[9px] py-[3px] text-[10px] uppercase tracking-[0.12em] hover:bg-[var(--pg-sunken-2)] disabled:cursor-not-allowed disabled:opacity-35"
+                        disabled={page === undefined || loading}
+                        key={rel}
+                        onClick={() => page !== undefined && goToPage(page)}
+                        title={`rel="${rel}"`}
+                        type="button"
+                      >
+                        {label}
+                      </button>
+                    );
+                  })}
+                </nav>
+              </div>
+            )}
 
             <div className="min-h-0 flex-1 overflow-auto px-4 pb-7 sm:px-7">
               {idle && (
