@@ -6,6 +6,9 @@ import { isUuid } from "@/lib/uuid";
  * `api_usage_daily` migration): never IPs or full user agents.
  */
 
+/** User-agent prefix of the e2e test suite; its requests are never counted. */
+export const E2E_USER_AGENT = "one-piece-api-e2e";
+
 const KNOWN_PATHS = new Set([
   "/api",
   "/api/characters",
