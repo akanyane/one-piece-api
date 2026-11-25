@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.15.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.14.0...one-piece-api-v0.15.0) (2026-11-25)
+
+
+### Features
+
+* **api:** add X-Total-Count and Link pagination headers to list endpoints ([900b44a](https://github.com/akanyane/one-piece-api/commit/900b44ac09ee73cf084b4bedb3ff6246488193d1))
+* **api:** add X-Total-Count and Link pagination headers to list endpoints ([e24ad19](https://github.com/akanyane/one-piece-api/commit/e24ad190754e913c9de2eb26d9fcf7e9f0791fb1))
+* **playground:** show X-Total-Count and Link page buttons in the response ([42c1c09](https://github.com/akanyane/one-piece-api/commit/42c1c0972cd7cdd397f89a01c9a372a75a70e718))
+
 ## [0.14.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.13.2...one-piece-api-v0.14.0) (2026-11-25)
 
 
