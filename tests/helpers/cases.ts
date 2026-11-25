@@ -138,3 +138,11 @@ export async function expectListResponse(
     }
   }
 }
+
+/** Select strings the API must send (relations embedded through junction tables). */
+export const CHARACTER_SELECT =
+  "*, bounties(*), character_devil_fruits(is_active, devil_fruits(id, name, type, sub_type, image_url)), character_affiliations(is_active, affiliations(id, name))";
+export const DEVIL_FRUIT_SELECT =
+  "*, character_devil_fruits(is_active, characters(id, name, image_url, status))";
+export const AFFILIATION_DETAIL_SELECT =
+  "*, character_affiliations(is_active, characters(id, name, image_url, status))";

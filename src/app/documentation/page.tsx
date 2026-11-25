@@ -14,12 +14,18 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  AFFILIATION_DETAIL_FIELDS,
   AFFILIATION_FIELDS,
   type ApiFieldRow,
   BOUNTY_FIELDS,
   CHARACTER_FIELDS,
+  CHARACTER_RELATION_FIELDS,
   DEVIL_FRUIT_FIELDS,
+  DEVIL_FRUIT_RELATION_FIELDS,
   ISLAND_FIELDS,
+  LINKED_AFFILIATION_FIELDS,
+  LINKED_CHARACTER_FIELDS,
+  LINKED_DEVIL_FRUIT_FIELDS,
   SHIP_FIELDS,
 } from "@/lib/api-fields";
 import { cn } from "@/lib/utils";
@@ -223,7 +229,8 @@ export default function DocumentationPage() {
                 <strong className="text-foreground">Detail routes:</strong>{" "}
                 every resource has{" "}
                 <EndpointCode>{"GET /api/{resource}/{id}"}</EndpointCode>,
-                returning one object with the same shape as a list item.
+                returning one object with the same shape as a list item
+                (affiliations also add their <InlineCode>members</InlineCode>).
               </li>
               <li>
                 <strong className="text-foreground">Timestamps:</strong>{" "}
@@ -309,7 +316,8 @@ export default function DocumentationPage() {
           <CardHeader>
             <CardTitle>Characters</CardTitle>
             <CardDescription>
-              Paginated characters; each item includes related bounties.
+              Paginated characters; each item includes their bounties, devil
+              fruits and affiliations.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4 text-sm text-muted-foreground">
@@ -341,15 +349,19 @@ export default function DocumentationPage() {
             <p>
               <strong className="text-foreground">Response:</strong> a JSON
               array of character objects. Each object includes the fields below,
-              plus a <InlineCode>bounties</InlineCode> array of bounty objects
-              (same shape as <EndpointCode>GET /api/bounties</EndpointCode>{" "}
-              items).
+              plus three relation arrays: <InlineCode>bounties</InlineCode>,{" "}
+              <InlineCode>devil_fruits</InlineCode> and{" "}
+              <InlineCode>affiliations</InlineCode>. Relations carry{" "}
+              <InlineCode>is_active</InlineCode> (<InlineCode>false</InlineCode>{" "}
+              for a former user or member) and list current ones first.
             </p>
             <div>
               <p className="mb-2 font-medium text-foreground">
                 Character object
               </p>
-              <FieldTable rows={CHARACTER_FIELDS} />
+              <FieldTable
+                rows={[...CHARACTER_FIELDS, ...CHARACTER_RELATION_FIELDS]}
+              />
             </div>
             <div>
               <p className="mb-2 font-medium text-foreground">
@@ -359,6 +371,26 @@ export default function DocumentationPage() {
               </p>
               <FieldTable rows={BOUNTY_FIELDS} />
             </div>
+            <div>
+              <p className="mb-2 font-medium text-foreground">
+                Nested{" "}
+                <code className="font-mono text-[0.8125rem]">
+                  devil_fruits[]
+                </code>{" "}
+                items
+              </p>
+              <FieldTable rows={LINKED_DEVIL_FRUIT_FIELDS} />
+            </div>
+            <div>
+              <p className="mb-2 font-medium text-foreground">
+                Nested{" "}
+                <code className="font-mono text-[0.8125rem]">
+                  affiliations[]
+                </code>{" "}
+                items
+              </p>
+              <FieldTable rows={LINKED_AFFILIATION_FIELDS} />
+            </div>
           </CardContent>
         </Card>
 
@@ -366,7 +398,8 @@ export default function DocumentationPage() {
           <CardHeader>
             <CardTitle>Character detail</CardTitle>
             <CardDescription>
-              Fetch a single character by id (includes related bounties).
+              Fetch a single character by id, with bounties, devil fruits and
+              affiliations.
             </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4 text-sm text-muted-foreground">
@@ -426,7 +459,9 @@ export default function DocumentationPage() {
         <Card>
           <CardHeader>
             <CardTitle>Devil fruits</CardTitle>
-            <CardDescription>Paginated devil fruit resources.</CardDescription>
+            <CardDescription>
+              Paginated devil fruits, each with the characters who ate it.
+            </CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4 text-sm text-muted-foreground">
             <p>
@@ -446,9 +481,21 @@ export default function DocumentationPage() {
             </p>
             <p>
               <strong className="text-foreground">Response:</strong> a JSON
-              array of devil fruit objects (fields below).
+              array of devil fruit objects (fields below). Most fruits have one
+              user; a fruit that changed hands lists the current user first and
+              former ones with <InlineCode>is_active: false</InlineCode>.
             </p>
-            <FieldTable rows={DEVIL_FRUIT_FIELDS} />
+            <FieldTable
+              rows={[...DEVIL_FRUIT_FIELDS, ...DEVIL_FRUIT_RELATION_FIELDS]}
+            />
+            <div>
+              <p className="mb-2 font-medium text-foreground">
+                Nested{" "}
+                <code className="font-mono text-[0.8125rem]">users[]</code>{" "}
+                items
+              </p>
+              <FieldTable rows={LINKED_CHARACTER_FIELDS} />
+            </div>
           </CardContent>
         </Card>
 
@@ -528,7 +575,10 @@ export default function DocumentationPage() {
             <p>
               <strong className="text-foreground">Detail:</strong>{" "}
               <EndpointCode>{"GET /api/affiliations/{id}"}</EndpointCode>{" "}
-              returns one object (same fields), or <InlineCode>404</InlineCode>.
+              returns one object with the same fields plus{" "}
+              <InlineCode>members</InlineCode>, every linked character (current
+              members first), or <InlineCode>404</InlineCode>. The list keeps
+              only <InlineCode>memberCount</InlineCode> to stay light.
             </p>
             <p>
               <strong className="text-foreground">Response:</strong> a JSON
@@ -536,6 +586,18 @@ export default function DocumentationPage() {
               count, largest first.
             </p>
             <FieldTable rows={AFFILIATION_FIELDS} />
+            <div>
+              <p className="mb-2 font-medium text-foreground">Detail only</p>
+              <FieldTable rows={AFFILIATION_DETAIL_FIELDS} />
+            </div>
+            <div>
+              <p className="mb-2 font-medium text-foreground">
+                Nested{" "}
+                <code className="font-mono text-[0.8125rem]">members[]</code>{" "}
+                items
+              </p>
+              <FieldTable rows={LINKED_CHARACTER_FIELDS} />
+            </div>
           </CardContent>
         </Card>
       </main>

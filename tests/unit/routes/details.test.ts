@@ -6,6 +6,11 @@ import { GET as getCharacter } from "@/app/api/characters/[id]/route";
 import { GET as getDevilFruit } from "@/app/api/devil-fruits/[id]/route";
 import { GET as getIsland } from "@/app/api/islands/[id]/route";
 import { GET as getShip } from "@/app/api/ships/[id]/route";
+import {
+  AFFILIATION_DETAIL_SELECT,
+  CHARACTER_SELECT,
+  DEVIL_FRUIT_SELECT,
+} from "../../helpers/cases";
 import { call, calls, recorded, respond } from "../../helpers/supabase-mock";
 
 type Handler = (
@@ -24,16 +29,18 @@ const RESOURCES: {
   {
     path: "characters",
     table: "characters",
-    select: "*, bounties(*)",
+    select: CHARACTER_SELECT,
     GET: getCharacter,
     row: { id: "x", bounties: [] },
+    expected: { id: "x", bounties: [], devil_fruits: [], affiliations: [] },
   },
   {
     path: "devil-fruits",
     table: "devil_fruits",
-    select: "*",
+    select: DEVIL_FRUIT_SELECT,
     GET: getDevilFruit,
     row: { id: "x", type: "Zoan" },
+    expected: { id: "x", type: "Zoan", users: [] },
   },
   {
     path: "bounties",
@@ -59,15 +66,38 @@ const RESOURCES: {
   {
     path: "affiliations",
     table: "affiliations",
-    select: "*, character_affiliations(count)",
+    select: AFFILIATION_DETAIL_SELECT,
     GET: getAffiliation,
     row: {
       id: "x",
       name: { en: "Straw Hat Pirates" },
-      character_affiliations: [{ count: 14 }],
+      character_affiliations: [
+        {
+          is_active: true,
+          characters: {
+            id: "m1",
+            name: { en: "Luffy" },
+            image_url: null,
+            status: "Alive",
+          },
+        },
+      ],
     },
-    // The aggregate is flattened into memberCount, as in the list.
-    expected: { id: "x", name: { en: "Straw Hat Pirates" }, memberCount: 14 },
+    // Junction rows become `members`; memberCount matches, as in the list.
+    expected: {
+      id: "x",
+      name: { en: "Straw Hat Pirates" },
+      memberCount: 1,
+      members: [
+        {
+          id: "m1",
+          name: { en: "Luffy" },
+          image_url: null,
+          status: "Alive",
+          is_active: true,
+        },
+      ],
+    },
   },
 ];
 

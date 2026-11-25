@@ -40,6 +40,103 @@ function isPastLastPage(error: { code?: string }): boolean {
  */
 const BY_ID = { ascending: true } as const;
 
+/** A junction-table embed, e.g. `{ is_active, devil_fruits: {...} }`, normalized. */
+type Link<T> = { is_active: boolean | null; target: T | null };
+
+/**
+ * Flattens junction rows into `[{ ...target, is_active }]`: current links
+ * first, then by English name, then id. A null `is_active` counts as current.
+ */
+function flattenLinks<T extends { id: string; name: unknown }>(
+  links: Link<T>[],
+) {
+  return links
+    .flatMap(({ is_active, target }) =>
+      target ? [{ ...target, is_active: is_active !== false }] : [],
+    )
+    .sort(
+      (a, b) =>
+        Number(b.is_active) - Number(a.is_active) ||
+        displayCharacterNameForSort(a.name).localeCompare(
+          displayCharacterNameForSort(b.name),
+        ) ||
+        a.id.localeCompare(b.id),
+    );
+}
+
+/** Characters embed their bounties, devil fruits and affiliations. */
+const CHARACTER_SELECT =
+  "*, bounties(*), character_devil_fruits(is_active, devil_fruits(id, name, type, sub_type, image_url)), character_affiliations(is_active, affiliations(id, name))";
+
+type CharacterLinks = {
+  character_devil_fruits: {
+    is_active: boolean | null;
+    devil_fruits: {
+      id: string;
+      name: unknown;
+      type: string | null;
+      sub_type: string | null;
+      image_url: string | null;
+    } | null;
+  }[];
+  character_affiliations: {
+    is_active: boolean | null;
+    affiliations: { id: string; name: unknown } | null;
+  }[];
+};
+
+/** API shape: junction embeds become `devil_fruits[]` and `affiliations[]`. */
+function toApiCharacter<R extends CharacterLinks>(row: R) {
+  const { character_devil_fruits, character_affiliations, ...rest } = row;
+  return {
+    ...rest,
+    devil_fruits: flattenLinks(
+      (character_devil_fruits ?? []).map((l) => ({
+        is_active: l.is_active,
+        target: l.devil_fruits,
+      })),
+    ),
+    affiliations: flattenLinks(
+      (character_affiliations ?? []).map((l) => ({
+        is_active: l.is_active,
+        target: l.affiliations,
+      })),
+    ),
+  };
+}
+
+/** A character as embedded in a devil fruit (`users`) or affiliation (`members`). */
+type CharacterRef = {
+  id: string;
+  name: unknown;
+  image_url: string | null;
+  status: string;
+};
+type CharacterLink = {
+  is_active: boolean | null;
+  characters: CharacterRef | null;
+};
+
+function characterLinks(links: CharacterLink[] | null | undefined) {
+  return flattenLinks(
+    (links ?? []).map((l) => ({
+      is_active: l.is_active,
+      target: l.characters,
+    })),
+  );
+}
+
+/** Devil fruits embed the characters who ate them. */
+const DEVIL_FRUIT_SELECT =
+  "*, character_devil_fruits(is_active, characters(id, name, image_url, status))";
+
+function toApiDevilFruit<R extends { character_devil_fruits: CharacterLink[] }>(
+  row: R,
+) {
+  const { character_devil_fruits, ...rest } = row;
+  return { ...rest, users: characterLinks(character_devil_fruits) };
+}
+
 type PageResult<T> = {
   data: T[] | null;
   error: PostgrestError | null;
@@ -84,7 +181,7 @@ async function fetchCharacters(params: GetCharactersParams) {
   const build = (head = false) => {
     let query = supabase
       .from("characters")
-      .select("*, bounties(*)", { count: "exact", head });
+      .select(CHARACTER_SELECT, { count: "exact", head });
     if (params.portraitsFirst) {
       // PostgREST can't order by "is null", so sort by the URL itself with nulls
       // last — portraits come first, roughly alphabetical by file slug.
@@ -100,10 +197,11 @@ async function fetchCharacters(params: GetCharactersParams) {
     return query;
   };
 
-  return pageWithTotal(
+  const { data, count } = await pageWithTotal(
     build().range((page - 1) * limit, page * limit - 1),
     () => build(true),
   );
+  return { data: data.map(toApiCharacter), count };
 }
 
 /** Cached character list. Revalidates every {@link REVALIDATE_SECONDS}s or on-demand via `revalidateTag("characters")`. */
@@ -116,11 +214,11 @@ export const getCharacters = unstable_cache(
 async function fetchCharacterById(id: string) {
   const { data, error } = await supabase
     .from("characters")
-    .select("*, bounties(*)")
+    .select(CHARACTER_SELECT)
     .eq("id", id)
     .maybeSingle();
   if (error) throw error;
-  return data;
+  return data ? toApiCharacter(data) : null;
 }
 
 /** Cached single-character lookup, keyed by id. */
@@ -141,7 +239,7 @@ async function fetchDevilFruits(params: GetDevilFruitsParams) {
   const build = (head = false) => {
     let query = supabase
       .from("devil_fruits")
-      .select("*", { count: "exact", head })
+      .select(DEVIL_FRUIT_SELECT, { count: "exact", head })
       .order("created_at", { ascending: false })
       .order("id", BY_ID);
     // Zoan models are searchable too, e.g. "nika" finds Hito Hito no Mi, Model: Nika.
@@ -149,34 +247,35 @@ async function fetchDevilFruits(params: GetDevilFruitsParams) {
     return query;
   };
 
-  return pageWithTotal(
+  const { data, count } = await pageWithTotal(
     build().range((page - 1) * limit, page * limit - 1),
     () => build(true),
   );
+  return { data: data.map(toApiDevilFruit), count };
 }
 
 /** Cached devil fruit list. */
 export const getDevilFruits = unstable_cache(
   fetchDevilFruits,
   ["devil-fruits-list"],
-  { revalidate: REVALIDATE_SECONDS, tags: ["devil-fruits"] },
+  { revalidate: REVALIDATE_SECONDS, tags: ["devil-fruits", "characters"] },
 );
 
 async function fetchDevilFruitById(id: string) {
   const { data, error } = await supabase
     .from("devil_fruits")
-    .select("*")
+    .select(DEVIL_FRUIT_SELECT)
     .eq("id", id)
     .maybeSingle();
   if (error) throw error;
-  return data;
+  return data ? toApiDevilFruit(data) : null;
 }
 
-/** Cached single devil fruit, same shape as a list item. */
+/** Cached single devil fruit, same shape as a list item (with `users`). */
 export const getDevilFruitById = unstable_cache(
   fetchDevilFruitById,
   ["devil-fruit-by-id"],
-  { revalidate: REVALIDATE_SECONDS, tags: ["devil-fruits"] },
+  { revalidate: REVALIDATE_SECONDS, tags: ["devil-fruits", "characters"] },
 );
 
 export type GetBountiesParams = {
@@ -414,14 +513,19 @@ export const getAffiliations = unstable_cache(
 async function fetchAffiliationById(id: string) {
   const { data, error } = await supabase
     .from("affiliations")
-    .select(AFFILIATION_WITH_COUNT)
+    .select(
+      "*, character_affiliations(is_active, characters(id, name, image_url, status))",
+    )
     .eq("id", id)
     .maybeSingle();
   if (error) throw error;
-  return data ? withMemberCount(data) : null;
+  if (!data) return null;
+  const { character_affiliations, ...rest } = data;
+  const members = characterLinks(character_affiliations);
+  return { ...rest, memberCount: members.length, members };
 }
 
-/** Cached single affiliation, same shape as a list item (with `memberCount`). */
+/** Cached single affiliation: the list item fields plus every member. */
 export const getAffiliationById = unstable_cache(
   fetchAffiliationById,
   ["affiliation-by-id"],

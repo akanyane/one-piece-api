@@ -110,7 +110,11 @@ export const openApiSpec = {
   // No authentication: every endpoint is public.
   security: [],
   tags: [
-    { name: "Characters", description: "Named characters and their bounties." },
+    {
+      name: "Characters",
+      description:
+        "Named characters with their bounties, devil fruits and affiliations.",
+    },
     { name: "Devil Fruits", description: "Devil fruits and their models." },
     { name: "Bounties", description: "Bounties issued on characters." },
     { name: "Ships", description: "Pirate, Marine and other vessels." },
@@ -144,7 +148,7 @@ export const openApiSpec = {
       operationId: "listCharacters",
       summary: "List characters",
       description:
-        "Characters, newest first, each with their bounties. Filter by name with `q` and by age with `ageBand`.",
+        "Characters, newest first, each with their bounties, devil fruits and affiliations. Filter by name with `q` and by age with `ageBand`.",
       tag: "Characters",
       schema: "Character",
       extraParams: [
@@ -165,7 +169,8 @@ export const openApiSpec = {
     "/api/characters/{id}": detailOperation({
       operationId: "getCharacter",
       summary: "Get a character",
-      description: "A single character with their bounties.",
+      description:
+        "A single character with their bounties, devil fruits and affiliations.",
       tag: "Characters",
       schema: "Character",
     }),
@@ -173,7 +178,7 @@ export const openApiSpec = {
       operationId: "listDevilFruits",
       summary: "List devil fruits",
       description:
-        "Devil fruits, newest first. Search by name or Zoan model with `q`.",
+        "Devil fruits, newest first, each with the characters who ate it (`users`). Search by name or Zoan model with `q`.",
       tag: "Devil Fruits",
       schema: "DevilFruit",
       extraParams: [
@@ -183,7 +188,8 @@ export const openApiSpec = {
     "/api/devil-fruits/{id}": detailOperation({
       operationId: "getDevilFruit",
       summary: "Get a devil fruit",
-      description: "A single devil fruit, same shape as a list item.",
+      description:
+        "A single devil fruit with its `users`, same shape as a list item.",
       tag: "Devil Fruits",
       schema: "DevilFruit",
     }),
@@ -268,9 +274,9 @@ export const openApiSpec = {
       operationId: "getAffiliation",
       summary: "Get an affiliation",
       description:
-        "A single affiliation with its `memberCount`, same shape as a list item.",
+        "A single affiliation with its `memberCount` and every member (`members`).",
       tag: "Affiliations",
-      schema: "Affiliation",
+      schema: "AffiliationDetail",
     }),
   },
   components: {
@@ -393,6 +399,59 @@ export const openApiSpec = {
             },
           },
           bounties: { type: "array", items: ref("CharacterBounty") },
+          devil_fruits: {
+            type: "array",
+            description:
+              "Devil fruits this character has eaten. `is_active: false` = a former user. Current first.",
+            items: ref("LinkedDevilFruit"),
+          },
+          affiliations: {
+            type: "array",
+            description:
+              "Crews and organizations, current first (`is_active: false` = former member).",
+            items: ref("LinkedAffiliation"),
+          },
+        },
+      },
+      LinkedDevilFruit: {
+        type: "object",
+        required: ["id", "is_active"],
+        properties: {
+          id: { type: "string", format: "uuid" },
+          name: ref("LocalizedName"),
+          type: nullable("string", { example: "Paramecia" }),
+          sub_type: nullable("string"),
+          image_url: nullable("string", { format: "uri" }),
+          is_active: {
+            type: "boolean",
+            description: "`true` for the current user of the fruit.",
+          },
+        },
+      },
+      LinkedAffiliation: {
+        type: "object",
+        required: ["id", "is_active"],
+        properties: {
+          id: { type: "string", format: "uuid" },
+          name: ref("LocalizedName"),
+          is_active: {
+            type: "boolean",
+            description: "`true` for a current member.",
+          },
+        },
+      },
+      LinkedCharacter: {
+        type: "object",
+        required: ["id", "is_active"],
+        properties: {
+          id: { type: "string", format: "uuid" },
+          name: ref("LocalizedName"),
+          image_url: nullable("string", { format: "uri" }),
+          status: { type: "string", enum: ["Alive", "Deceased", "Unknown"] },
+          is_active: {
+            type: "boolean",
+            description: "`false` for a former user or member.",
+          },
         },
       },
       DevilFruit: {
@@ -410,6 +469,12 @@ export const openApiSpec = {
           }),
           sub_type: nullable("string", { example: "Mythical" }),
           image_url: nullable("string", { format: "uri" }),
+          users: {
+            type: "array",
+            description:
+              "Characters who have eaten this fruit, current user first.",
+            items: ref("LinkedCharacter"),
+          },
         },
       },
       Bounty: {
@@ -481,6 +546,22 @@ export const openApiSpec = {
             description: "Number of characters linked to this affiliation.",
           },
         },
+      },
+      AffiliationDetail: {
+        allOf: [
+          ref("Affiliation"),
+          {
+            type: "object",
+            properties: {
+              members: {
+                type: "array",
+                description:
+                  "Every linked character (current and former), current members first.",
+                items: ref("LinkedCharacter"),
+              },
+            },
+          },
+        ],
       },
     },
   },

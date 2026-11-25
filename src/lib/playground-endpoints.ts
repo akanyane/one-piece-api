@@ -1,9 +1,12 @@
 import {
+  AFFILIATION_DETAIL_FIELDS,
   AFFILIATION_FIELDS,
   type ApiFieldRow,
   BOUNTY_FIELDS,
   CHARACTER_FIELDS,
+  CHARACTER_RELATION_FIELDS,
   DEVIL_FRUIT_FIELDS,
+  DEVIL_FRUIT_RELATION_FIELDS,
   ISLAND_FIELDS,
   SHIP_FIELDS,
 } from "@/lib/api-fields";
@@ -74,7 +77,7 @@ export const PLAYGROUND_ENDPOINTS: PlaygroundEndpoint[] = [
     title: "Characters",
     figure: "01",
     description:
-      "Paginated list of characters with localized names, images, canonical stats, and embedded bounties.",
+      "Paginated list of characters with localized names, images, canonical stats, bounties, devil fruits and affiliations.",
     params: [
       ...PAGINATION_PARAMS,
       { name: "q", placeholder: "luffy", hint: "name search" },
@@ -84,15 +87,7 @@ export const PLAYGROUND_ENDPOINTS: PlaygroundEndpoint[] = [
         hint: "0-12, 13-17, 18-29, 30-59, 60+",
       },
     ],
-    fields: [
-      ...CHARACTER_FIELDS,
-      {
-        field: "bounties",
-        type: "array",
-        notes:
-          "Embedded bounty objects (same shape as GET /api/bounties items)",
-      },
-    ],
+    fields: [...CHARACTER_FIELDS, ...CHARACTER_RELATION_FIELDS],
   },
   {
     id: "character",
@@ -100,7 +95,8 @@ export const PLAYGROUND_ENDPOINTS: PlaygroundEndpoint[] = [
     path: "/api/characters/{id}",
     title: "Character detail",
     figure: "02",
-    description: "A single character by id, including embedded bounties.",
+    description:
+      "A single character by id, with bounties, devil fruits and affiliations.",
     params: [
       {
         name: "id",
@@ -108,10 +104,7 @@ export const PLAYGROUND_ENDPOINTS: PlaygroundEndpoint[] = [
         hint: "path param",
       },
     ],
-    fields: [
-      ...CHARACTER_FIELDS,
-      { field: "bounties", type: "array", notes: "Embedded bounty objects" },
-    ],
+    fields: [...CHARACTER_FIELDS, ...CHARACTER_RELATION_FIELDS],
   },
   {
     id: "devil-fruits",
@@ -119,12 +112,13 @@ export const PLAYGROUND_ENDPOINTS: PlaygroundEndpoint[] = [
     path: "/api/devil-fruits",
     title: "Devil fruits",
     figure: "03",
-    description: "Paginated list of devil fruits by class and model.",
+    description:
+      "Paginated list of devil fruits by class and model, with who ate each one.",
     params: [
       ...PAGINATION_PARAMS,
       { name: "q", placeholder: "nika", hint: "name search" },
     ],
-    fields: DEVIL_FRUIT_FIELDS,
+    fields: [...DEVIL_FRUIT_FIELDS, ...DEVIL_FRUIT_RELATION_FIELDS],
   },
   {
     id: "bounties",
@@ -180,7 +174,7 @@ export const PLAYGROUND_ENDPOINTS: PlaygroundEndpoint[] = [
       ...PAGINATION_PARAMS,
       { name: "q", placeholder: "straw hat", hint: "name search" },
     ],
-    fields: AFFILIATION_FIELDS,
+    fields: [...AFFILIATION_FIELDS, ...AFFILIATION_DETAIL_FIELDS],
   },
 ];
 

@@ -45,12 +45,12 @@ for fruit in fruits:
 | Method | Endpoint | Description |
 |:--|:--|:--|
 | `GET` | [`/api`](https://www.onepieceapi.com/api) | Map of every endpoint URL |
-| `GET` | [`/api/characters`](https://www.onepieceapi.com/api/characters) | Characters, newest first, each with their bounties |
-| `GET` | [`/api/devil-fruits`](https://www.onepieceapi.com/api/devil-fruits) | Devil fruits: Paramecia, Zoan and Logia, with Zoan models |
+| `GET` | [`/api/characters`](https://www.onepieceapi.com/api/characters) | Characters, newest first, each with their bounties, devil fruits and affiliations |
+| `GET` | [`/api/devil-fruits`](https://www.onepieceapi.com/api/devil-fruits) | Devil fruits: Paramecia, Zoan and Logia, with Zoan models and who ate each one (`users`) |
 | `GET` | [`/api/bounties`](https://www.onepieceapi.com/api/bounties) | Bounties, each with a summary of its character |
 | `GET` | [`/api/ships`](https://www.onepieceapi.com/api/ships) | Ships: type, status and affiliation |
 | `GET` | [`/api/islands`](https://www.onepieceapi.com/api/islands) | Islands and the sea they belong to |
-| `GET` | [`/api/affiliations`](https://www.onepieceapi.com/api/affiliations) | Crews and organizations, biggest first |
+| `GET` | [`/api/affiliations`](https://www.onepieceapi.com/api/affiliations) | Crews and organizations, biggest first. `/api/affiliations/{id}` adds every `members` entry |
 | `GET` | `/api/{resource}/{id}` | One item by UUID, for any resource above (e.g. `/api/ships/{id}`) |
 | `GET` | [`/openapi.json`](https://www.onepieceapi.com/openapi.json) | OpenAPI 3.1 description of all of the above |
 
@@ -108,7 +108,8 @@ Every field is described in the [documentation](https://www.onepieceapi.com/docu
 
 ### Good to know
 
-- **Responses are plain JSON arrays**, or a single object for detail routes (`/api/{resource}/{id}`), with the same shape as a list item. Errors look like `{ "error": "Not found" }`: `400` for an id that isn't a UUID, `404` when it doesn't exist, `500` otherwise.
+- **Responses are plain JSON arrays**, or a single object for detail routes (`/api/{resource}/{id}`), with the same shape as a list item (affiliations also add `members`). Errors look like `{ "error": "Not found" }`: `400` for an id that isn't a UUID, `404` when it doesn't exist, `500` otherwise.
+- **Relations come embedded.** Each character has `devil_fruits` and `affiliations`, each devil fruit has `users`, and `/api/affiliations/{id}` has `members`. Every link has `is_active` (`false` = former user or member), and current ones come first.
 - **Names are localized objects.** `name.en`, `name.jp` and `name.romaji`. Any key may be missing.
 - **Responses are cached at the edge** for about a minute. The data only changes when the dataset is updated.
 - **Use the `www` host.** `onepieceapi.com` redirects to `www.onepieceapi.com`, and that redirect does not carry CORS headers.
