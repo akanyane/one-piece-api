@@ -7,6 +7,7 @@ vi.mock("@/supabase/client", () => import("../helpers/supabase-mock"));
 // `unstable_cache` needs the Next.js runtime; outside it, call through.
 vi.mock("next/cache", () => ({
   unstable_cache: <T extends (...args: never[]) => unknown>(fn: T) => fn,
+  revalidateTag: vi.fn(),
 }));
 
 afterEach(() => {

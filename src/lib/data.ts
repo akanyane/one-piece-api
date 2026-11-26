@@ -9,6 +9,21 @@ import { supabase } from "@/supabase/client";
 /** Reference data (characters, devil fruits, bounties) only changes when someone runs a data pass. */
 const REVALIDATE_SECONDS = 60;
 
+/**
+ * Every tag used by the caches below. An entry carries the tags of all the
+ * tables it reads, so purging one resource also purges entries that embed it.
+ * `/internal/revalidate` purges these on demand after a direct data fix.
+ */
+export const CACHE_TAGS = [
+  "characters",
+  "devil-fruits",
+  "bounties",
+  "ships",
+  "islands",
+  "affiliations",
+] as const;
+export type CacheTag = (typeof CACHE_TAGS)[number];
+
 /** Escape `%` and `_` so user input is literal in SQL `ILIKE`. */
 function escapeIlike(s: string): string {
   return s.replace(/\\/g, "\\\\").replace(/%/g, "\\%").replace(/_/g, "\\_");
@@ -208,7 +223,10 @@ async function fetchCharacters(params: GetCharactersParams) {
 export const getCharacters = unstable_cache(
   fetchCharacters,
   ["characters-list"],
-  { revalidate: REVALIDATE_SECONDS, tags: ["characters"] },
+  {
+    revalidate: REVALIDATE_SECONDS,
+    tags: ["characters", "bounties", "devil-fruits", "affiliations"],
+  },
 );
 
 async function fetchCharacterById(id: string) {
@@ -225,7 +243,10 @@ async function fetchCharacterById(id: string) {
 export const getCharacterById = unstable_cache(
   fetchCharacterById,
   ["character-by-id"],
-  { revalidate: REVALIDATE_SECONDS, tags: ["characters"] },
+  {
+    revalidate: REVALIDATE_SECONDS,
+    tags: ["characters", "bounties", "devil-fruits", "affiliations"],
+  },
 );
 
 export type GetDevilFruitsParams = { page: number; limit: number; q?: string };
@@ -344,7 +365,7 @@ async function fetchBounties(params: GetBountiesParams) {
 /** Cached bounty list. */
 export const getBounties = unstable_cache(fetchBounties, ["bounties-list"], {
   revalidate: REVALIDATE_SECONDS,
-  tags: ["bounties"],
+  tags: ["bounties", "characters"],
 });
 
 async function fetchBountyById(id: string) {
@@ -360,7 +381,7 @@ async function fetchBountyById(id: string) {
 /** Cached single bounty, same shape as a list item. */
 export const getBountyById = unstable_cache(fetchBountyById, ["bounty-by-id"], {
   revalidate: REVALIDATE_SECONDS,
-  tags: ["bounties"],
+  tags: ["bounties", "characters"],
 });
 
 export type GetShipsParams = { page: number; limit: number; q?: string };
@@ -506,7 +527,7 @@ export const getAffiliations = unstable_cache(
   ["affiliations-list"],
   {
     revalidate: REVALIDATE_SECONDS,
-    tags: ["affiliations"],
+    tags: ["affiliations", "characters"],
   },
 );
 
@@ -631,7 +652,10 @@ async function fetchCharacterProfile(id: string) {
 export const getCharacterProfile = unstable_cache(
   fetchCharacterProfile,
   ["character-profile"],
-  { revalidate: REVALIDATE_SECONDS, tags: ["characters"] },
+  {
+    revalidate: REVALIDATE_SECONDS,
+    tags: ["characters", "bounties", "devil-fruits", "affiliations"],
+  },
 );
 
 async function fetchCrewmates(affiliationId: string, excludeId: string) {

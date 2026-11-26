@@ -152,8 +152,20 @@ pnpm dev               # http://localhost:3000
 |:--|:--|
 | `SUPABASE_URL` | Your project URL, e.g. `https://<ref>.supabase.co` |
 | `SUPABASE_SECRET_KEY` | A **secret** key, used on the server only. Never expose it to the browser. |
+| `REVALIDATE_SECRET` | Optional. Bearer token for `POST /internal/revalidate` (see below). Without it, the route answers 503. |
 
 Other scripts: `pnpm build`, `pnpm start`, `pnpm lint` and `pnpm typecheck`.
+
+### Purging the cache after a data fix
+
+Responses are cached for 60 seconds, but after a quiet period the first request can still get the old cached copy while a fresh one loads in the background. After you edit rows directly in Supabase, purge the cache:
+
+```bash
+pnpm revalidate                    # every resource
+pnpm revalidate islands            # or only some: characters, devil-fruits, bounties, ships, islands, affiliations
+```
+
+This calls `POST /internal/revalidate` with `Authorization: Bearer $REVALIDATE_SECRET` (it targets production unless `API_BASE_URL` is set). Each cache entry is tagged with every table it reads, so purging `devil-fruits` also refreshes the characters that embed them. The CDN can keep serving its copy for up to another 60 seconds.
 
 ## Tests
 
