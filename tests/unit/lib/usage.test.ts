@@ -117,7 +117,6 @@ describe("trackedParams", () => {
 
   it("ignores non-list paths", () => {
     expect(trackedParams("/api", p("page=2"))).toEqual([]);
-    expect(trackedParams("/api/ships/{id}", p("q=x"))).toEqual([]);
     expect(trackedParams("other", p("q=x"))).toEqual([]);
   });
 
@@ -184,6 +183,27 @@ describe("trackedParams", () => {
   it("caps the list at 8 entries", () => {
     const qs = Array.from({ length: 12 }, (_, i) => `x${i}=1`).join("&");
     expect(trackedParams("/api/affiliations", p(qs))).toHaveLength(8);
+  });
+});
+
+describe("trackedParams on detail routes", () => {
+  const ID = "637dd95f-248c-42a8-9dc3-9ad4531c1801";
+
+  it.each([
+    ["/api/characters/{id}", `/api/characters/${ID}`],
+    ["/api/ships/{id}", `/api/ships/${ID.toUpperCase()}/`],
+  ])("%s records the lowercased id", (path, pathname) => {
+    expect(trackedParams(path, new URLSearchParams("q=x"), pathname)).toEqual([
+      { param: "id", value: ID },
+    ]);
+  });
+
+  it.each([
+    ["/api/ships/{invalid}", "/api/ships/not-a-uuid"],
+    ["/api/ships/{id}", ""],
+    ["/api/ships/{id}", "/api/ships/not-a-uuid"],
+  ])("%s with %j records nothing", (path, pathname) => {
+    expect(trackedParams(path, new URLSearchParams(), pathname)).toEqual([]);
   });
 });
 
