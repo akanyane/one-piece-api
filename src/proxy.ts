@@ -25,7 +25,10 @@ export function proxy(request: NextRequest, event: NextFetchEvent) {
     track &&
     (request.method === "GET" || request.method === "HEAD") &&
     // The e2e suite (tests/e2e) runs against production; keep it out of the stats.
-    !userAgent?.startsWith(E2E_USER_AGENT)
+    !userAgent?.startsWith(E2E_USER_AGENT) &&
+    // Next.js router prefetches from the website itself, not API calls.
+    !request.headers.has("rsc") &&
+    !request.headers.has("next-router-prefetch")
   ) {
     const path = normalizeApiPath(request.nextUrl.pathname);
     const client = classifyClient(userAgent);
