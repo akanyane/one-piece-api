@@ -1,6 +1,6 @@
 {
   "name": "one-piece-api",
-  "version": "0.16.0",
+  "version": "0.17.0",
   "private": true,
   "packageManager": "pnpm@12.16.1",
   "author": {
