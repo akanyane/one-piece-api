@@ -248,7 +248,7 @@ export default function DocumentationPage() {
                 write by up to a minute.
               </li>
               <li>
-                <strong className="text-foreground">Rate limit:</strong> 600
+                <strong className="text-foreground">Rate limit:</strong> 3,000
                 requests per minute per IP. Above that you get{" "}
                 <InlineCode>429 Too Many Requests</InlineCode> until the minute
                 resets. Paging through a whole resource at{" "}
