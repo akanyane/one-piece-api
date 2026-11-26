@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.18.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.17.0...one-piece-api-v0.18.0) (2026-11-26)
+
+
+### Features
+
+* **api:** richer anonymous usage stats and a documented rate limit ([15e0f81](https://github.com/akanyane/one-piece-api/commit/15e0f8143305fe21cb2e529cdf14655cccffd67c))
+* **api:** richer anonymous usage stats and a documented rate limit ([a86a8a3](https://github.com/akanyane/one-piece-api/commit/a86a8a30b004277d9adbe9b061889867c2389509))
+
 ## [0.17.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.16.0...one-piece-api-v0.17.0) (2026-11-26)
 
 
