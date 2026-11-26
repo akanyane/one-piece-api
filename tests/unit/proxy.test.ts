@@ -73,6 +73,10 @@ describe("proxy tracking", () => {
       p_client: "python",
       p_country: "BR",
       p_origin: "example.dev:8443",
+      p_agent: "",
+      p_visitor: expect.stringMatching(/^[0-9a-f]{16}$/),
+      // Params are only recorded for list endpoints.
+      p_params: [],
     });
     // Never the IP, the query string or the raw user agent.
     expect(String(init?.body)).not.toMatch(/203\.0\.113|luffy|requests\/2/);
@@ -128,7 +132,54 @@ describe("proxy tracking", () => {
       p_client: "none",
       p_country: "",
       p_origin: "",
+      p_agent: "",
+      p_visitor: "",
+      p_params: [],
     });
+  });
+
+  it("records the agent name, bucketed params and a hashed visitor on list calls", async () => {
+    const { event, settled } = fakeEvent();
+    proxy(
+      request(
+        "/api/characters?q=%20Monkey%20D.%20Luffy%20&page=3&limit=500&status=alive",
+        {
+          headers: {
+            "user-agent": "Dataview/2.1 (+https://dataview.example)",
+            "x-real-ip": "198.51.100.7",
+          },
+        },
+      ),
+      event,
+    );
+    await settled();
+    const body = rpcBody();
+    expect(body).toMatchObject({
+      p_path: "/api/characters",
+      p_client: "other",
+      p_agent: "Dataview",
+      p_params: [
+        { param: "page", value: "2-5" },
+        { param: "limit", value: ">100" },
+        { param: "q", value: "monkey d. luffy" },
+        { param: "other", value: "status" },
+      ],
+    });
+    expect(body.p_visitor).toMatch(/^[0-9a-f]{16}$/);
+    expect(JSON.stringify(body)).not.toMatch(/198\.51\.100/);
+  });
+
+  it("gives the same IP the same visitor id within a day, and a different one to other IPs", async () => {
+    const visit = async (ip: string) => {
+      fetchMock.mockClear();
+      const { event, settled } = fakeEvent();
+      proxy(request("/api/ships", { headers: { "x-real-ip": ip } }), event);
+      await settled();
+      return rpcBody().p_visitor;
+    };
+    const a = await visit("192.0.2.1");
+    expect(await visit("192.0.2.1")).toBe(a);
+    expect(await visit("192.0.2.2")).not.toBe(a);
   });
 
   it("never throws when the database call fails", async () => {
