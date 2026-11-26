@@ -36,6 +36,7 @@ export default defineConfig({
       include: [
         "src/app/api/**/*.ts",
         "src/app/openapi.json/route.ts",
+        "src/app/internal/**/*.ts",
         "src/proxy.ts",
         "src/lib/api-*.ts",
         "src/lib/data.ts",
