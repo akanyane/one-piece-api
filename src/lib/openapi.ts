@@ -24,6 +24,8 @@ function listOperation(opts: {
   tag: string;
   schema: string;
   extraParams?: object[];
+  /** The endpoint validates some params and answers 400 for bad values. */
+  validates?: boolean;
 }) {
   return {
     get: {
@@ -46,6 +48,9 @@ function listOperation(opts: {
             },
           },
         },
+        ...(opts.validates && {
+          "400": { $ref: "#/components/responses/BadRequest" },
+        }),
         "500": { $ref: "#/components/responses/ServerError" },
       },
     },
@@ -148,9 +153,10 @@ export const openApiSpec = {
       operationId: "listCharacters",
       summary: "List characters",
       description:
-        "Characters, newest first, each with their bounties, devil fruits and affiliations. Filter by name with `q` and by age with `ageBand`.",
+        "Characters, newest first, each with their bounties, devil fruits and affiliations. Filter by name with `q`, age with `ageBand`, `status`, current affiliation, current devil fruit or `hasDevilFruit`. Filters combine with AND. An invalid `status`, id or boolean answers 400.",
       tag: "Characters",
       schema: "Character",
+      validates: true,
       extraParams: [
         searchParam("Filter by English, Japanese or romaji name.", "luffy"),
         {
@@ -163,6 +169,35 @@ export const openApiSpec = {
             enum: ["all", "0-12", "13-17", "18-29", "30-59", "60+"],
             default: "all",
           },
+        },
+        {
+          name: "status",
+          in: "query",
+          description: "Only characters with this status. Case-insensitive.",
+          schema: { type: "string", enum: ["alive", "deceased", "unknown"] },
+        },
+        {
+          name: "affiliation",
+          in: "query",
+          description:
+            "Affiliation id (from `/api/affiliations`). Only its current members; former members are excluded.",
+          schema: { type: "string", format: "uuid" },
+          example: "f7715d6d-cc3f-4290-824c-9a3e6ae2d4a0",
+        },
+        {
+          name: "devilFruit",
+          in: "query",
+          description:
+            "Devil fruit id (from `/api/devil-fruits`). Only its current user; former users are excluded. Can't be combined with `hasDevilFruit=false`.",
+          schema: { type: "string", format: "uuid" },
+          example: "87512161-c1cd-42a1-85cd-9904b23d31c5",
+        },
+        {
+          name: "hasDevilFruit",
+          in: "query",
+          description:
+            "`true`: only characters who currently have a devil fruit. `false`: only those who don't.",
+          schema: { type: "string", enum: ["true", "false"] },
         },
       ],
     }),
@@ -322,7 +357,7 @@ export const openApiSpec = {
     responses: {
       BadRequest: {
         description:
-          'Malformed input, e.g. an id that is not a UUID (`{ "error": "Invalid id" }`).',
+          'Malformed input, e.g. an id that is not a UUID (`{ "error": "Invalid id" }`) or an invalid filter value.',
         content: { "application/json": { schema: ref("Error") } },
       },
       NotFound: {

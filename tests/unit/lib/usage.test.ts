@@ -168,6 +168,21 @@ describe("trackedParams", () => {
     ]);
   });
 
+  it("keeps whole ids for the character filters", () => {
+    const id = "F7715D6D-CC3F-4290-824C-9A3E6AE2D4A0";
+    expect(
+      trackedParams(
+        "/api/characters",
+        p(`status=Alive&affiliation=${id}&devilFruit=${id}&hasDevilFruit=true`),
+      ),
+    ).toEqual([
+      { param: "status", value: "alive" },
+      { param: "affiliation", value: id.toLowerCase() },
+      { param: "devilFruit", value: id.toLowerCase() },
+      { param: "hasDevilFruit", value: "true" },
+    ]);
+  });
+
   it("skips empty values and records unsupported params once by name", () => {
     expect(
       trackedParams(

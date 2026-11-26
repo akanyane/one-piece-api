@@ -83,7 +83,16 @@ export function agentName(userAgent: string | null, client: string): string {
 
 /** Query params each list endpoint understands, in the order they're recorded. */
 const LIST_PARAMS: Record<string, readonly string[]> = {
-  "/api/characters": ["page", "limit", "q", "ageBand"],
+  "/api/characters": [
+    "page",
+    "limit",
+    "q",
+    "ageBand",
+    "status",
+    "affiliation",
+    "devilFruit",
+    "hasDevilFruit",
+  ],
   "/api/devil-fruits": ["page", "limit", "q"],
   "/api/bounties": ["page", "limit", "q", "isActive", "sort"],
   "/api/ships": ["page", "limit", "q"],
@@ -91,6 +100,7 @@ const LIST_PARAMS: Record<string, readonly string[]> = {
   "/api/affiliations": ["page", "limit", "q"],
 };
 const MAX_PARAMS = 8;
+const ID_PARAMS = new Set(["affiliation", "devilFruit"]);
 
 export type ParamUse = { param: string; value: string };
 
@@ -141,7 +151,8 @@ export function trackedParams(
           ? limitBucket(raw)
           : param === "q"
             ? raw.toLowerCase().replace(/\s+/g, " ").slice(0, 40)
-            : raw.toLowerCase().slice(0, 24);
+            : // Ids are kept whole (36 chars) so they can be joined to names.
+              raw.toLowerCase().slice(0, ID_PARAMS.has(param) ? 40 : 24);
     out.push({ param, value });
   }
   const unknown = new Set<string>();

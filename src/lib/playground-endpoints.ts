@@ -77,7 +77,7 @@ export const PLAYGROUND_ENDPOINTS: PlaygroundEndpoint[] = [
     title: "Characters",
     figure: "01",
     description:
-      "Paginated list of characters with localized names, images, canonical stats, bounties, devil fruits and affiliations.",
+      "Paginated list of characters with localized names, images, canonical stats, bounties, devil fruits and affiliations. Filter by name, age, status, affiliation or devil fruit.",
     params: [
       ...PAGINATION_PARAMS,
       { name: "q", placeholder: "luffy", hint: "name search" },
@@ -86,6 +86,22 @@ export const PLAYGROUND_ENDPOINTS: PlaygroundEndpoint[] = [
         placeholder: "18-29",
         hint: "0-12, 13-17, 18-29, 30-59, 60+",
       },
+      {
+        name: "status",
+        placeholder: "alive",
+        hint: "alive, deceased, unknown",
+      },
+      {
+        name: "affiliation",
+        placeholder: "uuid, from /api/affiliations",
+        hint: "current members",
+      },
+      {
+        name: "devilFruit",
+        placeholder: "uuid, from /api/devil-fruits",
+        hint: "current user",
+      },
+      { name: "hasDevilFruit", placeholder: "true", hint: "true or false" },
     ],
     fields: [...CHARACTER_FIELDS, ...CHARACTER_RELATION_FIELDS],
   },

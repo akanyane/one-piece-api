@@ -1,3 +1,5 @@
+import { isUuid } from "@/lib/uuid";
+
 export type AgeBand = "all" | "0-12" | "13-17" | "18-29" | "30-59" | "60+";
 
 const AGE_BANDS = new Set<AgeBand>([
@@ -61,4 +63,58 @@ export function ageRangeForBand(band: AgeBand): {
     default:
       return { min: null, max: null };
   }
+}
+
+export const CHARACTER_STATUSES = ["Alive", "Deceased", "Unknown"] as const;
+export type CharacterStatus = (typeof CHARACTER_STATUSES)[number];
+
+export type CharacterFilters = {
+  status?: CharacterStatus;
+  /** Affiliation UUID: current members only. */
+  affiliation?: string;
+  /** Devil fruit UUID: its current user only. */
+  devilFruit?: string;
+  /** `true`: eats a devil fruit now; `false`: doesn't. */
+  hasDevilFruit?: boolean;
+};
+
+/**
+ * `status`, `affiliation`, `devilFruit` and `hasDevilFruit` from a public API
+ * request. Blank values count as absent; anything else that isn't valid is an
+ * error (a 400), so a typo never silently returns every character.
+ */
+export function parseCharacterFilters(
+  params: URLSearchParams,
+): { filters: CharacterFilters } | { error: string } {
+  const get = (key: string) => params.get(key)?.trim() || undefined;
+  const filters: CharacterFilters = {};
+
+  const status = get("status")?.toLowerCase();
+  if (status) {
+    const match = CHARACTER_STATUSES.find((s) => s.toLowerCase() === status);
+    if (!match) {
+      return { error: "Invalid status: use alive, deceased or unknown" };
+    }
+    filters.status = match;
+  }
+
+  for (const key of ["affiliation", "devilFruit"] as const) {
+    const id = get(key)?.toLowerCase();
+    if (!id) continue;
+    if (!isUuid(id)) return { error: `Invalid ${key}: expected a UUID` };
+    filters[key] = id;
+  }
+
+  const has = get("hasDevilFruit")?.toLowerCase();
+  if (has) {
+    if (has !== "true" && has !== "false") {
+      return { error: "Invalid hasDevilFruit: use true or false" };
+    }
+    filters.hasDevilFruit = has === "true";
+  }
+
+  if (filters.devilFruit && filters.hasDevilFruit === false) {
+    return { error: "devilFruit can't be combined with hasDevilFruit=false" };
+  }
+  return { filters };
 }

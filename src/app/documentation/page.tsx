@@ -361,6 +361,34 @@ export default function DocumentationPage() {
                 <InlineCode>60+</InlineCode>. When set, rows with{" "}
                 <InlineCode>age = null</InlineCode> are excluded.
               </li>
+              <li>
+                <EndpointCode>?status=</EndpointCode>{" "}
+                <InlineCode>alive</InlineCode>,{" "}
+                <InlineCode>deceased</InlineCode> or{" "}
+                <InlineCode>unknown</InlineCode> (case-insensitive).
+              </li>
+              <li>
+                <EndpointCode>?affiliation=</EndpointCode> an affiliation id:
+                only its <em>current</em> members.
+              </li>
+              <li>
+                <EndpointCode>?devilFruit=</EndpointCode> a devil fruit id: only
+                its <em>current</em> user (e.g. Sabo for the Flame-Flame Fruit,
+                not Ace).
+              </li>
+              <li>
+                <EndpointCode>?hasDevilFruit=</EndpointCode>{" "}
+                <InlineCode>true</InlineCode> or <InlineCode>false</InlineCode>:
+                characters who currently have a devil fruit, or who don&apos;t.
+              </li>
+              <li>
+                Filters combine with AND, e.g.{" "}
+                <EndpointCode>
+                  {"?affiliation={id}&status=alive&hasDevilFruit=true"}
+                </EndpointCode>
+                . An invalid value answers <InlineCode>400</InlineCode> with a
+                message instead of being ignored.
+              </li>
             </ul>
             <p>
               <strong className="text-foreground">Response:</strong> a JSON

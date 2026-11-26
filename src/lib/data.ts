@@ -2,7 +2,7 @@ import type { PostgrestError } from "@supabase/supabase-js";
 import { unstable_cache } from "next/cache";
 import { clampLimit, clampPage } from "@/lib/api-params";
 import type { BountySort } from "@/lib/bounties-catalog-url";
-import type { AgeBand } from "@/lib/characters-catalog-url";
+import type { AgeBand, CharacterFilters } from "@/lib/characters-catalog-url";
 import { ageRangeForBand } from "@/lib/characters-catalog-url";
 import { supabase } from "@/supabase/client";
 
@@ -102,7 +102,14 @@ type CharacterLinks = {
 
 /** API shape: junction embeds become `devil_fruits[]` and `affiliations[]`. */
 function toApiCharacter<R extends CharacterLinks>(row: R) {
-  const { character_devil_fruits, character_affiliations, ...rest } = row;
+  const {
+    character_devil_fruits,
+    character_affiliations,
+    // Filter-only embeds (see characterSelect); never part of the response.
+    aff_filter: _aff,
+    fruit_filter: _fruit,
+    ...rest
+  } = row as R & { aff_filter?: unknown; fruit_filter?: unknown };
   return {
     ...rest,
     devil_fruits: flattenLinks(
@@ -178,7 +185,7 @@ async function pageWithTotal<T>(
   return { data: [], count: head.count ?? 0 };
 }
 
-export type GetCharactersParams = {
+export type GetCharactersParams = CharacterFilters & {
   page: number;
   limit: number;
   q?: string;
@@ -186,6 +193,26 @@ export type GetCharactersParams = {
   /** Site catalog only: characters with a portrait first (the public API keeps newest-first). */
   portraitsFirst?: boolean;
 };
+
+/**
+ * CHARACTER_SELECT plus aliased copies of the junction tables, used only to
+ * filter. Filtering the real embeds would also trim the `affiliations` and
+ * `devil_fruits` arrays in the response, so they stay untouched.
+ */
+function characterSelect(p: CharacterFilters): typeof CHARACTER_SELECT {
+  let select: string = CHARACTER_SELECT;
+  if (p.affiliation) {
+    select += ", aff_filter:character_affiliations!inner(affiliation_id)";
+  }
+  if (p.devilFruit || p.hasDevilFruit === true) {
+    select += ", fruit_filter:character_devil_fruits!inner(devil_fruit_id)";
+  } else if (p.hasDevilFruit === false) {
+    // Left join + "is null" below = characters with no current fruit.
+    select += ", fruit_filter:character_devil_fruits(devil_fruit_id)";
+  }
+  // Typed as the base select: the extra embeds are stripped by toApiCharacter.
+  return select as typeof CHARACTER_SELECT;
+}
 
 async function fetchCharacters(params: GetCharactersParams) {
   const page = clampPage(params.page);
@@ -196,7 +223,7 @@ async function fetchCharacters(params: GetCharactersParams) {
   const build = (head = false) => {
     let query = supabase
       .from("characters")
-      .select(CHARACTER_SELECT, { count: "exact", head });
+      .select(characterSelect(params), { count: "exact", head });
     if (params.portraitsFirst) {
       // PostgREST can't order by "is null", so sort by the URL itself with nulls
       // last — portraits come first, roughly alphabetical by file slug.
@@ -209,6 +236,22 @@ async function fetchCharacters(params: GetCharactersParams) {
     const { min, max } = ageRangeForBand(params.ageBand ?? "all");
     if (min !== null) query = query.gte("age", min);
     if (max !== null) query = query.lte("age", max);
+
+    if (params.status) query = query.eq("status", params.status);
+    if (params.affiliation) {
+      query = query
+        .eq("aff_filter.affiliation_id", params.affiliation)
+        .eq("aff_filter.is_active", true);
+    }
+    if (params.devilFruit) {
+      query = query.eq("fruit_filter.devil_fruit_id", params.devilFruit);
+    }
+    if (params.devilFruit || params.hasDevilFruit !== undefined) {
+      query = query.eq("fruit_filter.is_active", true);
+    }
+    if (params.hasDevilFruit === false && !params.devilFruit) {
+      query = query.is("fruit_filter", null);
+    }
     return query;
   };
 
