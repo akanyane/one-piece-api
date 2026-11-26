@@ -125,6 +125,15 @@ describe("proxy tracking", () => {
     expect(count()).toBe(0);
   });
 
+  it.each<Record<string, string>>([
+    { rsc: "1" },
+    { "next-router-prefetch": "1" },
+  ])("skips Next.js router prefetches (%o)", (headers) => {
+    const { event, count } = fakeEvent();
+    proxy(request("/api", { headers }), event);
+    expect(count()).toBe(0);
+  });
+
   it("sends empty strings when country and origin are missing", async () => {
     const { event, settled } = fakeEvent();
     proxy(request("/openapi.json"), event);

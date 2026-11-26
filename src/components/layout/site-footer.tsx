@@ -147,6 +147,10 @@ function FooterColumn({
       <ul className="mt-4 flex flex-col gap-2.5 text-sm">
         {links.map(({ href, label }) => {
           const external = href.startsWith("http");
+          // JSON and text files, not pages: a <Link> would prefetch them as
+          // React Server Components on every page view (a 404 for llms.txt
+          // and a fake hit on the API index).
+          const file = href === "/api" || href.endsWith(".txt");
           const className =
             "inline-flex items-center gap-1 text-foreground/80 transition-colors hover:text-primary";
           return (
@@ -160,6 +164,10 @@ function FooterColumn({
                 >
                   {label}
                   <ArrowUpRight aria-hidden className="size-3 opacity-50" />
+                </a>
+              ) : file ? (
+                <a className={className} href={href}>
+                  {label}
                 </a>
               ) : (
                 <Link className={className} href={href}>
