@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.19.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.18.0...one-piece-api-v0.19.0) (2026-11-26)
+
+
+### Features
+
+* **api:** count which item ids detail routes are asked for ([ceb98d9](https://github.com/akanyane/one-piece-api/commit/ceb98d9ed4a5d3d99e4c7cf6a54b01a0ba1d6ed2))
+* **api:** count which item ids detail routes are asked for ([9935323](https://github.com/akanyane/one-piece-api/commit/9935323d7c06ae6a835240d4ff0edc9053b814cd))
+
 ## [0.18.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.17.0...one-piece-api-v0.18.0) (2026-11-26)
 
 
