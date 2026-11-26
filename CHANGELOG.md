@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.19.1](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.19.0...one-piece-api-v0.19.1) (2026-11-26)
+
+
+### Bug Fixes
+
+* **site:** stop prefetching /api and llms.txt from the footer ([9813f20](https://github.com/akanyane/one-piece-api/commit/9813f20180ceb3f69a814532011b904c99d751f4))
+* **site:** stop prefetching /api and llms.txt from the footer ([d5c5923](https://github.com/akanyane/one-piece-api/commit/d5c59237a870891653604fd7e09d4181e92ad658))
+
 ## [0.19.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.18.0...one-piece-api-v0.19.0) (2026-11-26)
 
 
