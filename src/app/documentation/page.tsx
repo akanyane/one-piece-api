@@ -223,7 +223,8 @@ export default function DocumentationPage() {
                 endpoint accepts <EndpointCode>?q=</EndpointCode>, a
                 case-insensitive name search across <InlineCode>en</InlineCode>,{" "}
                 <InlineCode>jp</InlineCode> and <InlineCode>romaji</InlineCode>{" "}
-                (max 120 characters).
+                (max 120 characters). <InlineCode>search</InlineCode> and{" "}
+                <InlineCode>name</InlineCode> work as aliases.
               </li>
               <li>
                 <strong className="text-foreground">Detail routes:</strong>{" "}

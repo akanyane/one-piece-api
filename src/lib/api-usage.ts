@@ -99,6 +99,8 @@ const LIST_PARAMS: Record<string, readonly string[]> = {
   "/api/islands": ["page", "limit", "q"],
   "/api/affiliations": ["page", "limit", "q"],
 };
+/** Accepted aliases of `q`; recorded under their own name to see how often they're used. */
+const SEARCH_ALIASES = ["search", "name"];
 const MAX_PARAMS = 8;
 const ID_PARAMS = new Set(["affiliation", "devilFruit"]);
 
@@ -138,8 +140,9 @@ export function trackedParams(
     const id = pathname.replace(/\/+$/, "").split("/").pop()?.toLowerCase();
     return id && isUuid(id) ? [{ param: "id", value: id }] : [];
   }
-  const known = LIST_PARAMS[path];
-  if (!known) return [];
+  const listParams = LIST_PARAMS[path];
+  if (!listParams) return [];
+  const known = [...listParams, ...SEARCH_ALIASES];
   const out: ParamUse[] = [];
   for (const param of known) {
     const raw = params.get(param)?.trim();
@@ -149,7 +152,7 @@ export function trackedParams(
         ? pageBucket(raw)
         : param === "limit"
           ? limitBucket(raw)
-          : param === "q"
+          : param === "q" || SEARCH_ALIASES.includes(param)
             ? raw.toLowerCase().replace(/\s+/g, " ").slice(0, 40)
             : // Ids are kept whole (36 chars) so they can be joined to names.
               raw.toLowerCase().slice(0, ID_PARAMS.has(param) ? 40 : 24);

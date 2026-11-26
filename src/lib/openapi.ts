@@ -62,7 +62,7 @@ function searchParam(description: string, example: string) {
   return {
     name: "q",
     in: "query",
-    description: `${description} Case-insensitive substring match, max 120 characters.`,
+    description: `${description} Case-insensitive substring match, max 120 characters. Also accepted as \`search\` or \`name\`.`,
     schema: { type: "string", maxLength: 120 },
     example,
   };

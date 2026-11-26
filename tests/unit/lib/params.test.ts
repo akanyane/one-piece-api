@@ -74,6 +74,17 @@ describe("parseSearch / parseNameQuery", () => {
     expect(parseNameQuery(raw)).toBe(out ?? "");
   });
 
+  it.each([
+    ["search=zoro", "zoro"],
+    ["name=nami", "nami"],
+    ["q=luffy&search=zoro&name=nami", "luffy"],
+    ["search=zoro&name=nami", "zoro"],
+    ["q=%20&search=%20&name=sanji", "sanji"],
+    ["search=(%22%2A)", undefined],
+  ])("accepts search/name as aliases of q: %s → %j", (qs, out) => {
+    expect(parseSearch(new URLSearchParams(qs))).toBe(out);
+  });
+
   it("takes the first value of an array (Next.js searchParams)", () => {
     expect(parseNameQuery(["zoro", "nami"])).toBe("zoro");
     expect(parseNameQuery([])).toBe("");
