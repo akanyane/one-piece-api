@@ -277,6 +277,104 @@ describe.skipIf(!BASE)(`API contract against ${BASE}`, () => {
       },
     );
 
+    type Linked = { id: string; is_active: boolean };
+    const total = (res: Response) => Number(res.headers.get("x-total-count"));
+    const ids = (items: Record<string, unknown>[]) =>
+      items.map((c) => c.id as string).sort();
+
+    it("characters status: every item matches, and the statuses add up", async () => {
+      const all = await get("/api/characters?limit=1");
+      let sum = 0;
+      for (const status of ["alive", "deceased", "unknown"]) {
+        const { res, body } = await get(
+          `/api/characters?limit=100&status=${status.toUpperCase()}`,
+        );
+        const { items } = expectPage(res, body, {
+          schema: "Character",
+          page: 1,
+          limit: 100,
+        });
+        for (const c of items)
+          expect(String(c.status).toLowerCase()).toBe(status);
+        sum += total(res);
+      }
+      expect(sum).toBe(total(all.res));
+    });
+
+    it("characters hasDevilFruit: true + false add up, and links agree", async () => {
+      const all = await get("/api/characters?limit=1");
+      const yes = await get("/api/characters?limit=100&hasDevilFruit=true");
+      const no = await get("/api/characters?limit=100&hasDevilFruit=false");
+      expect(total(yes.res) + total(no.res)).toBe(total(all.res));
+      const opts = { schema: "Character", page: 1, limit: 100 };
+      for (const c of expectPage(yes.res, yes.body, opts).items) {
+        expect((c.devil_fruits as Linked[]).some((f) => f.is_active)).toBe(
+          true,
+        );
+      }
+      for (const c of expectPage(no.res, no.body, opts).items) {
+        expect((c.devil_fruits as Linked[]).some((f) => f.is_active)).toBe(
+          false,
+        );
+      }
+    });
+
+    it("characters affiliation returns exactly the current members", async () => {
+      const list = await get("/api/affiliations?limit=100");
+      const aff = (list.body as { id: string; memberCount: number }[]).find(
+        (a) => a.memberCount >= 5 && a.memberCount <= 100,
+      );
+      expect(aff).toBeDefined();
+      if (!aff) return;
+      const detail = await get(`/api/affiliations/${aff.id}`);
+      const current = (detail.body as { members: Linked[] }).members
+        .filter((m) => m.is_active)
+        .map((m) => m.id)
+        .sort();
+      const { res, body } = await get(
+        `/api/characters?limit=100&affiliation=${aff.id}`,
+      );
+      const { items } = expectPage(res, body, {
+        schema: "Character",
+        page: 1,
+        limit: 100,
+      });
+      expect(ids(items)).toEqual(current);
+      // The filter must not trim the embedded relation arrays.
+      for (const c of items) {
+        expect((c.affiliations as Linked[]).map((a) => a.id)).toContain(aff.id);
+      }
+    });
+
+    it("characters devilFruit returns only the current user", async () => {
+      const list = await get("/api/devil-fruits?limit=100");
+      const fruit = (list.body as { id: string; users: Linked[] }[]).find((f) =>
+        f.users.some((u) => !u.is_active),
+      );
+      expect(fruit, "a fruit with a former user").toBeDefined();
+      if (!fruit) return;
+      const current = fruit.users.filter((u) => u.is_active).map((u) => u.id);
+      const { res, body } = await get(`/api/characters?devilFruit=${fruit.id}`);
+      const { items } = expectPage(res, body, {
+        schema: "Character",
+        page: 1,
+        limit: 20,
+      });
+      expect(ids(items)).toEqual(current.sort());
+    });
+
+    it.concurrent.each([
+      "status=zombie",
+      "affiliation=straw-hats",
+      "devilFruit=mera",
+      "hasDevilFruit=yes",
+      "devilFruit=87512161-c1cd-42a1-85cd-9904b23d31c5&hasDevilFruit=false",
+    ])("characters %s answers 400", async (qs) => {
+      const { res, body } = await get(`/api/characters?${qs}`);
+      expect(res.status).toBe(400);
+      expect(body).toEqual({ error: expect.any(String) });
+    });
+
     const bountyCombos = ["true", "false", undefined].flatMap((isActive) =>
       ["high", "low", "newest", undefined].map((sort) => ({ isActive, sort })),
     );

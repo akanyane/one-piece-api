@@ -78,8 +78,14 @@ Some endpoints take extra filters:
 | Endpoint | Param | Values |
 |:--|:--|:--|
 | `/api/characters` | `ageBand` | `all`, `0-12`, `13-17`, `18-29`, `30-59`, `60+` |
+| `/api/characters` | `status` | `alive`, `deceased`, `unknown` |
+| `/api/characters` | `affiliation` | An affiliation id. Only its current members |
+| `/api/characters` | `devilFruit` | A devil fruit id. Only its current user |
+| `/api/characters` | `hasDevilFruit` | `true` (has a devil fruit now) or `false` |
 | `/api/bounties` | `isActive` | `true` (current bounties only) or `false` (superseded only) |
 | `/api/bounties` | `sort` | `newest` (default), `high`, `low` |
+
+Filters combine with AND, for example `/api/characters?affiliation={id}&status=alive&hasDevilFruit=true`. An invalid value answers `400` with a message, so a typo never quietly returns everything.
 
 ### Example response
 
@@ -178,9 +184,9 @@ This calls `POST /internal/revalidate` with `Authorization: Bearer $REVALIDATE_S
 | `pnpm test:watch` | Unit tests in watch mode |
 | `pnpm test:e2e` | Contract tests against a live deployment (needs `API_BASE_URL`) |
 
-**Unit tests** (`tests/unit`) call every route handler directly, with Supabase replaced by an in-memory mock that records the exact query built (filters, ordering, range). Each list endpoint runs every combination of its params, valid and invalid: `page` × `limit` × `q`, plus `ageBand` for characters and `isActive` × `sort` for bounties. The tests check the query, the body, `X-Total-Count` and every `Link` URL. Detail routes, errors (400/404/500), the usage-tracking proxy, the parsers and the OpenAPI spec are covered too. They also check that the spec documents exactly the routes that exist.
+**Unit tests** (`tests/unit`) call every route handler directly, with Supabase replaced by an in-memory mock that records the exact query built (filters, ordering, range). Each list endpoint runs every combination of its params, valid and invalid: `page` × `limit` × `q`, plus `ageBand` and `status` × `affiliation` × `devilFruit` × `hasDevilFruit` for characters, and `isActive` × `sort` for bounties. The tests check the query, the body, `X-Total-Count` and every `Link` URL. Detail routes, errors (400/404/500), the usage-tracking proxy, the parsers and the OpenAPI spec are covered too. They also check that the spec documents exactly the routes that exist.
 
-**End-to-end tests** (`tests/e2e`) hit a real deployment and validate every response against the schemas in `/openapi.json`. They also check that filters really filter: names match `q`, ages fall in the `ageBand`, bounties come back in `sort` order, and following `Link: rel="next"` visits every item exactly once.
+**End-to-end tests** (`tests/e2e`) hit a real deployment and validate every response against the schemas in `/openapi.json`. They also check that filters really filter: names match `q`, ages fall in the `ageBand`, character filters agree with the affiliation and devil fruit detail routes, bounties come back in `sort` order, and following `Link: rel="next"` visits every item exactly once.
 
 ```bash
 pnpm build && pnpm start                         # in one terminal

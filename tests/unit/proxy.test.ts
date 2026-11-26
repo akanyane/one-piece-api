@@ -153,7 +153,7 @@ describe("proxy tracking", () => {
     const { event, settled } = fakeEvent();
     proxy(
       request(
-        "/api/characters?q=%20Monkey%20D.%20Luffy%20&page=3&limit=500&status=alive",
+        "/api/characters?q=%20Monkey%20D.%20Luffy%20&page=3&limit=500&status=alive&fields=name",
         {
           headers: {
             "user-agent": "Dataview/2.1 (+https://dataview.example)",
@@ -173,7 +173,8 @@ describe("proxy tracking", () => {
         { param: "page", value: "2-5" },
         { param: "limit", value: ">100" },
         { param: "q", value: "monkey d. luffy" },
-        { param: "other", value: "status" },
+        { param: "status", value: "alive" },
+        { param: "other", value: "fields" },
       ],
     });
     expect(body.p_visitor).toMatch(/^[0-9a-f]{16}$/);
