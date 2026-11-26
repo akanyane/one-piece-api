@@ -248,6 +248,21 @@ export default function DocumentationPage() {
                 write by up to a minute.
               </li>
               <li>
+                <strong className="text-foreground">Rate limit:</strong> 600
+                requests per minute per IP. Above that you get{" "}
+                <InlineCode>429 Too Many Requests</InlineCode> until the minute
+                resets. Paging through a whole resource at{" "}
+                <InlineCode>limit=100</InlineCode> takes about 15 requests, so
+                cache what you fetch instead of polling in a loop.
+              </li>
+              <li>
+                <strong className="text-foreground">Privacy:</strong> usage is
+                counted anonymously (endpoint, client type, country, calling
+                site and which query params are used). IPs and full user agents
+                are never stored. Distinct callers per day are counted with a
+                hash of the IP that changes daily and can&apos;t be reversed.
+              </li>
+              <li>
                 <strong className="text-foreground">Errors:</strong> failed
                 requests return JSON{" "}
                 <InlineCode>{`{ "error": string }`}</InlineCode>. Detail routes

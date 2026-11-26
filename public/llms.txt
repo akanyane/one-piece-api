@@ -13,7 +13,7 @@ All endpoints return JSON over plain HTTP, require no authentication or API key,
 - [Islands](https://www.onepieceapi.com/api/islands): `GET /api/islands` (list, paginated) and `GET /api/islands/{id}`. Fields: id, name, sea, image_url, extra_data.
 - [Affiliations](https://www.onepieceapi.com/api/affiliations): `GET /api/affiliations` (list, paginated, biggest factions first) and `GET /api/affiliations/{id}` (adds `members`: every linked character with `is_active`). Fields: id, name, memberCount (number of linked characters).
 
-List endpoints share `?page=` (1-based, default 1), `?limit=` (default 20, max 100) and `?q=` (case-insensitive name search across en/jp/romaji). The body is a plain JSON array; the `X-Total-Count` response header has the total number of matching items and the `Link` header has first/prev/next/last page URLs. Every detail route returns one object with the same shape as a list item (affiliations add `members`): 400 for an id that isn't a UUID, 404 when not found.
+List endpoints share `?page=` (1-based, default 1), `?limit=` (default 20, max 100) and `?q=` (case-insensitive name search across en/jp/romaji). The body is a plain JSON array; the `X-Total-Count` response header has the total number of matching items and the `Link` header has first/prev/next/last page URLs. Every detail route returns one object with the same shape as a list item (affiliations add `members`): 400 for an id that isn't a UUID, 404 when not found. Rate limit: 600 requests per minute per IP (429 above that); responses are CDN-cached for ~60s, so cache on your side instead of polling.
 
 ## Docs
 

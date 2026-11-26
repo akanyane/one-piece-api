@@ -1,11 +1,14 @@
 import type { NextFetchEvent, NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import {
+  agentName,
   classifyClient,
+  clientIp,
   E2E_USER_AGENT,
   normalizeApiPath,
   originHost,
   recordApiHit,
+  trackedParams,
 } from "@/lib/api-usage";
 
 /**
@@ -24,12 +27,17 @@ export function proxy(request: NextRequest, event: NextFetchEvent) {
     // The e2e suite (tests/e2e) runs against production; keep it out of the stats.
     !userAgent?.startsWith(E2E_USER_AGENT)
   ) {
+    const path = normalizeApiPath(request.nextUrl.pathname);
+    const client = classifyClient(userAgent);
     event.waitUntil(
       recordApiHit({
-        path: normalizeApiPath(request.nextUrl.pathname),
-        client: classifyClient(userAgent),
+        path,
+        client,
         country: request.headers.get("x-vercel-ip-country") ?? "",
         origin: originHost(request.headers.get("origin")),
+        agent: agentName(userAgent, client),
+        ip: clientIp(request.headers),
+        params: trackedParams(path, request.nextUrl.searchParams),
       }),
     );
   }
