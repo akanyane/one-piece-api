@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.20.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.19.1...one-piece-api-v0.20.0) (2026-11-26)
+
+
+### Features
+
+* **api:** filter characters by status, affiliation and devil fruit ([d45d007](https://github.com/akanyane/one-piece-api/commit/d45d007ad38ed10862e7aa4e4ef9e6f034d2f20e))
+* **api:** filter characters by status, affiliation and devil fruit ([cef7bcf](https://github.com/akanyane/one-piece-api/commit/cef7bcf95272fe9d0af4ebcf5bcc7e989be5ffa6))
+
 ## [0.19.1](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.19.0...one-piece-api-v0.19.1) (2026-11-26)
 
 
