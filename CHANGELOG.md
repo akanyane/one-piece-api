@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.21.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.20.0...one-piece-api-v0.21.0) (2026-11-26)
+
+
+### Features
+
+* **api:** accept search and name as aliases of q ([218226a](https://github.com/akanyane/one-piece-api/commit/218226a18e364fdd570383b6132fbd6999c9ddf2))
+* **api:** accept search and name as aliases of q ([0b6f5db](https://github.com/akanyane/one-piece-api/commit/0b6f5db9276c4a6d2c58a487338b78ab5ae2d24f))
+
 ## [0.20.0](https://github.com/akanyane/one-piece-api/compare/one-piece-api-v0.19.1...one-piece-api-v0.20.0) (2026-11-26)
 
 
