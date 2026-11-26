@@ -96,7 +96,7 @@ export const openApiSpec = {
     title: "One Piece API",
     version: "1.0.0",
     description:
-      "Free, read-only REST API for the One Piece manga/anime: characters, devil fruits, bounties, ships, islands and affiliations. No API key or authentication. CORS is enabled for every origin, so it can be called straight from the browser. List endpoints return a plain JSON array; pagination metadata is in the `X-Total-Count` and `Link` response headers. Fair use: 600 requests per minute per IP; above that the edge answers `429 Too Many Requests`.",
+      "Free, read-only REST API for the One Piece manga/anime: characters, devil fruits, bounties, ships, islands and affiliations. No API key or authentication. CORS is enabled for every origin, so it can be called straight from the browser. List endpoints return a plain JSON array; pagination metadata is in the `X-Total-Count` and `Link` response headers. Fair use: 3,000 requests per minute per IP; above that the edge answers `429 Too Many Requests`.",
     license: {
       name: "MIT",
       url: "https://github.com/akanyane/one-piece-api/blob/main/LICENSE",

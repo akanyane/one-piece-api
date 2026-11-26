@@ -112,7 +112,7 @@ Every field is described in the [documentation](https://www.onepieceapi.com/docu
 - **Relations come embedded.** Each character has `devil_fruits` and `affiliations`, each devil fruit has `users`, and `/api/affiliations/{id}` has `members`. Every link has `is_active` (`false` = former user or member), and current ones come first.
 - **Names are localized objects.** `name.en`, `name.jp` and `name.romaji`. Any key may be missing.
 - **Responses are cached at the edge** for about a minute. The data only changes when the dataset is updated.
-- **Fair use: 600 requests per minute per IP.** Above that, requests get `429 Too Many Requests` until the minute resets. Paging through a whole resource at `limit=100` takes about 15 requests, so cache what you fetch instead of polling in a loop.
+- **Fair use: 3,000 requests per minute per IP.** Above that, requests get `429 Too Many Requests` until the minute resets. Paging through a whole resource at `limit=100` takes about 15 requests, so cache what you fetch instead of polling in a loop.
 - **Usage is counted anonymously**: endpoint, client type (browser, Node, Python…), country, calling site, which query params are used, and a count of distinct callers per day. IPs and full user agents are never stored. Distinct callers are counted with a hash of the IP that changes every day and can't be reversed.
 - **Use the `www` host.** `onepieceapi.com` redirects to `www.onepieceapi.com`, and that redirect does not carry CORS headers.
 - **Some fields are often empty** (`null` or `"Unknown"`), because the series never revealed them. Blood types and heights are the usual cases.
