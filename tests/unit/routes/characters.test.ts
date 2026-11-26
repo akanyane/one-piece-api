@@ -155,6 +155,11 @@ describe("GET /api/characters: edge cases", () => {
     expect(calls(recorded[0], "or")).toEqual([[nameOr("zoro")]]);
   });
 
+  it.each(["search", "name"])("accepts %s as an alias of q", async (key) => {
+    await GET(new Request(apiUrl("/api/characters", { [key]: "zoro" })));
+    expect(calls(recorded[0], "or")).toEqual([[nameOr("zoro")]]);
+  });
+
   it("answers 400 for a data exception (SQLSTATE class 22)", async () => {
     respond(() => ({ error: { code: "22P02", message: "invalid input" } }));
     const res = await GET(new Request(apiUrl("/api/characters")));

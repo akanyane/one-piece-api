@@ -62,7 +62,7 @@ Every list endpoint accepts:
 |:--|:--|:--|
 | `page` | `1` | 1-based page number. A page past the end returns `[]`. |
 | `limit` | `20` | Items per page, up to `100`. |
-| `q` | | Case-insensitive name search across English, Japanese and romaji. On `/api/devil-fruits` it also matches the Zoan model, and on `/api/bounties` the bounty holder's name. |
+| `q` | | Case-insensitive name search across English, Japanese and romaji. On `/api/devil-fruits` it also matches the Zoan model, and on `/api/bounties` the bounty holder's name. `search` and `name` are accepted as aliases. |
 
 List responses stay plain JSON arrays. The pagination info is in the response headers:
 

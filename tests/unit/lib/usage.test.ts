@@ -183,6 +183,19 @@ describe("trackedParams", () => {
     ]);
   });
 
+  it("records the search aliases under their own name", () => {
+    expect(
+      trackedParams(
+        "/api/characters",
+        p("search=Big%20Mom&name=Kaido&fields=x"),
+      ),
+    ).toEqual([
+      { param: "search", value: "big mom" },
+      { param: "name", value: "kaido" },
+      { param: "other", value: "fields" },
+    ]);
+  });
+
   it("skips empty values and records unsupported params once by name", () => {
     expect(
       trackedParams(

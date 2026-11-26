@@ -23,7 +23,18 @@ export function parsePagination(params: URLSearchParams): {
   };
 }
 
-/** Sanitized `q` name search from a public API request, or `undefined` when blank. */
+/**
+ * Params accepted as the name search, in priority order. `search` and `name`
+ * are aliases people reach for before reading the docs; without them the
+ * search was silently ignored and the whole list came back.
+ */
+export const SEARCH_PARAMS = ["q", "search", "name"] as const;
+
+/** Sanitized name search (`q`, or an alias) from a public API request, or `undefined` when blank. */
 export function parseSearch(params: URLSearchParams): string | undefined {
-  return parseNameQuery(params.get("q") ?? undefined) || undefined;
+  for (const key of SEARCH_PARAMS) {
+    const q = parseNameQuery(params.get(key) ?? undefined);
+    if (q) return q;
+  }
+  return undefined;
 }
