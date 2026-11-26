@@ -258,9 +258,10 @@ export default function DocumentationPage() {
               <li>
                 <strong className="text-foreground">Privacy:</strong> usage is
                 counted anonymously (endpoint, client type, country, calling
-                site and which query params are used). IPs and full user agents
-                are never stored. Distinct callers per day are counted with a
-                hash of the IP that changes daily and can&apos;t be reversed.
+                site, and which query params and item ids are requested). IPs
+                and full user agents are never stored. Distinct callers per day
+                are counted with a hash of the IP that changes daily and
+                can&apos;t be reversed.
               </li>
               <li>
                 <strong className="text-foreground">Errors:</strong> failed

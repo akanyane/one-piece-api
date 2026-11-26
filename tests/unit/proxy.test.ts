@@ -75,8 +75,10 @@ describe("proxy tracking", () => {
       p_origin: "example.dev:8443",
       p_agent: "",
       p_visitor: expect.stringMatching(/^[0-9a-f]{16}$/),
-      // Params are only recorded for list endpoints.
-      p_params: [],
+      // Detail calls record the id; the query string is ignored.
+      p_params: [
+        { param: "id", value: "637dd95f-248c-42a8-9dc3-9ad4531c1801" },
+      ],
     });
     // Never the IP, the query string or the raw user agent.
     expect(String(init?.body)).not.toMatch(/203\.0\.113|luffy|requests\/2/);

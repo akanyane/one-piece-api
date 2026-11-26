@@ -114,11 +114,20 @@ function limitBucket(raw: string): string {
  * page ranges, the limit, the search text (lowercased, 40 chars) and enum
  * values. Unsupported params are recorded as `other` with the param's name,
  * which shows which filters people try that don't exist yet.
+ *
+ * Detail calls record the requested `id` instead (from `pathname`), so the
+ * most viewed items can be ranked. Only valid UUIDs: `path` is already
+ * `{invalid}` for anything else, which keeps junk ids out.
  */
 export function trackedParams(
   path: string,
   params: URLSearchParams,
+  pathname = "",
 ): ParamUse[] {
+  if (path.endsWith("/{id}")) {
+    const id = pathname.replace(/\/+$/, "").split("/").pop()?.toLowerCase();
+    return id && isUuid(id) ? [{ param: "id", value: id }] : [];
+  }
   const known = LIST_PARAMS[path];
   if (!known) return [];
   const out: ParamUse[] = [];

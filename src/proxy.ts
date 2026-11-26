@@ -37,7 +37,11 @@ export function proxy(request: NextRequest, event: NextFetchEvent) {
         origin: originHost(request.headers.get("origin")),
         agent: agentName(userAgent, client),
         ip: clientIp(request.headers),
-        params: trackedParams(path, request.nextUrl.searchParams),
+        params: trackedParams(
+          path,
+          request.nextUrl.searchParams,
+          request.nextUrl.pathname,
+        ),
       }),
     );
   }
